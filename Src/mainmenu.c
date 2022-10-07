@@ -13,11 +13,14 @@ void Main_Menu_Init()
 
 void Main_Menu_Update()
 {
+
 	CP_Graphics_ClearBackground(CP_Color_Create(0, 0, 0, 255));
+	CP_Font_DrawText("Main Menu Click SpaceBar to continue", CP_System_GetDisplayWidth() / 2, CP_System_GetDisplayHeight() / 2);
 	if(CP_Input_KeyTriggered(KEY_SPACE)){
 		CP_Engine_SetNextGameState(game_init, game_update, game_exit);
 	    CP_Engine_Run();
 	}
+
 	
 }
 
