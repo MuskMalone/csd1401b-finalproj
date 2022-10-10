@@ -1,8 +1,9 @@
-#include "cprocessing.h"
-#include "utils.h"
+
 #include "game.h"
+#define PLAYER_IDX 0
 #define ENTITY_CAP 100
 
+// @todo auto resize the array
 Entity entities[ENTITY_CAP];
 
 void game_init(void)
@@ -11,8 +12,8 @@ void game_init(void)
 		entities[i].type = entity_null;
 	}
 	Player p = init_player();
-	entities[0].type = entity_player;
-	entities[0].player = p;
+	entities[PLAYER_IDX].type = entity_player;
+	entities[PLAYER_IDX].player = p;
 }
 
 void game_update(void)
@@ -21,10 +22,10 @@ void game_update(void)
 	for (int i = 0; i < ENTITY_CAP; ++i) {
 		if (entities[i].type == entity_null) continue;
 		switch (entities[i].type) {
-		case entity_player: update_player(); break;
-		case entity_mob: break;
-		case entity_boss: break;
-		case entity_projectile: break;
+			case entity_player: update_player(); break;
+			case entity_mob: update_mob(i, PLAYER_IDX, entities); break;
+			case entity_boss: break;
+			case entity_projectile: break;
 		}
 	}
 }

@@ -1,8 +1,7 @@
 #pragma once;
 #include "utils.h"
 #include "cprocessing.h"
-typedef enum attack_type {range, melee} attack_type;
-typedef struct Mob {
-	attack_type type;
-	Position pos;
-}Mob;
+#include "gametypes.h"
+
+Mob init_mob(void);
+void update_mob(int mob_idx, int player_idx, Entity entities[]);
