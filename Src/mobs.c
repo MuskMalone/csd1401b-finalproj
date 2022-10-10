@@ -20,7 +20,7 @@ void update_mob(int mob_idx, int player_idx, Entity entities[]) {
 	
 	CP_Vector direction = getVectorBetweenPositions(&(mob->pos), &(player->pos));
 	
-	moveEntity(&(mob->pos), direction.x * 10, direction.y * 10);
+	moveEntity(&(mob->pos), direction.x * 50.0f, direction.y * 50.0f);
 	
 	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
 }

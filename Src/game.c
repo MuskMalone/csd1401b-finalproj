@@ -14,6 +14,9 @@ void game_init(void)
 	Player p = init_player();
 	entities[PLAYER_IDX].type = entity_player;
 	entities[PLAYER_IDX].player = p;
+	Mob m = init_mob();
+	entities[1].type = entity_mob;
+	entities[1].mob = m;
 }
 
 void game_update(void)
@@ -22,7 +25,7 @@ void game_update(void)
 	for (int i = 0; i < ENTITY_CAP; ++i) {
 		if (entities[i].type == entity_null) continue;
 		switch (entities[i].type) {
-			case entity_player: update_player(); break;
+			case entity_player: update_player(PLAYER_IDX, entities); break;
 			case entity_mob: update_mob(i, PLAYER_IDX, entities); break;
 			case entity_boss: break;
 			case entity_projectile: break;
