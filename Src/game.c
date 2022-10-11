@@ -33,15 +33,14 @@ void game_update(void)
 	}
 
 	Position test;
-	float dim = 50.0f;
-	test.x = 100.0f; test.y = 100.f;
+	test.x = 100.0f; test.y = 100.0f;
+	float diameter = 50.0f;
 	CP_Settings_StrokeWeight(0.0f);
-	
-	if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter/2.0f, test, dim, dim))
+
+	if (collisionCircle(test, diameter/2.0f, entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter/2.0f))
 		CP_Settings_Fill(CP_Color_Create(51, 255, 173, 255));
 	else CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
-	
-	CP_Graphics_DrawRect(test.x, test.y, dim, dim);
+	CP_Graphics_DrawCircle(test.x, test.y, diameter);
 }
 
 void game_exit(void)

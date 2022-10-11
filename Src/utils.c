@@ -29,8 +29,7 @@ int collisionAABB(Position a_min, Position a_max, Position b_min, Position b_max
 
 // collision for circles
 int collisionCircle(Position a_center, float a_radius, Position b_center, float b_radius) {
-	float distance = CP_Vector_Distance(CP_Vector_Set(a_center.x, a_center.y), CP_Vector_Set(b_center.x, b_center.y)),
-		total_radius = a_radius + b_radius;
+	float distance = positionDistance(a_center, b_center), total_radius = a_radius + b_radius;
 	
 	int out = (distance < total_radius) ? TRUE : FALSE;
 	return out;
@@ -59,3 +58,8 @@ int collisionCircleRect(Position circle, float radius, Position rect, float widt
 	return FALSE;
 }
 
+float positionDistance(Position a, Position b) {
+	float distX = a.x - b.x;
+	float distY = a.y - b.y;
+	return sqrt((distX * distX) + (distY * distY));
+}

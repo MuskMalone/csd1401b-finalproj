@@ -27,3 +27,5 @@ int collisionCircle(Position a_center, float a_radius, Position b_center, float 
 // circle to rectangle collision
 // works for collision between a circle and a rectangle
 int collisionCircleRect(Position circle, float radius, Position rect, float width, float height);
+
+float positionDistance(Position a, Position b);
