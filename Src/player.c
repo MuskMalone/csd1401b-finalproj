@@ -45,18 +45,23 @@ void update_player(int player_idx, Entity entities[]) {
 
 	//Reduces the barrier strength whenever the player clicks spacebar
 	// If you want to reduce the opacity of the barrier, uncomment the "basewieght" variable in the "if" statement bellow
-	// If you want to reduce the size of the barrier, uncomment the "radius_reduction" variable in the "if" statement bellow
 	if (CP_Input_KeyTriggered(KEY_SPACE)) {
 
-		if (baseweight >= 100)  baseweight -= 100; // if baseweight 
-		//radius_reduction += 2;
+		if (baseweight >= 30) {
+			baseweight -= 30;
+		}
+		else {
+			baseweight = 0;
+		}
+	}
+	else {
+
+		//Increases the barrier's opacity over time ( Uncomment this if you want to change the opacity of the barrier when user click space)
+		if (baseweight < 255) {
+			baseweight += 50 * CP_System_GetDt();
+		}
 	}
 
-
-	//Increases the barrier's opacity over time ( Uncomment this if you want to change the opacity of the barrier when user click space)
-	if (baseweight < 255) {
-		baseweight += 60 * CP_System_GetDt();
-	}
 
 	//Basic Player movement
 	if (CP_Input_KeyDown(KEY_D)) moveEntity(&(player->pos), player->speed, 0);
