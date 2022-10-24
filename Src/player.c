@@ -3,6 +3,18 @@
 
 float baseweight = 255.0f;
 float radius_reduction = 4.8f;
+int check_collision(Position const *p, float diameter, int wall_pos[GRID_ROWS][GRID_COLS]) {
+	for (int i = 0; i < GRID_ROWS; ++i) {
+		for (int j = 0; j < GRID_COLS; ++j) {
+			if (wall_pos[i][j]) {
+				int collided = collisionCircleRect(*p, diameter / 2.0f, (Position) { WALL_DIM* (float)i, WALL_DIM* (float)j }, WALL_DIM, WALL_DIM);
+				if (collided) return collided;
+			}
+
+		}
+	}
+	return 0;
+}
 Player init_player(void) {
 	Player player;
 	float Window_Width = CP_System_GetWindowWidth();
@@ -60,20 +72,40 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 
 	//Basic Player movement
 	if (CP_Input_KeyDown(KEY_D)) {
-		if (player->pos.x < (CP_System_GetWindowWidth() - ((player->diameter) / 2.0f)))
+		moveEntity(&(player->pos), player->speed, 0);
+		int player_at_border = !(player->pos.x < (CP_System_GetWindowWidth() - ((player->diameter) / 2.0f))),
+			player_at_wall = check_collision(&(player->pos), player->diameter, wall_pos);
+		if (!(player_at_border || player_at_wall)) {
 			moveEntity(&(player->pos), player->speed, 0);
+		}
+		moveEntity(&(player->pos), -player->speed, 0);
 	}
 	else if (CP_Input_KeyDown(KEY_A)) {
-		if (player->pos.x > (0.0f + ((player->diameter) / 2.0f)))
+		moveEntity(&(player->pos), -player->speed, 0);
+		int player_at_border = !(player->pos.x > (0.0f + ((player->diameter) / 2.0f))),
+			player_at_wall = check_collision(&(player->pos), player->diameter, wall_pos);
+		if (!(player_at_border || player_at_wall)) {
 			moveEntity(&(player->pos), -player->speed, 0);
+		}
+		moveEntity(&(player->pos), player->speed, 0);
 	}
 	if (CP_Input_KeyDown(KEY_W)) {
-		if (player->pos.y > (0.0f + ((player->diameter) / 2.0f)))
+		moveEntity(&(player->pos), 0, -player->speed);
+		int player_at_border = !(player->pos.y > (0.0f + ((player->diameter) / 2.0f))),
+			player_at_wall = check_collision(&(player->pos), player->diameter, wall_pos);
+		if (!(player_at_border || player_at_wall)) {
 			moveEntity(&(player->pos), 0, -player->speed);
+		}
+		moveEntity(&(player->pos), 0, player->speed);
 	}
 	else if (CP_Input_KeyDown(KEY_S)) {
-		if (player->pos.y < (CP_System_GetWindowHeight() - ((player->diameter) / 2.0f)))
+		moveEntity(&(player->pos), 0, player->speed);
+		int player_at_border = !(player->pos.y < (CP_System_GetWindowHeight() - ((player->diameter) / 2.0f))),
+			player_at_wall = check_collision(&(player->pos), player->diameter, wall_pos);
+		if (!(player_at_border || player_at_wall)) {
 			moveEntity(&(player->pos), 0, player->speed);
+		}
+		moveEntity(&(player->pos), 0, -player->speed);
 	}
 	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
 }
