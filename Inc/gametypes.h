@@ -8,6 +8,7 @@ typedef struct Player
 	int speed;
 	float parryrad;
 } Player;
+
 // for mobs
 typedef enum attack_type { range, melee } attack_type;
 typedef enum mob_id { mob1 } mob_id;
@@ -25,6 +26,9 @@ typedef struct Projectile {
 typedef struct Boss {
 	Position pos;
 	float health;
+	float diameter;
+	int speed;
+	float parryrad;
 }Boss;
 // overarching entity struct
 typedef enum entity_type {

@@ -1,6 +1,7 @@
 
 #include "game.h"
 #define PLAYER_IDX 0
+#define BOSS_IDX 1
 #define ENTITY_CAP 100
 
 // @todo auto resize the array
@@ -12,8 +13,11 @@ void game_init(void)
 		entities[i].type = entity_null;
 	}
 	Player p = init_player();
+	Boss b = init_boss();
 	entities[PLAYER_IDX].type = entity_player;
 	entities[PLAYER_IDX].player = p;
+	entities[BOSS_IDX].type = entity_boss;
+	entities[BOSS_IDX].boss = b;
 	//Mob m = init_mob();
 	//entities[1].type = entity_mob;
 	//entities[1].mob = m;
@@ -27,7 +31,7 @@ void game_update(void)
 		switch (entities[i].type) {
 			case entity_player: update_player(PLAYER_IDX, entities); break;
 			case entity_mob: update_mob(i, PLAYER_IDX, entities); break;
-			case entity_boss: break;
+			//case entity_boss: update_boss(BOSS_IDX, PLAYER_IDX, entities); break;
 			case entity_projectile: break;
 		}
 	}
