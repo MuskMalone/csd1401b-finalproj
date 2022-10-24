@@ -18,7 +18,7 @@ Player init_player(void) {
 	player.parryrad = MAX_PARRYRADIUS;
 	return player;
 }
-void update_player(int player_idx, Entity entities[]) {
+void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Player* player = &(entities[player_idx].player);
 	for (int i = 0, sw = 2, radius_size = radius_reduction, parry_color = 255, parry_weight = baseweight; i < 8; ++i) {	//Creates the Barrier Effect
 		if (i == 8 - 1) {	//Sets the white color ring

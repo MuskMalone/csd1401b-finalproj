@@ -49,10 +49,18 @@ void game_update(void)
 	for (int i = 0; i < ENTITY_CAP; ++i) {
 		if (entities[i].type == entity_null) continue;
 		switch (entities[i].type) {
-			case entity_player: update_player(PLAYER_IDX, entities); break;
+			case entity_player: update_player(PLAYER_IDX, entities, wall_pos); break;
 			case entity_mob: update_mob(i, PLAYER_IDX, entities); break;
 			case entity_boss: break;
 			case entity_projectile: break;
+		}
+	}
+	for (int i = 0; i < GRID_ROWS; ++i) {
+		for (int j = 0; j < GRID_COLS; ++j) {
+			if (wall_pos[i][j]) {
+				CP_Settings_StrokeWeight(0.0);
+				CP_Graphics_DrawRect(WALL_DIM * (float)i, WALL_DIM * (float)j, WALL_DIM, WALL_DIM);
+			}
 		}
 	}
 
