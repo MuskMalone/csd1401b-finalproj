@@ -173,6 +173,9 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <ClInclude Include="..\Inc\projectiles.h" />
     <ClInclude Include="..\Inc\utils.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\Assets\maps.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

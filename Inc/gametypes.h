@@ -1,5 +1,8 @@
 #pragma once
 #include "utils.h"
+#define WALL_DIM 50.0f
+#define GRID_ROWS 25
+#define GRID_COLS 30
 // for player
 typedef struct Player
 {

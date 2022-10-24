@@ -59,10 +59,21 @@ void update_player(int player_idx, Entity entities[]) {
 	}
 
 	//Basic Player movement
-	if (CP_Input_KeyDown(KEY_D)) moveEntity(&(player->pos), player->speed, 0);
-	else if (CP_Input_KeyDown(KEY_A)) moveEntity(&(player->pos), -player->speed, 0);
-	if (CP_Input_KeyDown(KEY_W)) moveEntity(&(player->pos), 0, -player->speed);
-	else if (CP_Input_KeyDown(KEY_S)) moveEntity(&(player->pos), 0, player->speed);
-
+	if (CP_Input_KeyDown(KEY_D)) {
+		if (player->pos.x < (CP_System_GetWindowWidth() - ((player->diameter) / 2.0f)))
+			moveEntity(&(player->pos), player->speed, 0);
+	}
+	else if (CP_Input_KeyDown(KEY_A)) {
+		if (player->pos.x > (0.0f + ((player->diameter) / 2.0f)))
+			moveEntity(&(player->pos), -player->speed, 0);
+	}
+	if (CP_Input_KeyDown(KEY_W)) {
+		if (player->pos.y > (0.0f + ((player->diameter) / 2.0f)))
+			moveEntity(&(player->pos), 0, -player->speed);
+	}
+	else if (CP_Input_KeyDown(KEY_S)) {
+		if (player->pos.y < (CP_System_GetWindowHeight() - ((player->diameter) / 2.0f)))
+			moveEntity(&(player->pos), 0, player->speed);
+	}
 	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
 }
