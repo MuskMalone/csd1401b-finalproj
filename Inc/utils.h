@@ -29,3 +29,5 @@ int collisionCircle(Position a_center, float a_radius, Position b_center, float 
 int collisionCircleRect(Position circle, float radius, Position rect, float width, float height);
 
 float positionDistance(Position a, Position b);
+
+//void DeflectProjectiles(char source, int projectile_index, Entity entities[]);
