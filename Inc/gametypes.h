@@ -4,8 +4,11 @@
 #define GRID_ROWS 25
 #define GRID_COLS 30
 // for player
+typedef enum player_state { resting, moving, dashing } player_state;
 typedef struct Player
 {
+	player_state state;
+	int health;
 	Position pos;
 	float diameter;
 	int speed;

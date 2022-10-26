@@ -59,7 +59,7 @@ void game_update(void)
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (wall_pos[i][j]) {
 				CP_Settings_StrokeWeight(0.0);
-				CP_Graphics_DrawRect(WALL_DIM * (float)i, WALL_DIM * (float)j, WALL_DIM, WALL_DIM);
+				CP_Graphics_DrawRect(WALL_DIM * (float)j, WALL_DIM * (float)i, WALL_DIM, WALL_DIM);
 			}
 		}
 	}

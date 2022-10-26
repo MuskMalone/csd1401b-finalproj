@@ -7,7 +7,7 @@ int check_collision(Position const *p, float diameter, int wall_pos[GRID_ROWS][G
 	for (int i = 0; i < GRID_ROWS; ++i) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (wall_pos[i][j]) {
-				int collided = collisionCircleRect(*p, diameter / 2.0f, (Position) { WALL_DIM* (float)i, WALL_DIM* (float)j }, WALL_DIM, WALL_DIM);
+				int collided = collisionCircleRect(*p, diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM);
 				if (collided) return collided;
 			}
 
@@ -108,4 +108,9 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 		moveEntity(&(player->pos), 0, -player->speed);
 	}
 	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
+}
+
+void damage_player(Player *p) {
+
+	p->health -= 1;
 }
