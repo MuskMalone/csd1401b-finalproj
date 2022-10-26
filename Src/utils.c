@@ -63,3 +63,10 @@ float positionDistance(Position a, Position b) {
 	float distY = a.y - b.y;
 	return sqrt((distX * distX) + (distY * distY));
 }
+
+
+/*
+void DeflectProjectiles(char source, int projectile_index, Entity entities[]) {
+	entities[projectile_index].projectile.source = source;
+	CP_Vector_Negate(entities[projectile_index].projectile.Direction);
+}*/

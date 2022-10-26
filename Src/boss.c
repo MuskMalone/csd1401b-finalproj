@@ -1,40 +1,53 @@
 #include "boss.h"
+#include "projectiles.h"
 #include "utils.h"
 
-float Boss_Max_Parry = 70.0f;
-float Boss_baseweight = 255.0f;
-float Boss_radius_reduction = 4.8f;
-float attack_cd = 3;
-float attack_timer = 0.0f;
-int is_atk = 0;
-float count = 1;
+
+#define  BOSS_HEALTH 10
+#define  BOSS_ATK_CD 3
+#define  BOSS_SPEED 10
+#define  BOSS_DIAMETER 50.0f
+#define  BOSS_PARRY_RAD 70.0f
+#define  BOSS_PARRY_BASEWEIGHT  255.0f
+#define  BOSS_PARRY_WEIGHT_REDUCTION  30.0f
+#define  BOSS_RAD_REDUCTION 4.8f
+#define  ENTITY_CAP 100
+
+
 Position target_location;
 CP_Vector D_vector;
+float Atk_Time_Tracker = 0.0f;
+float Acceleration;
+int To_Atk = 0;
+int Acceleration_Count = 1;
+
 
 Boss init_boss(void) {
 	Boss boss;
-	float Window_Width = CP_System_GetWindowWidth();
-	float Window_Height = CP_System_GetWindowHeight();
-	Position p;
+	boss.health = BOSS_HEALTH;
+	boss.atk_cd = BOSS_ATK_CD;
+	boss.speed = BOSS_SPEED;
+	boss.parry_cd = BOSS_PARRY_BASEWEIGHT/BOSS_PARRY_WEIGHT_REDUCTION;
+	boss.diameter = BOSS_DIAMETER;
+	boss.parryrad = BOSS_PARRY_RAD;
+	boss.Parry_BaseWeight = BOSS_PARRY_BASEWEIGHT;
+	boss.pos.x = ((float)CP_System_GetWindowWidth() /2) - (boss.diameter / 2);
+	boss.pos.y = ((float)CP_System_GetWindowHeight() * 1 / 4) - (boss.diameter / 2);
 
-
-	boss.speed = 50;
-	boss.diameter = 50.0f;
-	p.x = (Window_Width / 2) - (boss.diameter / 2);
-	p.y = (Window_Height* 1/4) - (boss.diameter / 2);
-	boss.pos = p;
-	boss.parryrad = Boss_Max_Parry;
+	for (int i = 1; i <= boss.speed; i++) {
+		Acceleration += i;
+	}
 	target_location = boss.pos;
 	return boss;
 }
 void update_boss(int boss_idx, int player_idx, Entity entities[]) {
 	Boss* boss = &(entities[boss_idx].boss);
 	Player* player = &(entities[player_idx].boss);
-	for (int i = 0, sw = 2, radius_size = Boss_radius_reduction, parry_color = 255, parry_weight = Boss_baseweight; i < 8; ++i) {	//Creates the Barrier Effect
+	for (int i = 0, sw = 2, radius_size = BOSS_RAD_REDUCTION, parry_color = 255, parry_weight = boss->Parry_BaseWeight; i < 8; ++i) {	//Creates the Barrier Effect
 		if (i == 8 - 1) {	//Sets the white color ring
-			radius_size = Boss_radius_reduction;
+			radius_size = BOSS_RAD_REDUCTION;
 			parry_color = 255;
-			parry_weight = Boss_baseweight;
+			parry_weight = boss->Parry_BaseWeight;
 			sw = 3;
 		}
 		else { // Sets the translucent red barrier effect 
@@ -55,43 +68,59 @@ void update_boss(int boss_idx, int player_idx, Entity entities[]) {
 
 	//Reduces the barrier strength whenever the player clicks spacebar
 	// If you want to reduce the opacity of the barrier, uncomment the "basewieght" variable in the "if" statement bellow
+
 	/*
 	if (CP_Input_KeyTriggered(KEY_SPACE)) {
-
-		if (Boss_baseweight >= 30) {
-			baseweight -= 30;
+		if (boss->Parry_BaseWeight >= 30) {
+			boss->Parry_BaseWeight -= 30;
 		}
 		else {
-			baseweight = 0;
+			boss->Parry_BaseWeight = 0;
 		}
 	}
 	else {
-
 		//Increases the barrier's opacity over time ( Uncomment this if you want to change the opacity of the barrier when user click space)
-		if (baseweight < 255) {
-			baseweight += 50 * CP_System_GetDt();
+		if (boss->Parry_BaseWeight < 255) {
+			boss->Parry_BaseWeight += 50 * CP_System_GetDt();
 		}
 	}
 	*/
-
+	//Boss Deflect
+	
+	for (int i = 0; i < ENTITY_CAP; ++i) {
+		if (entities[i].type != entity_null && entities[i].type == entity_projectile) {
+			if (collisionCircle(boss->pos, boss->parryrad, entities[i].projectile.pos, entities[i].projectile.radius)) {
+				if (boss->parry_cd > 0) {
+					deflectprojectiles('e', i, entities);
+					boss->parry_cd -= 1;
+					boss->Parry_BaseWeight -= 30;
+					//entities[i].projectile.
+				}
+			}
+		}
+	}
+	
+	/*
+	Atk_Time_Tracker += CP_System_GetDt();
 	//Boss movement
-	attack_timer += CP_System_GetDt();
-	if (attack_timer > 3) {
-		is_atk = 1;
-		attack_timer = 0;
+	if (Atk_Time_Tracker > boss->atk_cd) {
+		To_Atk = 1;
+		Atk_Time_Tracker = 0;
 		target_location = player->pos;
 		D_vector = CP_Vector_Set(target_location.x - boss->pos.x, target_location.y - boss->pos.y);
 	}
-	if(is_atk) {
-		boss->pos.x += (D_vector.x*(count/28.0f));
-		boss->pos.y += (D_vector.y*(count/28.0f));
-		if (count==7){
+	if (To_Atk) {
+		moveEntity(&(boss->pos), D_vector.x * (Acceleration_Count / Acceleration) * CP_System_GetFrameRate(), D_vector.y * (Acceleration_Count / Acceleration) * CP_System_GetFrameRate());
+		if (Acceleration_Count == boss->speed) {
 			boss->pos = target_location;
-			is_atk = 0;
-			count = 1;
+			To_Atk = 0;
+			Acceleration_Count = 1;
 		}
-		count++;
+		else {
+			Acceleration_Count++;
+		}
+
 	}
-	
+	*/
 
 }
