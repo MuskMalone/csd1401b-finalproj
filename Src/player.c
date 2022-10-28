@@ -8,14 +8,14 @@
 #define NORMAL_SPEED 200
 #define DASH_SPEED NORMAL_SPEED*5
 
-float baseweight = 255.0f;
+float stamina = 255.0f;
 float radius_reduction = 4.8f;
 float dashed_duration = .0f;
 int is_cooldown = 0;
 float cooldown = .0f;
 
 void init_cooldown(void) {
-	baseweight = 0.0f;
+	stamina = 0.0f;
 	cooldown = COOLDOWN_DURATION;
 	is_cooldown = 1;
 }
@@ -45,6 +45,7 @@ Player init_player(void) {
 	float Window_Height = CP_System_GetWindowHeight();
 	Position p;
 
+	player.health = 5;
 	player.speed = 200;
 	player.horizontal_dir = 0, player.vertical_dir = 0;
 	player.state = resting;
@@ -58,6 +59,12 @@ Player init_player(void) {
 }
 void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Player* player = &(entities[player_idx].player);
+
+	// if player is dead, stop doing anything;aa
+	if (player->health <= 0) {
+		set_state(player, dead);
+		return;
+	}
 	//Reduces the barrier strength whenever the player clicks spacebar
 	// If you want to reduce the opacity of the barrier, uncomment the "basewieght" variable in the "if" statement bellow
 	// If you want to reduce the size of the barrier, uncomment the "radius_reduction" variable in the "if" statement bellow
@@ -67,7 +74,7 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 				cooldown += .5f;
 		}
 		else {
-			if (baseweight >= 100.0f)  baseweight -= 100.0f; // if baseweight 
+			if (stamina >= 100.0f)  stamina -= 100.0f; // if stamina 
 			else {
 				init_cooldown();
 			}
@@ -75,14 +82,18 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 		//radius_reduction += 2;
 	}
 	if (CP_Input_KeyTriggered(KEY_L)) {
+		// make sure player is moving
 		if (player->horizontal_dir || player->vertical_dir) {
+
+			// if cooldown, penalize the player by adding cooldown
 			if (is_cooldown) {
 				if (cooldown <= MAX_COOLDOWN)
 					cooldown += .5f;
 			}
 			else {
-				if (baseweight >= 100.0f) {
-					baseweight -= 100.0f;
+				// reduce stamina
+				if (stamina >= 100.0f) {
+					stamina -= 100.0f;
 				}
 				else {
 					init_cooldown();
@@ -164,11 +175,11 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 	sprintf_s(buffer, _countof(buffer), "player state: %d, cooldown: %f, is_cooldown: %d", player->state, cooldown, is_cooldown);
 	CP_Font_DrawText(buffer, 30, 30);
 
-	for (int i = 0, sw = 2, radius_size = radius_reduction, parry_color = 255, parry_weight = baseweight; i < 8; ++i) {	//Creates the Barrier Effect
+	for (int i = 0, sw = 2, radius_size = radius_reduction, parry_color = 255, parry_weight = stamina; i < 8; ++i) {	//Creates the Barrier Effect
 		if (i == 8 - 1) {	//Sets the white color ring
 			radius_size = radius_reduction;
 			parry_color = 255;
-			parry_weight = baseweight;
+			parry_weight = stamina;
 			sw = 3;
 		}
 		else { // Sets the translucent blue barrier effect 
@@ -193,8 +204,8 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 
 	}
 	else {
-		if (baseweight < 255.0f) {
-			baseweight += 60.0f * CP_System_GetDt();
+		if (stamina < 255.0f) {
+			stamina += 60.0f * CP_System_GetDt();
 		}
 	}
 	//Prints the player Object
@@ -203,7 +214,10 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 	CP_Graphics_DrawCircle(player->pos.x, player->pos.y, player->diameter);
 }
 
-void damage_player(Player *p) {
-
-	p->health -= 1;
+int damage_player(Player *p) {
+	if (p->state != dashing) {
+		p->health -= 1;
+		return 1;
+	}
+	return 0;
 }

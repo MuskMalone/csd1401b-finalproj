@@ -7,4 +7,4 @@
 // to insert into entities
 Player init_player(void);
 void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]);
-void damage_player(Player *p);
+int damage_player(Player *p);
