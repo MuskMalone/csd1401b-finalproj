@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "player.h"
-#define MAX_PARRYRADIUS 50.0f;
-#define DASH_DURATION .3f;
+#define MAX_PARRYRADIUS 50.0f
+#define DASH_DURATION .1f
+#define NORMAL_SPEED 200
+#define DASH_SPEED NORMAL_SPEED*5
 
 float baseweight = 255.0f;
 float radius_reduction = 4.8f;
@@ -19,6 +21,15 @@ int check_collision(Position p, float diameter, int wall_pos[GRID_ROWS][GRID_COL
 		}
 	}
 	return 0;
+}
+void set_state(Player* p, player_state state) {
+	// only allow state from dashing to resting;
+	if (p->state == dashing) {
+		if (state == resting) p->state = state;
+		else return;
+		return;
+	}
+	p->state = state;
 }
 Player init_player(void) {
 	Player player;
@@ -80,35 +91,54 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 
 	//Basic Player movement
 	if (CP_Input_KeyDown(KEY_D)) {
-		player->state = moving;
+		set_state(player, moving);
 		player->horizontal_dir = 1;
 	}
 	else if (CP_Input_KeyDown(KEY_A)) {
-		player->state = moving;
+		set_state(player, moving);
 		player->horizontal_dir = -1;
 	}
 	if (CP_Input_KeyDown(KEY_W)) {
-		player->state = moving;
+		set_state(player, moving);
 		player->vertical_dir = -1;
 	}
 	else if (CP_Input_KeyDown(KEY_S)) {
-		player->state = moving;
+		set_state(player, moving);
 		player->vertical_dir = 1;
 	}
+
 	if (CP_Input_KeyReleased(KEY_D) || CP_Input_KeyReleased(KEY_A)) {
 		player->horizontal_dir = 0;
 	}
 	if (CP_Input_KeyReleased(KEY_W) || CP_Input_KeyReleased(KEY_S)) {
 		player->vertical_dir = 0;
 	}
+
+	if (CP_Input_KeyTriggered(KEY_L)) {
+		if (player->state != dashing) {
+			set_state(player, dashing);
+			player->speed = DASH_SPEED;
+		}
+
+	}
+
+	if (player->state == dashing) {
+		dashed_duration += CP_System_GetDt();
+ 		if (dashed_duration > DASH_DURATION) {
+			player->speed = NORMAL_SPEED;
+			set_state(player, resting);
+			dashed_duration = .0f;
+		}
+	}
+
 	if ((player->horizontal_dir == 0) && (player->vertical_dir == 0)) {
-		player->state = resting;
+		set_state(player, resting);
 	}
 	else {
 		// check for collision
 		int player_at_xborder, player_at_xwall, player_at_yborder, player_at_ywall;
-		float xspeed = (float)player->horizontal_dir * player->speed,
-			yspeed = (float)player->vertical_dir * player->speed;
+		float xspeed = (float)(player->horizontal_dir * player->speed),
+			yspeed = (float)(player->vertical_dir * player->speed);
 		float futureX = player->pos.x + xspeed * CP_System_GetDt(),
 			futureY = player->pos.y + yspeed * CP_System_GetDt();
 
@@ -125,6 +155,13 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 	}
 
 	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
+
+	CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
+	CP_Settings_TextSize(20.0f);
+
+	char buffer[50] = { 0 };
+	sprintf_s(buffer, _countof(buffer), "dashed time: %f", dashed_duration);
+	CP_Font_DrawText(buffer, 30, 30);
 }
 
 void damage_player(Player *p) {
