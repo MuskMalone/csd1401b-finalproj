@@ -23,6 +23,8 @@ typedef struct Mob {
 	mob_id id;
 	attack_type type;
 	Position pos;
+	float diameter;
+	float health;
 } Mob;
 // for projectiles
 typedef struct Projectile {

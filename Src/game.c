@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #define PLAYER_IDX 0
+#define BOSS_IDX 1
 #define ENTITY_CAP 100
 // to disable vs warning for fopen function
 #pragma warning(disable : 4996)
@@ -13,6 +14,8 @@ int wall_pos[GRID_ROWS][GRID_COLS];
 
 void game_init(void)
 {
+	//int max_mobs = 20;
+	//int mob_idx = 1;
 	for (int i = 0; i < ENTITY_CAP; ++i) {
 		entities[i].type = entity_null;
 	}
@@ -35,6 +38,14 @@ void game_init(void)
 		}
 	}
 	fclose(map);
+
+	Boss b = init_boss();
+	entities[BOSS_IDX].type = entity_boss;
+	entities[BOSS_IDX].boss = b;
+	Mob m = init_mob();
+	entities[2].type = entity_mob;
+	entities[2].mob = m;
+	
 }
 
 void game_update(void)
@@ -48,8 +59,8 @@ void game_update(void)
 		switch (entities[i].type) {
 			case entity_player: update_player(PLAYER_IDX, entities, wall_pos); break;
 			case entity_mob: update_mob(i, PLAYER_IDX, entities); break;
-			case entity_boss: break;
-			case entity_projectile: break;
+			case entity_boss: update_boss(BOSS_IDX, PLAYER_IDX, entities); break;
+			case entity_projectile: update_projectile(i, entities); break;
 		}
 	}
 

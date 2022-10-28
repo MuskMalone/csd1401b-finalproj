@@ -4,4 +4,4 @@
 #include "gametypes.h"
 
 Boss init_boss(void);
-void update_boss(int boss_idx, Entity entities[]);
+void update_boss(int boss_idx, int player_idx, Entity entities[]);
