@@ -19,9 +19,6 @@ void game_init(void)
 	Player p = init_player();
 	entities[PLAYER_IDX].type = entity_player;
 	entities[PLAYER_IDX].player = p;
-	Mob m = init_mob();
-	entities[1].type = entity_mob;
-	entities[1].mob = m;
 
 	int ch, newline = 0;
 	// loads the map delimited by \n into the wall_pos array
