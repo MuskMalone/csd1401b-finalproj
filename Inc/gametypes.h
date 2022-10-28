@@ -38,6 +38,7 @@ typedef struct Boss {
 	int health;
 	int atk_cd;
 	int speed;
+	int parry_ammo;
 	int parry_cd;
 	float diameter;
 	float parryrad;
