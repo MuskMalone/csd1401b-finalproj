@@ -19,9 +19,9 @@ void update_projectile(int index, Entity entities[]) {
 	moveEntity(&(proj->pos), proj->Direction.x * proj->speed, proj->Direction.y * proj->speed);
 }
 
-void deflectprojectiles(char source,int index, Entity entities[]) {
+void deflectprojectiles(char source,int index, Entity entities[],int speed) {
 	Projectile* proj = &(entities[index].projectile);
 	proj->source = source;
 	proj->Direction = CP_Vector_Negate(proj->Direction);
-	proj->speed *= 2;
+	proj->speed *= (2+speed);
 }

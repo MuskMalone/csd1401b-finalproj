@@ -45,7 +45,7 @@ void game_update(void)
 		CP_Settings_Fill(CP_Color_Create(51, 255, 173, 255));
 	else CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
 	CP_Graphics_DrawCircle(test.x, test.y, diameter);
-	/* // spawn projectiles aiming at boss (For testing only)
+	 // spawn projectiles aiming at boss (For testing only)
 	if (CP_Input_KeyTriggered(KEY_Q)) {
 		for (int i = 0; i < ENTITY_CAP; ++i) {
 			if (entities[i].type == entity_null) {
@@ -65,7 +65,7 @@ void game_update(void)
 			}
 		}
 	}
-	*/
+	
 }
 
 void game_exit(void)
