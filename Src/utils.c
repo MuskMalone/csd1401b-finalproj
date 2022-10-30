@@ -81,6 +81,19 @@ int IsAreaClicked(float area_center_x, float area_center_y, float area_width, fl
 		return 0;
 	}
 }
+
+int IsCircleClicked(float circle_center_x, float circle_center_y, float diameter, float click_x, float click_y)
+{
+	if (click_x <= circle_center_x + diameter && click_x >= circle_center_x - diameter && click_y <= circle_center_y + diameter && click_y >= circle_center_y - diameter)  //if ur mouse is within the circle
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+
+}
 /*
 void DeflectProjectiles(char source, int projectile_index, Entity entities[]) {
 	entities[projectile_index].projectile.source = source;

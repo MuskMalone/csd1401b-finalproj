@@ -6,11 +6,11 @@
 float M_width;
 float M_height;
 
-CP_Image StartBut = NULL;
-CP_Image HowBut = NULL;
-CP_Image EndBut = NULL;
+int tutbool = 0;
 CP_Image background = NULL;
 CP_Image Title = NULL;
+CP_Image Tuts = NULL;
+CP_Image xbut = NULL;
 
 typedef struct Button
 {
@@ -25,12 +25,13 @@ Button button[4];
 
 void loadfile()
 {
-	
+	xbut = CP_Image_Load("./Assets/xBut.png");
 	background = CP_Image_Load("./Assets/main.png");
 	Title = CP_Image_Load("./Assets/Title.png");
 	button[0].image = CP_Image_Load("./Assets/startbutton.png");
 	button[2].image = CP_Image_Load("./Assets/EXIT.png");
 	button[1].image = CP_Image_Load("./Assets/HOWTOPLAY.png");
+	Tuts = CP_Image_Load("./Assets/TUTS.png");
 	button->Height = 104;
 	button->Width = 512;
 	button->Posx = M_width;
@@ -50,7 +51,7 @@ void Main_Menu_Init()
 	//To be put in the Mainmenu.c file. (Setting the window size)
 
 	// width and height of the window will be based on how wide each wall is
-	float W_width =  WALL_DIM * GRID_COLS;
+	float W_width = WALL_DIM * GRID_COLS;
 	float W_height = WALL_DIM * GRID_ROWS;
 	float Menu_Rect_Width = W_width / 8;
 	float Menu_Rect_Height = W_height / 8;
@@ -67,6 +68,8 @@ void Main_Menu_Update()
 	float mousePosX = CP_Input_GetMouseX();
 	float mousePosY = CP_Input_GetMouseY();
 
+	
+
 	CP_Graphics_ClearBackground(CP_Color_Create(0, 0, 0, 255));
 	//CP_Font_DrawText("Main Menu Click SpaceBar to continue", CP_System_GetDisplayWidth() / 2, CP_System_GetDisplayHeight() / 2);
 	/*if(CP_Input_KeyTriggered(KEY_SPACE)){
@@ -78,16 +81,31 @@ void Main_Menu_Update()
 	{
 		CP_Image_Draw(button[i].image, button->Posx, button[i].Posy, button->Width, button->Height, 255);
 	}
-	
-	if (CP_Input_MouseTriggered(MOUSE_BUTTON_1)) 
+
+	if (CP_Input_MouseTriggered(MOUSE_BUTTON_1))
 	{
-		if (IsAreaClicked(button->Posx, button[0].Posy, button->Width/2, button->Height/2, mousePosX, mousePosY) == 1) {
+		if (IsAreaClicked(button->Posx, button[0].Posy, button->Width / 2, button->Height / 2, mousePosX, mousePosY) == 1) {
 			goGame();
 		}
 		if (IsAreaClicked(button->Posx, button[1].Posy, button->Width / 2, button->Height / 2, mousePosX, mousePosY) == 1) {
 			//show tuts
+			tutbool = 1;
+		}
+		if (IsAreaClicked(button->Posx, button[2].Posy, button->Width / 2, button->Height / 2, mousePosX, mousePosY) == 1) {
+			CP_Engine_Terminate();
+		}
+	}
 
-			
+	if (tutbool == 1)
+	{
+		CP_Image_Draw(Tuts, M_width, M_height, 900, 1000, 255);
+		CP_Image_Draw(xbut, M_width *3.15/2, M_height /10, 75, 75, 255);
+		if (CP_Input_MouseTriggered(MOUSE_BUTTON_1)) 
+		{
+			if (IsCircleClicked(M_width * 3.15 / 2, M_height / 10, 50, mousePosX, mousePosY) == 1)
+			{
+				tutbool = 0;
+			}
 		}
 	}
 }
