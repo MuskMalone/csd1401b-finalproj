@@ -1,5 +1,6 @@
 #include "cprocessing.h"
 #include "game.h"
+#include "gametypes.h"
 
 float M_width;
 float M_height;
@@ -30,8 +31,10 @@ void Main_Menu_Init()
 {
 
 	//To be put in the Mainmenu.c file. (Setting the window size)
-	float W_width = CP_System_GetDisplayWidth() * 2 / 3;
-	float W_height = CP_System_GetDisplayHeight() * 2 / 3;
+
+	// width and height of the window will be based on how wide each wall is
+	float W_width =  WALL_DIM * GRID_COLS;
+	float W_height = WALL_DIM * GRID_ROWS;
 	float Menu_Rect_Width = W_width / 8;
 	float Menu_Rect_Height = W_height / 8;
 	CP_System_SetWindowSize(W_width, W_height);
