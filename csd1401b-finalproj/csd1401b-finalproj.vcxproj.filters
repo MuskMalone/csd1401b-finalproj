@@ -71,4 +71,24 @@
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Assets\EXIT.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\HOWTOPLAY.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\main.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\startbutton.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Title.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\TUTS.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

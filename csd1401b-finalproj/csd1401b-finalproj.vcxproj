@@ -176,6 +176,14 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
   <ItemGroup>
     <Text Include="..\Assets\maps.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Assets\EXIT.png" />
+    <Image Include="..\Assets\HOWTOPLAY.png" />
+    <Image Include="..\Assets\main.png" />
+    <Image Include="..\Assets\startbutton.png" />
+    <Image Include="..\Assets\Title.png" />
+    <Image Include="..\Assets\TUTS.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
