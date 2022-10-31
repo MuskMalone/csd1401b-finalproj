@@ -33,6 +33,7 @@ typedef struct Projectile {
 	float radius;
 	int speed;
 	char source;
+	char type;
 } Projectile;
 // for boss
 typedef struct Boss {

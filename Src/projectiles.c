@@ -1,7 +1,8 @@
 #include "projectiles.h"
 
-Projectile init_projectile(char Source, Position Start, CP_Vector Direction) {
+Projectile init_projectile(char Source, Position Start, CP_Vector Direction,char type) {
 	Projectile Proj;
+	Proj.type = type;
 	Proj.pos.x = Start.x;
 	Proj.pos.y = Start.y;
 	Proj.Direction = Direction;
@@ -16,12 +17,17 @@ void update_projectile(int index, Entity entities[]) {
 	int blue_rgb = proj->source == 'p' ? 255 : 0;
 	CP_Settings_Fill(CP_Color_Create(red_rgb, 0, blue_rgb, 255));
 	CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius*2);
-	moveEntity(&(proj->pos), proj->Direction.x * proj->speed, proj->Direction.y * proj->speed);
+	if (proj->type == 'r') {
+		moveEntity(&(proj->pos), proj->Direction.x * proj->speed, proj->Direction.y * proj->speed);
+	}
+
 }
 
 void deflectprojectiles(char source,int index, Entity entities[],int speed) {
 	Projectile* proj = &(entities[index].projectile);
 	proj->source = source;
-	proj->Direction = CP_Vector_Negate(proj->Direction);
-	proj->speed *= (2+speed);
+	if (proj->type == 'r') {
+		proj->Direction = CP_Vector_Negate(proj->Direction);
+		proj->speed *= (2 + speed);
+	}
 }

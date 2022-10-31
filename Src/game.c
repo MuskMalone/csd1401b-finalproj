@@ -59,7 +59,7 @@ void game_update(void)
 		switch (entities[i].type) {
 			case entity_player: update_player(PLAYER_IDX, entities, wall_pos); break;
 			case entity_mob: update_mob(i, PLAYER_IDX, entities); break;
-			case entity_boss: update_boss(BOSS_IDX, PLAYER_IDX, entities); break;
+			case entity_boss: update_boss(BOSS_IDX, PLAYER_IDX, entities, wall_pos); break;
 			case entity_projectile: update_projectile(i, entities); break;
 		}
 	}
@@ -88,13 +88,13 @@ Position test;
 				Position startpos;
 				startpos.x = ((float)CP_System_GetWindowWidth() *1/ 4) - (10.0f);
 				startpos.y = ((float)CP_System_GetWindowHeight() /2) - (10.0f);
-				Projectile proj = init_projectile('p',startpos, getVectorBetweenPositions(&(startpos), &(entities[BOSS_IDX].boss.pos)));
+				Projectile proj = init_projectile('p',startpos, getVectorBetweenPositions(&(startpos), &(entities[BOSS_IDX].boss.pos)),'r');
 				entities[i].type = entity_projectile;
 				entities[i].projectile = proj;
 				Position startposb;
 				startposb.x = ((float)CP_System_GetWindowWidth() * 3 / 4) - (10.0f);
 				startposb.y = ((float)CP_System_GetWindowHeight() / 2) - (10.0f);
-				Projectile projb = init_projectile('p', startposb, getVectorBetweenPositions(&(startposb), &(entities[BOSS_IDX].boss.pos)));
+				Projectile projb = init_projectile('p', startposb, getVectorBetweenPositions(&(startposb), &(entities[BOSS_IDX].boss.pos)),'r');
 				entities[i+1].type = entity_projectile;
 				entities[i+1].projectile = projb;
 				break;
