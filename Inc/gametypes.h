@@ -24,6 +24,7 @@ typedef struct Mob {
 	attack_type type;
 	Position pos;
 	float diameter;
+	float radius_damage;
 	float health;
 } Mob;
 // for projectiles
