@@ -26,6 +26,7 @@ typedef struct Mob {
 	float diameter;
 	float radius_damage;
 	float health;
+	BOOL is_exploding;
 } Mob;
 // for projectiles
 typedef struct Projectile {

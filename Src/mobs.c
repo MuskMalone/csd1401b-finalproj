@@ -11,8 +11,6 @@ void expansion_mob_size(Entity entities[], int mob_idx)
 	float mob_dia = mob->diameter; //initialising in the local variable
 	float circle_expansion_cap = 20.0f;
 
-	
-	
 	mob->diameter++; //plusing the global variable 
 	
 
@@ -21,8 +19,9 @@ void expansion_mob_size(Entity entities[], int mob_idx)
 		
 		entities[mob_idx].type = entity_null;
 	}
-
 }
+
+
 
 void mob_explosion(int player_idx, Entity entities[], int mob_idx)
 {
@@ -43,22 +42,25 @@ void mob_explosion(int player_idx, Entity entities[], int mob_idx)
 	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
 	CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob_dia);
 
+	//mob_isNear = collisionCircle(mob->pos, mob_dia * 2.0f, player->pos, player_dia * 2.0f) ? 1 : 0;
 
-	//collision of enemey and the player
+	//mob_isNear = 0;
+	//collision of enemy and the player
 	if (collisionCircle(mob->pos, mob_dia * 2.0f ,player->pos, player_dia * 2.0f)) //give a certain distance
 	{
-		mob_isNear = 1; //its near
-	}
-	if (mob_isNear == 1) //if its near
-	{
+		mob->is_exploding = 1;
 		moveEntity(&(mob->pos), direction.x * 50.0f, direction.y * 50.0f); //the enemy will move
+		
+	}
+	if (mob->is_exploding)
+	{
 		expansion_mob_size(entities, mob_idx); //and runs the function that expands the size of the mob
 	}
+
 	//if (collisionCircle(mob->pos, explosion_radius, player->pos, explosion_radius))
 	//{
 	//	//player health loss
 	//}
-
 
 }
 
@@ -69,20 +71,20 @@ Mob init_mob() {
 	
 	//setting the mob position and the diameter
 	Mob mob;
-	Position p;
+	//Position p;
 	
-	p.x = (Window_Width / 3) - (50 / 3);
-	p.y = (Window_Height / 3) - (50 / 3);
-	mob.pos = p;
+	//p.x = (Window_Width / 3);
+	//p.y = (Window_Height / 3);
+	mob.pos.x = CP_Random_RangeFloat(0.0f, Window_Width);
+	mob.pos.y = CP_Random_RangeFloat(0.0f, Window_Height);
 	mob.diameter = 50.0f;
 	mob.health = 50.0f;
 	mob.radius_damage = 100.0f;
+	mob.is_exploding = 0;
 	return mob;
 }
 
-void update_mob(int mob_idx, int player_idx, Entity entities[]) {
-
+void update_mob(int mob_idx, int player_idx, Entity entities[]) 
+{
 	mob_explosion(player_idx, entities, mob_idx);
-
-
 }
