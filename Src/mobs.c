@@ -88,3 +88,4 @@ void update_mob(int mob_idx, int player_idx, Entity entities[])
 {
 	mob_explosion(player_idx, entities, mob_idx);
 }
+

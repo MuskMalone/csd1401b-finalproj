@@ -42,17 +42,21 @@ void game_init(void)
 	Boss b = init_boss();
 	entities[BOSS_IDX].type = entity_boss;
 	entities[BOSS_IDX].boss = b;
-
-	for (int i = 2; i < ENTITY_CAP; ++i)
-	{
-		Mob m = init_mob();
-		entities[i].type = entity_mob;
-		entities[i].mob = m;
-	}
-	
-	/*Mob m = init_mob();
+	Mob m = init_mob();
 	entities[2].type = entity_mob;
-	entities[2].mob = m;*/
+	entities[2].mob = m;
+	//spawn of enemies
+	/*for (int i = 2; i < ENTITY_CAP; ++i)
+	{
+		if (entities[i].type == entity_null)
+		{
+			Mob m = init_mob();
+			entities[i].type = entity_mob;
+			entities[i].mob = m;
+		}
+		
+	}*/
+	
 }
 
 void game_update(void)
@@ -70,8 +74,6 @@ void game_update(void)
 			case entity_projectile: update_projectile(i, entities); break;
 		}
 	}
-
-	
 
 	for (int i = 0; i < GRID_ROWS; ++i) {
 		for (int j = 0; j < GRID_COLS; ++j) {
