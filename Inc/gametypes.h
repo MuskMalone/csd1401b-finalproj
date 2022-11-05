@@ -29,11 +29,14 @@ typedef struct Mob {
 // for projectiles
 typedef struct Projectile {
 	Position pos;
+	Position Future_Pos;
 	CP_Vector Direction;
 	float radius;
 	int speed;
 	char source;
 	char type;
+	char toRebound_NextFrame;
+
 } Projectile;
 // for boss
 typedef struct Boss {

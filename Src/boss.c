@@ -69,7 +69,7 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 			if (entities[i].type != entity_null && entities[i].type == entity_projectile) {
 				if (collisionCircle(boss->pos, boss->parryrad, entities[i].projectile.pos, entities[i].projectile.radius) && entities[i].projectile.source =='p') {
 					if (boss->parry_ammo > 0) {
-						deflectprojectiles('e', i, entities,(int)Acceleration_Count);
+						deflectprojectiles('e', i, entities);
 						boss->parry_ammo--;
 						boss->Parry_BaseWeight -= BOSS_PARRY_BASEWEIGHT/BOSS_PARRY_AMMO;
 					}

@@ -36,26 +36,34 @@ int collisionCircle(Position a_center, float a_radius, Position b_center, float 
 }
 
 int collisionCircleRect(Position circle, float radius, Position rect, float width, float height) {
+	
 	// temporary variables to set edges for testing
 	float testX = circle.x;
 	float testY = circle.y;
-
+	
+	
 	// which edge is closest
 	if (circle.x < rect.x) testX = rect.x;      // test left edge
 	else if (circle.x > rect.x + width) testX = rect.x + width;   // right edge
 	if (circle.y < rect.y) testY = rect.y;      // top edge
 	else if (circle.y > rect.y + height) testY = rect.y + height;   // bottom edge
 
+	
 	// get distance from closest edges
 	float distX = circle.x - testX;
 	float distY = circle.y - testY;
 	float distance = sqrt((distX * distX) + (distY * distY));
+
+
 
 	// if the distance is less than the radius, collision!
 	if (distance <= radius) {
 		return TRUE;
 	}
 	return FALSE;
+	
+
+
 }
 
 float positionDistance(Position a, Position b) {
