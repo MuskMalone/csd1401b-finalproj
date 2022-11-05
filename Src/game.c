@@ -4,12 +4,13 @@
 #include <stdlib.h>
 
 #define BOSS_IDX 1
+#define SIZE 6
 // to disable vs warning for fopen function
 #pragma warning(disable : 4996)
 
 // @todo auto resize the array
 Entity entities[ENTITY_CAP];
-int wall_pos[GRID_ROWS][GRID_COLS];
+int wall_pos[SIZE][GRID_ROWS][GRID_COLS];
 
 void game_init(void)
 {
@@ -22,20 +23,23 @@ void game_init(void)
 	entities[PLAYER_IDX].type = entity_player;
 	entities[PLAYER_IDX].player = p;
 
-	int ch, newline = 0;
+	int ch, idx;
 	// loads the map delimited by \n into the wall_pos array
 	FILE* map = fopen("Assets/maps.txt", "r");
-	for (int i = 0; i < GRID_ROWS && !newline; ++i) {
-		for (int j = 0; j < GRID_COLS; ++j) {
-			ch = fgetc(map);
-			// if encounter a \n char, break out of the entire loop
-			if (ch == '\n') {
-				newline = 1;
-				break;
+	for (idx = 0; idx < SIZE; ++idx) {
+		for (int i = 0; i < GRID_ROWS; i++) {
+			for (int j = 0; j < GRID_COLS; ++j) {
+				ch = fgetc(map);
+				// if encounter a \n char, break out of the entire loop
+
+				wall_pos[idx][i][j] = atoi((char*)&ch);
+
 			}
-			wall_pos[i][j] = atoi((char*)&ch);
 		}
+
+		ch = fgetc(map);
 	}
+
 	fclose(map);
 
 	Boss b = init_boss();
@@ -44,13 +48,26 @@ void game_init(void)
 	Mob m = init_mob();
 	entities[2].type = entity_mob;
 	entities[2].mob = m;
+	//spawn of enemies
+	/*for (int i = 2; i < ENTITY_CAP; ++i)
+	{
+		if (entities[i].type == entity_null)
+		{
+			Mob m = init_mob();
+			entities[i].type = entity_mob;
+			entities[i].mob = m;
+		}
+		
+	}*/
 	
 }
 
 void game_update(void)
 {
-	
-	CP_Graphics_ClearBackground(CP_Color_Create(150,150,150,255));
+
+
+	CP_Graphics_ClearBackground(CP_Color_Create(150, 150, 150, 255));
+
 	// calls each entity's update function
 	for (int i = 0; i < ENTITY_CAP; ++i) {
 		if (entities[i].type == entity_null) continue;
@@ -62,8 +79,9 @@ void game_update(void)
 		}
 	}
 	for (int i = 0; i < GRID_ROWS; ++i) {
+
 		for (int j = 0; j < GRID_COLS; ++j) {
-			if (wall_pos[i][j]) {
+			if (wall_pos[num][i][j]) {
 				CP_Settings_StrokeWeight(0.0);
 				CP_Graphics_DrawRect(WALL_DIM * (float)j, WALL_DIM * (float)i, WALL_DIM, WALL_DIM);
 			}
@@ -99,6 +117,6 @@ void game_update(void)
 
 void game_exit(void)
 {
-	
+
 }
 
