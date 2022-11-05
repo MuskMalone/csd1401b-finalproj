@@ -72,36 +72,7 @@ float positionDistance(Position a, Position b) {
 	return sqrt((distX * distX) + (distY * distY));
 }
 
-int IsAreaClicked(float area_center_x, float area_center_y, float area_width, float area_height, float click_x, float click_y)
-{
-	float boundaryBotY = area_center_y + area_height; //Find the highest point the mousePos can go 
-	float boundaryTopY = area_center_y - area_height; //Find the lowest point the mousePos can go
 
-	float boundaryLeftX = area_center_x - area_width; //Find the most left the mousePos can go 
-	float boundaryRightX = area_center_x + area_width; //Find the most right the mousePos can go
-
-	if (click_x >= boundaryLeftX && click_x <= boundaryRightX && click_y <= boundaryBotY && click_y >= boundaryTopY) //if ur mouse is within the box
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
-}
-
-int IsCircleClicked(float circle_center_x, float circle_center_y, float diameter, float click_x, float click_y)
-{
-	if (click_x <= circle_center_x + diameter && click_x >= circle_center_x - diameter && click_y <= circle_center_y + diameter && click_y >= circle_center_y - diameter)  //if ur mouse is within the circle
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
-
-}
 /*
 void DeflectProjectiles(char source, int projectile_index, Entity entities[]) {
 	entities[projectile_index].projectile.source = source;
