@@ -59,7 +59,7 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 	}
 	//Prints the Boss Object
 	CP_Settings_StrokeWeight(0.0f);
-	CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
+	CP_Settings_Fill(CP_Color_Create(255/(11-boss->health), 255, 255, 255));
 	CP_Graphics_DrawCircle(boss->pos.x, boss->pos.y, boss->diameter);
 
 
@@ -125,7 +125,7 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 		float scalar = boss->parryrad / CP_Vector_Length(Directional_Vector);
 		Directional_Vector = CP_Vector_Scale(Directional_Vector, scalar);
 		
-		moveEntity(&(boss->pos), D_vector.x * (Acceleration_Count / Acceleration) * CP_System_GetFrameRate(), D_vector.y * (Acceleration_Count / Acceleration) * CP_System_GetFrameRate());
+		//moveEntity(&(boss->pos), D_vector.x * (Acceleration_Count / Acceleration) * CP_System_GetFrameRate(), D_vector.y * (Acceleration_Count / Acceleration) * CP_System_GetFrameRate());
 		
 		for (int i = 0; i < GRID_ROWS; ++i) {
 			for (int j = 0; j < GRID_COLS; ++j) {
@@ -144,7 +144,7 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 		}
 		
 		if (Acceleration_Count == boss->speed) {
-			boss->pos = target_location;
+			//boss->pos = target_location;
 			for (int i = 0; i < ENTITY_CAP; ++i) {
 				if (entities[i].type == entity_null) {
 					Position Melee_Atk_Pos = boss->pos;
@@ -166,4 +166,8 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 	
 	
 
+}
+
+void damage_boss(Boss* b) {
+	b->health -= 1;
 }

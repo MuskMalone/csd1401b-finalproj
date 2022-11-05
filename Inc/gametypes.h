@@ -3,6 +3,8 @@
 #define WALL_DIM 50.0f
 #define GRID_ROWS 25
 #define GRID_COLS 30
+#define ENTITY_CAP 100
+#define PLAYER_IDX 0
 // for player
 typedef enum player_state { resting, moving, dashing, dead } player_state;
 typedef struct Player
