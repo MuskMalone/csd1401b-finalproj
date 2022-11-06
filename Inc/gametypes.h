@@ -1,6 +1,8 @@
 #pragma once
 #include "utils.h"
 #define WALL_DIM 50.0f
+#define ENTITY_CAP 100
+#define PLAYER_IDX 0
 #define GRID_ROWS 25
 #define GRID_COLS 30
 // for player
@@ -31,10 +33,13 @@ typedef struct Mob {
 // for projectiles
 typedef struct Projectile {
 	Position pos;
+	Position Future_Pos;
 	CP_Vector Direction;
 	float radius;
 	int speed;
 	char source;
+	char type;
+	char toRebound_NextFrame;
 } Projectile;
 // for boss
 typedef struct Boss {

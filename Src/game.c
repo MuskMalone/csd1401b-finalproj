@@ -2,9 +2,9 @@
 #include "game.h"
 #include <stdio.h>
 #include <stdlib.h>
-#define PLAYER_IDX 0
+
 #define BOSS_IDX 1
-#define ENTITY_CAP 100
+
 #define SIZE 6
 // to disable vs warning for fopen function
 #pragma warning(disable : 4996)
@@ -74,8 +74,8 @@ void game_update(void)
 		switch (entities[i].type) {
 		case entity_player: update_player(PLAYER_IDX, entities, wall_pos[num]); break;
 		case entity_mob: update_mob(i, PLAYER_IDX, entities); break;
-		case entity_boss: break;
-		case entity_projectile: break;
+		case entity_boss: update_boss(BOSS_IDX, PLAYER_IDX, entities, wall_pos[num]); break;
+		case entity_projectile: update_projectile(i, entities, wall_pos[num]); break;
 		}
 	}
 	for (int i = 0; i < GRID_ROWS; i++) {
