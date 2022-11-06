@@ -86,6 +86,21 @@ void game_update(void)
 			}
 		}
 	}
+	if (CP_Input_MouseClicked(MOUSE_BUTTON_1)) {
+		for (int i = 0; i < ENTITY_CAP; ++i) {
+			if (entities[i].type == entity_null) {
+				//entities[BOSS_IDX].boss.health--;
+				Position Mousepos = (Position){ CP_Input_GetMouseX(),CP_Input_GetMouseY() };
+				Position startposb;
+				startposb.x = ((float)CP_System_GetWindowWidth() * 3 / 4) - (10.0f);
+				startposb.y = ((float)CP_System_GetWindowHeight() / 2) - (10.0f);
+				Projectile projb = init_projectile('p', startposb, getVectorBetweenPositions(&(startposb), &(Mousepos)), 'r');
+				entities[i].type = entity_projectile;
+				entities[i].projectile = projb;
+				break;
+			}
+		}
+	}
 
 }
 

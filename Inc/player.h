@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "cprocessing.h"
 #include "gametypes.h"
+#include "projectiles.h"
 
 // returns the addr of the player intialized 
 // to insert into entities

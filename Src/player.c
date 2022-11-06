@@ -4,15 +4,16 @@
 #define COOLDOWN_DURATION 2.0f
 #define MAX_COOLDOWN 8.0f
 #define MAX_PARRYRADIUS 50.0f
-#define DASH_DURATION .1f
+#define DASH_DURATION .15f
+#define STAMINA_COST 70.0f
 #define NORMAL_SPEED 200
 #define DASH_SPEED NORMAL_SPEED*5
 
-float stamina = 255.0f;
-float radius_reduction = 4.8f;
-float dashed_duration = .0f;
-int is_cooldown = 0;
-float cooldown = .0f;
+static float stamina = 255.0f;
+static float radius_reduction = 4.8f;
+static float dashed_duration = .0f;
+static int is_cooldown = 0;
+static float cooldown = .0f;
 
 void init_cooldown(void) {
 	stamina = 0.0f;
@@ -30,11 +31,21 @@ int check_collision(Position p, float diameter, int wall_pos[GRID_ROWS][GRID_COL
 	}
 	return 0;
 }
+void player_deflect_projectile(Player *p, Entity entities[]) {
+	for (int i = 0; i < ENTITY_CAP; ++i) {
+		if (entities[i].type == entity_projectile) {
+			Projectile* projectile = &(entities[i].projectile);
+			int collided = collisionCircle(p->pos, p->parryrad, projectile->pos, projectile->radius);
+			if (collided) {
+				deflectprojectiles((char)'p', i, entities);
+			}
+		}
+	}
+}
 void set_state(Player* p, player_state state) {
 	// only allow state from dashing to resting;
 	if (p->state == dashing) {
 		if (state == resting) p->state = state;
-		else return;
 		return;
 	}
 	p->state = state;
@@ -46,7 +57,7 @@ Player init_player(void) {
 	Position p;
 
 	player.health = 5;
-	player.speed = 200;
+	player.speed = NORMAL_SPEED;
 	player.horizontal_dir = 0, player.vertical_dir = 0;
 	player.state = resting;
 	player.diameter = 50.0f;
@@ -74,7 +85,10 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 				cooldown += .5f;
 		}
 		else {
-			if (stamina >= 100.0f)  stamina -= 100.0f; // if stamina 
+			if (stamina >= STAMINA_COST) {
+				player_deflect_projectile(player, entities);
+				stamina -= STAMINA_COST; // if stamina 
+			}
 			else {
 				init_cooldown();
 			}
@@ -92,15 +106,14 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 			}
 			else {
 				// reduce stamina
-				if (stamina >= 100.0f) {
-					stamina -= 100.0f;
+				if (stamina >= STAMINA_COST) {
+					stamina -= STAMINA_COST;
 				}
 				else {
 					init_cooldown();
 				}
 				if (player->state != dashing) {
 					set_state(player, dashing);
-					player->speed = DASH_SPEED;
 				}
 			}
 		}
@@ -133,14 +146,18 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 	}
 
 
-
+	// if player is in dashing state
 	if (player->state == dashing) {
+		player->speed = DASH_SPEED;
 		dashed_duration += CP_System_GetDt();
  		if (dashed_duration > DASH_DURATION) {
 			player->speed = NORMAL_SPEED;
 			set_state(player, resting);
 			dashed_duration = .0f;
 		}
+	}
+	else {
+		player->speed = NORMAL_SPEED;
 	}
 
 	if ((player->horizontal_dir == 0) && (player->vertical_dir == 0)) {
@@ -174,8 +191,7 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 	char buffer[500] = { 0 };
 	sprintf_s(buffer, _countof(buffer), "player state: %d, cooldown: %f, is_cooldown: %d", player->state, cooldown, is_cooldown);
 	CP_Font_DrawText(buffer, 30, 30);
-
-	for (int i = 0, sw = 2, radius_size = radius_reduction, parry_color = 255, parry_weight = stamina; i < 8; ++i) {	//Creates the Barrier Effect
+	for (int i = 0, sw = 2, radius_size = (int) radius_reduction, parry_color = 255, parry_weight = (int) stamina; i < 8; ++i) {	//Creates the Barrier Effect
 		if (i == 8 - 1) {	//Sets the white color ring
 			radius_size = radius_reduction;
 			parry_color = 255;
@@ -190,7 +206,7 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 		CP_Settings_StrokeWeight(sw);
 		CP_Settings_Stroke(CP_Color_Create(parry_color, 255, 255, parry_weight));
 		CP_Settings_Fill(CP_Color_Create(218, 240, 255, 0));
-		CP_Graphics_DrawCircle(player->pos.x, player->pos.y, player->parryrad * 2 - radius_size);
+		CP_Graphics_DrawCircle(player->pos.x, player->pos.y, (player->parryrad * 2.0f) - (float)radius_size);
 	}
 	//Increases the barrier's opacity over time ( Uncomment this if you want to change the opacity of the barrier when user click space)
 
