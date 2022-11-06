@@ -5,7 +5,7 @@
 
 #define  BOSS_HEALTH 10
 #define  BOSS_ATK_CD 3
-#define  BOSS_SPEED 8
+#define  BOSS_SPEED 10
 #define  BOSS_DIAMETER 50.0f
 #define  BOSS_PARRY_RAD 70.0f
 #define  BOSS_PARRY_AMMO  10
@@ -99,57 +99,24 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 		Atk_Time_Tracker = 0;
 		D_vector = CP_Vector_Normalize(CP_Vector_Set(player->pos.x - boss->pos.x, player->pos.y - boss->pos.y));
 		CP_Vector offset_Vector = CP_Vector_Negate(CP_Vector_Scale(D_vector, (boss->parryrad - (boss->diameter)) / CP_Vector_Length(D_vector)));
-		//D_vector = CP_Vector_Subtract(D_vector, offset_Vector);
 		target_location.x = player->pos.x + offset_Vector.x;
 		target_location.y = player->pos.y + offset_Vector.y;
 		D_vector = CP_Vector_Set(target_location.x - boss->pos.x, target_location.y - boss->pos.y);
-		/*
-		target_location = player->pos;
-		D_vector = 
-		CP_Vector offset_Vector = CP_Vector_Scale(CP_Vector_Normalize(D_vector), -1*(player->parryrad - player->diameter / 2) / CP_Vector_Length(D_vector));
-		moveEntity(&target_location, offset_Vector.x, offset_Vector.y);
-		D_vector = CP_Vector_Add(D_vector, offset_Vector);
-		boss->parry_ammo -= 10;
-		*/
-		//Need Target Location
-		//Need D_vector
 	}
 	if (To_Atk) {
-		// Check for wall Collision
-		Position Next_Position;
-		Next_Position.x = boss->pos.x + (D_vector.x * (Acceleration_Count / Acceleration));
-		Next_Position.y = boss->pos.y + (D_vector.x * (Acceleration_Count / Acceleration));
-		
-		Position Old_Position = boss->pos;
-		CP_Vector Directional_Vector = getVectorBetweenPositions(&(boss->pos), &Next_Position);
-		float scalar = boss->parryrad / CP_Vector_Length(Directional_Vector);
-		Directional_Vector = CP_Vector_Scale(Directional_Vector, scalar);
-		
-		moveEntity(&(boss->pos), D_vector.x * (Acceleration_Count / Acceleration) * CP_System_GetFrameRate(), D_vector.y * (Acceleration_Count / Acceleration) * CP_System_GetFrameRate());
-		
-		for (int i = 0; i < GRID_ROWS; ++i) {
-			for (int j = 0; j < GRID_COLS; ++j) {
-				if (wall_pos[i][j]){
-					float distance = CP_Vector_Distance(CP_Vector_Set(Old_Position.x, Old_Position.y),CP_Vector_Set(Next_Position.x, Next_Position.y));
-					int iteration = distance / WALL_DIM;
-					Position Dummy_Position = Old_Position;
-					for (int iter = 0; iter < iteration; iter++) {
-						moveEntity(&Dummy_Position, Directional_Vector.x, Directional_Vector.y);
-						if (collisionCircleRect(Dummy_Position, boss->parryrad, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) {
-							wall_pos[i][j] = 0;
-						}
-					}
-				}
-			}
+		for (int x = 10; x > 0; x--) { //Destroy any walls that it collides with
+			Position Next_Position;
+			Next_Position.x = boss->pos.x + (D_vector.x * (Acceleration_Count / Acceleration) / x);
+			Next_Position.y = boss->pos.y + (D_vector.x * (Acceleration_Count / Acceleration) / x );
+			Destory_Wall(wall_pos, Next_Position, boss->diameter, boss->parryrad, boss->parry_ammo, WALL_DIM, WALL_DIM);
 		}
-		
-		if (Acceleration_Count == boss->speed) {
+
+		if(Acceleration_Count == boss->speed){
 			boss->pos = target_location;
+			Destory_Wall(wall_pos, boss->pos, boss->diameter, boss->parryrad, boss->parry_ammo, WALL_DIM, WALL_DIM);
 			for (int i = 0; i < ENTITY_CAP; ++i) {
 				if (entities[i].type == entity_null) {
-					Position Melee_Atk_Pos = boss->pos;
-					Projectile proj = init_projectile('b', Melee_Atk_Pos, CP_Vector_Set(0,0),'m');
-					proj.radius = boss->parryrad;
+					Projectile proj = init_projectile('e', 'm',boss->parryrad, boss->pos, CP_Vector_Set(0, 0));
 					entities[i].type = entity_projectile;
 					entities[i].projectile = proj;
 					break;
@@ -159,13 +126,25 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 			Acceleration_Count = 1;
 		}
 		else {
+			moveEntity(&(boss->pos), D_vector.x* (Acceleration_Count / Acceleration)* CP_System_GetFrameRate(), D_vector.y* (Acceleration_Count / Acceleration)* CP_System_GetFrameRate());
 			Acceleration_Count++;
 		}
-
 	}
 	
 	
 
+}
+void Destory_Wall(int wall_pos[GRID_ROWS][GRID_COLS], Position Boss_Pos, int boss_diameter, int parry_rad ,int parry_ammo, int wall_width, int wall_height) {
+	for (int i = 0; i < GRID_ROWS; ++i) {
+		for (int j = 0; j < GRID_COLS; ++j) {
+			if (wall_pos[i][j]) {
+				int collided = 0;
+				if(parry_ammo){collided = collisionCircleRect(Boss_Pos, parry_rad, (Position) { wall_width* (float)j, wall_height* (float)i }, wall_width, wall_height); }
+				else { collided = collisionCircleRect(Boss_Pos, boss_diameter, (Position) { wall_width* (float)j, wall_height* (float)i }, wall_width, wall_height); }
+				if (collided) { wall_pos[i][j] = 0; }
+			}
+		}
+	}
 }
 
 void damage_boss(Boss* b) {
