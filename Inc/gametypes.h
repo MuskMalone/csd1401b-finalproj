@@ -3,6 +3,8 @@
 #define WALL_DIM 50.0f
 #define GRID_ROWS 25
 #define GRID_COLS 30
+#define ENTITY_CAP 100
+#define PLAYER_IDX 0
 // for player
 typedef enum player_state { resting, moving, dashing, dead } player_state;
 typedef struct Player
@@ -24,17 +26,19 @@ typedef struct Mob {
 	attack_type type;
 	Position pos;
 	float diameter;
-	float radius_damage;
 	float health;
-	BOOL is_exploding;
 } Mob;
 // for projectiles
 typedef struct Projectile {
 	Position pos;
+	Position Future_Pos;
 	CP_Vector Direction;
 	float radius;
 	int speed;
 	char source;
+	char type;
+	char toRebound_NextFrame;
+
 } Projectile;
 // for boss
 typedef struct Boss {
