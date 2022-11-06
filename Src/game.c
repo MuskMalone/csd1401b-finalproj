@@ -65,7 +65,7 @@ void game_init(void)
 
 void game_update(void)
 {
-
+	int num = 0;
 	CP_Graphics_ClearBackground(CP_Color_Create(150, 150, 150, 255));
 
 	// calls each entity's update function
