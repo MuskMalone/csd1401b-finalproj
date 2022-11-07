@@ -94,7 +94,7 @@ void game_update(void)
 				Position startposb;
 				startposb.x = ((float)CP_System_GetWindowWidth() / 2) ;
 				startposb.y = ((float)CP_System_GetWindowHeight() * 1 / 4);
-				Projectile projb = init_projectile('e', 'm',15, startposb, getVectorBetweenPositions(&(startposb), &(Mousepos)));
+				Projectile projb = init_projectile('p', 'm',10, startposb, getVectorBetweenPositions(&(startposb), &(Mousepos)));
 				entities[i].type = entity_projectile;
 				entities[i].projectile = projb;
 				break;
