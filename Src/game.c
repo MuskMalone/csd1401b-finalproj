@@ -46,9 +46,9 @@ void game_init(void)
 	Boss b = init_boss();
 	entities[BOSS_IDX].type = entity_boss;
 	entities[BOSS_IDX].boss = b;
-	Mob m = init_mob();
-	entities[2].type = entity_mob;
-	entities[2].mob = m;
+	//Mob m = init_mob();
+	//entities[2].type = entity_mob;
+	//entities[2].mob = m;
 	//spawn of enemies
 	/*for (int i = 2; i < ENTITY_CAP; ++i)
 	{
@@ -86,15 +86,15 @@ void game_update(void)
 			}
 		}
 	}
-	if (CP_Input_MouseClicked(MOUSE_BUTTON_1)) {
+	if (CP_Input_KeyTriggered(KEY_Q)) {
 		for (int i = 0; i < ENTITY_CAP; ++i) {
 			if (entities[i].type == entity_null) {
 				//entities[BOSS_IDX].boss.health--;
 				Position Mousepos = (Position){ CP_Input_GetMouseX(),CP_Input_GetMouseY() };
 				Position startposb;
-				startposb.x = ((float)CP_System_GetWindowWidth() * 3 / 4) - (10.0f);
-				startposb.y = ((float)CP_System_GetWindowHeight() / 2) - (10.0f);
-				Projectile projb = init_projectile('p', startposb, getVectorBetweenPositions(&(startposb), &(Mousepos)), 'r');
+				startposb.x = ((float)CP_System_GetWindowWidth() / 2) ;
+				startposb.y = ((float)CP_System_GetWindowHeight() * 1 / 4);
+				Projectile projb = init_projectile('e', 'm',15, startposb, getVectorBetweenPositions(&(startposb), &(Mousepos)));
 				entities[i].type = entity_projectile;
 				entities[i].projectile = projb;
 				break;

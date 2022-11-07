@@ -1,14 +1,14 @@
 #include "projectiles.h"
 
-Projectile init_projectile(char Source, Position Start, CP_Vector Direction,char type) {
+Projectile init_projectile(char Source, char type, int radius, Position Start_Pos, CP_Vector Direction_Vector) {
 	Projectile Proj;
-	Proj.type = type;
-	Proj.pos.x = Start.x;
-	Proj.pos.y = Start.y;
-	Proj.Direction = Direction;
-	Proj.radius = 10.0f;
-	Proj.speed = 1000;
-	Proj.source = Source;
+	Proj.type = type;			// 2 Projectile types. Static (For melee or exploding enemy) and Mobile (Ranged mobs)
+	Proj.pos.x = Start_Pos.x;
+	Proj.pos.y = Start_Pos.y;
+	Proj.Direction = Direction_Vector;
+	Proj.radius = radius;	   // default size 20
+	Proj.speed = 100;
+	Proj.source = Source;	  // The owner of the projectile. Prevents the projectile from attacking its owner
 	Proj.Future_Pos = Proj.pos;
 	Proj.toRebound_NextFrame = 'n';
 	return Proj;
@@ -18,9 +18,9 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 	int red_rgb = proj->source == 'p' ? 0 : 255;
 	int blue_rgb = proj->source == 'p' ? 255 : 0;
 	int to_Rebound = 0;
-	CP_Settings_Fill(CP_Color_Create(red_rgb, 0, blue_rgb, 255));
+	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
 	
-	if (proj->type == 'r') {
+	if (proj->type == 'm') {
 		if (proj->toRebound_NextFrame != 'n') {
 			proj->pos = proj->Future_Pos;
 			deflectprojectiles(proj->toRebound_NextFrame, index, entities);
@@ -28,7 +28,6 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 		else {
 			moveEntity(&(proj->pos), proj->Direction.x * proj->speed, proj->Direction.y * proj->speed);
 		}
-
 		if(!Entities_Collision_Check(proj, index, entities)){
 			Position Left_Edge_Wall = (Position){ -WALL_DIM , 0 };
 			Position Right_Edge_Wall = (Position){ CP_System_GetWindowWidth() , 0 };
@@ -61,14 +60,18 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 		CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius * 2);
 		}
 	}
-	
-
+	else {
+		int check = Entities_Collision_Check(proj, index, entities);
+		if (!check) {
+			entities[index].type = entity_null;
+		}
+	}
 }
 
 void deflectprojectiles(char source,int index, Entity entities[]) {
 	Projectile* proj = &(entities[index].projectile);
 
-	if (proj->type == 'r') {
+	if (proj->type == 'm') {
 		if (source == 'x') {
 			proj->Direction.x *= -1;
 		}
