@@ -46,9 +46,9 @@ void game_init(void)
 	Boss b = init_boss();
 	entities[BOSS_IDX].type = entity_boss;
 	entities[BOSS_IDX].boss = b;
-	//Mob m = init_mob();
-	//entities[2].type = entity_mob;
-	//entities[2].mob = m;
+	Mob m = init_mob();
+	entities[2].type = entity_mob;
+	entities[2].mob = m;
 	//spawn of enemies
 	/*for (int i = 2; i < ENTITY_CAP; ++i)
 	{

@@ -2,10 +2,18 @@
 //what each mob had run
 //when each mob is running on the screen, each codes runs
 BOOL mob_isNear = 0;
+#define  MOB_HEALTH 5
+#define  MOB_DIAMETER 50.0f
+#define  MOB_DMG_RAD 100.0f
+
+void collision_check(Position p, float diameter, int wall_pos[GRID_ROWS][GRID_COLS])
+{
+
+}
 
 void expansion_mob_size(Entity entities[], int mob_idx)
 {
-	float currentElapsedTime = CP_System_GetDt();
+	//float currentElapsedTime = CP_System_GetDt();
 
 	Mob* mob = &(entities[mob_idx].mob);
 	float mob_dia = mob->diameter; //initialising in the local variable
@@ -25,8 +33,6 @@ void expansion_mob_size(Entity entities[], int mob_idx)
 
 void mob_explosion(int player_idx, Entity entities[], int mob_idx)
 {
-	
-	
 	Player* player = &(entities[player_idx].player);
 	Mob* mob = &(entities[mob_idx].mob);
 
@@ -44,7 +50,6 @@ void mob_explosion(int player_idx, Entity entities[], int mob_idx)
 
 	//mob_isNear = collisionCircle(mob->pos, mob_dia * 2.0f, player->pos, player_dia * 2.0f) ? 1 : 0;
 
-	//mob_isNear = 0;
 	//collision of enemy and the player
 	if (collisionCircle(mob->pos, mob_dia * 2.0f ,player->pos, player_dia * 2.0f)) //give a certain distance
 	{
@@ -64,6 +69,10 @@ void mob_explosion(int player_idx, Entity entities[], int mob_idx)
 
 }
 
+//void damage_mob(Mob *mob) {
+//	mob->health -= 1;
+//}
+
 Mob init_mob() {
 	
 	float Window_Width = (float)CP_System_GetWindowWidth();
@@ -77,9 +86,9 @@ Mob init_mob() {
 	//p.y = (Window_Height / 3);
 	mob.pos.x = CP_Random_RangeFloat(0.0f, Window_Width);
 	mob.pos.y = CP_Random_RangeFloat(0.0f, Window_Height);
-	mob.diameter = 50.0f;
-	mob.health = 50.0f;
-	mob.radius_damage = 100.0f;
+	mob.diameter = MOB_DIAMETER;
+	mob.health = MOB_HEALTH;
+	mob.radius_damage = MOB_DMG_RAD;
 	mob.is_exploding = 0;
 	return mob;
 }
@@ -87,5 +96,6 @@ Mob init_mob() {
 void update_mob(int mob_idx, int player_idx, Entity entities[]) 
 {
 	mob_explosion(player_idx, entities, mob_idx);
+	//ranged_mob(player_idx, entities, mob_idx);
 }
 
