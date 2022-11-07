@@ -116,7 +116,7 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 			Destory_Wall(wall_pos, boss->pos, boss->diameter, boss->parryrad, boss->parry_ammo, WALL_DIM, WALL_DIM);
 			for (int i = 0; i < ENTITY_CAP; ++i) {
 				if (entities[i].type == entity_null) {
-					Projectile proj = init_projectile('e', 'm',boss->parryrad, boss->pos, CP_Vector_Set(0, 0));
+					Projectile proj = init_projectile('e', 's',boss->parryrad, boss->pos, CP_Vector_Set(0, 0));
 					entities[i].type = entity_projectile;
 					entities[i].projectile = proj;
 					break;

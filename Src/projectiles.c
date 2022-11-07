@@ -61,9 +61,9 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 		}
 	}
 	else {
-		if (!Entities_Collision_Check(proj, index, entities)) {
-			entities[index].type = entity_null;
-		}
+		Entities_Collision_Check(proj, index, entities);
+		entities[index].type = entity_null;
+		
 	}
 }
 
