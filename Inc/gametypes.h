@@ -55,12 +55,6 @@ typedef struct Boss {
 	float Parry_BaseWeight;
 }Boss;
 // overarching entity struct
-typedef union entity_struct {
-	Player player;
-	Mob mob;
-	Boss boss;
-	Projectile projectile;
-} entity_struct;
 typedef enum entity_type {
 	entity_null,
 	entity_player,
@@ -71,7 +65,10 @@ typedef enum entity_type {
 typedef struct Entity
 {
 	entity_type type;
-	entity_struct;
+	union {
+		Player player;
+		Mob mob;
+		Boss boss;
+		Projectile projectile;
+	};
 } Entity;
-
-int insert_to_entity_array(entity_type type, Entity entities[], entity_struct(*init_func)());
