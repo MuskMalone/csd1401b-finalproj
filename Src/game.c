@@ -73,7 +73,7 @@ void game_update(void)
 		if (entities[i].type == entity_null) continue;
 		switch (entities[i].type) {
 		case entity_player: update_player(PLAYER_IDX, entities, wall_pos[num]); break;
-		case entity_mob: update_mob(i, PLAYER_IDX, entities); break;
+		case entity_mob: update_mob(i, PLAYER_IDX, entities, wall_pos[num]); break;
 		case entity_boss: update_boss(BOSS_IDX, PLAYER_IDX, entities, wall_pos[num]); break;
 		case entity_projectile: update_projectile(i, entities, wall_pos[num]); break;
 		}
