@@ -4,7 +4,6 @@
 #include <stdlib.h>
 
 #define BOSS_IDX 1
-
 #define SIZE 6
 // to disable vs warning for fopen function
 #pragma warning(disable : 4996)
@@ -20,9 +19,11 @@ void game_init(void)
 	for (int i = 0; i < ENTITY_CAP; ++i) {
 		entities[i].type = entity_null;
 	}
-	Player p = init_player();
-	entities[PLAYER_IDX].type = entity_player;
-	entities[PLAYER_IDX].player = p;
+	entity_struct p = init_player();
+	entities[PLAYER_IDX] = (Entity){
+		entity_player,
+		p
+	};
 
 	int ch, idx;
 	// loads the map delimited by \n into the wall_pos array
@@ -43,9 +44,7 @@ void game_init(void)
 
 	fclose(map);
 
-	Boss b = init_boss();
-	entities[BOSS_IDX].type = entity_boss;
-	entities[BOSS_IDX].boss = b;
+	insert_to_entity_array(entity_boss, entities, init_boss);
 	//Mob m = init_mob();
 	//entities[2].type = entity_mob;
 	//entities[2].mob = m;
@@ -87,18 +86,13 @@ void game_update(void)
 		}
 	}
 	if (CP_Input_KeyTriggered(KEY_Q)) {
-		for (int i = 0; i < ENTITY_CAP; ++i) {
-			if (entities[i].type == entity_null) {
-				//entities[BOSS_IDX].boss.health--;
-				Position Mousepos = (Position){ CP_Input_GetMouseX(),CP_Input_GetMouseY() };
-				Position startposb;
-				startposb.x = ((float)CP_System_GetWindowWidth() / 2) ;
-				startposb.y = ((float)CP_System_GetWindowHeight() * 1 / 4);
-				Projectile projb = init_projectile('p', 'm',10, startposb, getVectorBetweenPositions(&(startposb), &(Mousepos)));
-				entities[i].type = entity_projectile;
-				entities[i].projectile = projb;
-				break;
-			}
+		Position Mousepos = (Position){ CP_Input_GetMouseX(),CP_Input_GetMouseY() };
+		Position startposb;
+		startposb.x = ((float)CP_System_GetWindowWidth() / 2);
+		startposb.y = ((float)CP_System_GetWindowHeight() * 1 / 4);
+		int p_idx = insert_to_entity_array(entity_projectile, entities, init_projectile);
+		if (p_idx > -1) {
+			set_projectile_values(&(entities[p_idx].projectile), 'p', 'm', 10, startposb, getVectorBetweenPositions(&(startposb), &(Mousepos)));
 		}
 	}
 

@@ -26,7 +26,7 @@ static int Acceleration_Count = 1;
 static float Parry_CD_Timer = 0;
 
 
-Boss init_boss(void) {
+entity_struct init_boss(void) {
 	Boss boss;
 	boss.health = BOSS_HEALTH;
 	boss.atk_cd = BOSS_ATK_CD;
@@ -43,7 +43,7 @@ Boss init_boss(void) {
 		Acceleration += i;
 	}
 	target_location = boss.pos;
-	return boss;
+	return (entity_struct) { .boss = boss };
 }
 void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Boss* boss = &(entities[boss_idx].boss);
@@ -118,13 +118,9 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 				boss->pos = target_location;
 				//Draw the Boss atked Animation 
 				Destory_Wall(wall_pos, boss->pos, boss->diameter, boss->parryrad, boss->parry_ammo, WALL_DIM, WALL_DIM);
-				for (int i = 0; i < ENTITY_CAP; ++i) {
-					if (entities[i].type == entity_null) {
-						Projectile proj = init_projectile('e', 's', boss->parryrad, boss->pos, CP_Vector_Set(0, 0));
-						entities[i].type = entity_projectile;
-						entities[i].projectile = proj;
-						break;
-					}
+				int p_idx = insert_to_entity_array(entity_projectile, entities, init_projectile);
+				if (p_idx > -1) {
+					set_projectile_values(&(entities[p_idx].projectile), 'e', 's', boss->parryrad, boss->pos, CP_Vector_Set(0, 0));
 				}
 				To_Atk = 0;
 				Acceleration_Count = 1;

@@ -50,7 +50,7 @@ void set_state(Player* p, player_state state) {
 	}
 	p->state = state;
 }
-Player init_player(void) {
+entity_struct init_player(void) {
 	Player player;
 	float Window_Width = CP_System_GetWindowWidth();
 	float Window_Height = CP_System_GetWindowHeight();
@@ -66,7 +66,7 @@ Player init_player(void) {
 	player.pos = p;
 	player.parryrad = MAX_PARRYRADIUS;
 
-	return player;
+	return (entity_struct) { .player = player };
 }
 void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Player* player = &(entities[player_idx].player);
