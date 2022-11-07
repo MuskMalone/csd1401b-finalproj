@@ -1,4 +1,5 @@
 #include "projectiles.h"
+static float Lifespan_count = 0;
 
 Projectile init_projectile(char Source, char type, int radius, Position Start_Pos, CP_Vector Direction_Vector) {
 	Projectile Proj;
@@ -11,6 +12,7 @@ Projectile init_projectile(char Source, char type, int radius, Position Start_Po
 	Proj.source = Source;	  // The owner of the projectile. Prevents the projectile from attacking its owner
 	Proj.Future_Pos = Proj.pos;
 	Proj.toRebound_NextFrame = 'n';
+	Proj.LifeSpan = 0.01;
 	return Proj;
 }
 void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
@@ -61,8 +63,13 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 		}
 	}
 	else {
+		//Draw the static proj explosion animation here
 		Entities_Collision_Check(proj, index, entities);
-		entities[index].type = entity_null;
+		Lifespan_count += CP_System_GetDt();
+		if (Lifespan_count >= proj->LifeSpan) {	
+			entities[index].type = entity_null;
+		}
+
 		
 	}
 }
@@ -114,6 +121,7 @@ int Wall_Edge_Check(Projectile* proj, Position rect, float width, float height) 
 }
 
 int Entities_Collision_Check(Projectile* proj, int index, Entity entities[]){
+	int Proj_Collided = 0;
 	for (int i = 0; i < ENTITY_CAP; ++i) {
 		if (entities[i].type == entity_null) continue;
 		if (proj->source != 'p') {
@@ -121,7 +129,8 @@ int Entities_Collision_Check(Projectile* proj, int index, Entity entities[]){
 				if (collisionCircle(entities[i].player.pos, entities[i].player.diameter / 2, proj->pos, proj->radius)) {
 					damage_player(&(entities[i].player));
 					entities[index].type = entity_null;
-					return 1;
+					Proj_Collided = 1;
+					break;
 				}
 			}
 
@@ -131,13 +140,17 @@ int Entities_Collision_Check(Projectile* proj, int index, Entity entities[]){
 				if (collisionCircle(entities[i].boss.pos, entities[i].boss.diameter / 2, proj->pos, proj->radius)) {
 					damage_boss(&(entities[i].boss));
 					entities[index].type = entity_null;
-					return 1;
+					Proj_Collided = 1;
+					break;
 				}
 			}
 			// Check if its Mob
 		}
 	}
-	return 0;
+	if (Proj_Collided) {
+		//Draw the Mobile projectile destroy animation
+	}
+	return Proj_Collided;
 }
 
 

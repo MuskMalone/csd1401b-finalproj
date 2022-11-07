@@ -40,6 +40,7 @@ typedef struct Projectile {
 	char source;
 	char type;
 	char toRebound_NextFrame;
+	float LifeSpan;
 } Projectile;
 // for boss
 typedef struct Boss {
