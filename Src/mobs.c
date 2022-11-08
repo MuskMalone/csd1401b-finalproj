@@ -64,7 +64,7 @@ void mob_explosion(int player_idx, Entity entities[], int mob_idx)
 
 }
 
-Mob init_mob() {
+entity_struct init_mob() {
 	
 	float Window_Width = (float)CP_System_GetWindowWidth();
 	float Window_Height = (float)CP_System_GetWindowHeight();
@@ -81,7 +81,7 @@ Mob init_mob() {
 	mob.health = 50.0f;
 	mob.radius_damage = 100.0f;
 	mob.is_exploding = 0;
-	return mob;
+	return (entity_struct) {.mob = mob};
 }
 
 void update_mob(int mob_idx, int player_idx, Entity entities[]) 

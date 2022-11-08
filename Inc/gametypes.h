@@ -40,6 +40,7 @@ typedef struct Projectile {
 	char source;
 	char type;
 	char toRebound_NextFrame;
+	float LifeSpan;
 } Projectile;
 // for boss
 typedef struct Boss {
@@ -54,6 +55,12 @@ typedef struct Boss {
 	float Parry_BaseWeight;
 }Boss;
 // overarching entity struct
+typedef union entity_struct {
+	Player player;
+	Mob mob;
+	Boss boss;
+	Projectile projectile;
+} entity_struct;
 typedef enum entity_type {
 	entity_null,
 	entity_player,
@@ -64,10 +71,7 @@ typedef enum entity_type {
 typedef struct Entity
 {
 	entity_type type;
-	union {
-		Player player;
-		Mob mob;
-		Boss boss;
-		Projectile projectile;
-	};
+	entity_struct;
 } Entity;
+
+int insert_to_entity_array(entity_type type, Entity entities[], entity_struct(*init_func)());

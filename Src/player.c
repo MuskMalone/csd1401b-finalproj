@@ -36,7 +36,7 @@ void player_deflect_projectile(Player *p, Entity entities[]) {
 		if (entities[i].type == entity_projectile) {
 			Projectile* projectile = &(entities[i].projectile);
 			int collided = collisionCircle(p->pos, p->parryrad, projectile->pos, projectile->radius);
-			if (collided) {
+			if (collided && projectile->source != (char) 'p') {
 				deflectprojectiles((char)'p', i, entities);
 			}
 		}
@@ -50,7 +50,7 @@ void set_state(Player* p, player_state state) {
 	}
 	p->state = state;
 }
-Player init_player(void) {
+entity_struct init_player(void) {
 	Player player;
 	float Window_Width = CP_System_GetWindowWidth();
 	float Window_Height = CP_System_GetWindowHeight();
@@ -66,7 +66,7 @@ Player init_player(void) {
 	player.pos = p;
 	player.parryrad = MAX_PARRYRADIUS;
 
-	return player;
+	return (entity_struct) { .player = player };
 }
 void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Player* player = &(entities[player_idx].player);
@@ -189,7 +189,7 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 	CP_Settings_TextSize(20.0f);
 
 	char buffer[500] = { 0 };
-	sprintf_s(buffer, _countof(buffer), "player state: %d, cooldown: %f, is_cooldown: %d", player->state, cooldown, is_cooldown);
+	sprintf_s(buffer, _countof(buffer), "player state: %d, cooldown: %f, health: %d", player->state, cooldown, player->health);
 	CP_Font_DrawText(buffer, 30, 30);
 	for (int i = 0, sw = 2, radius_size = (int) radius_reduction, parry_color = 255, parry_weight = (int) stamina; i < 8; ++i) {	//Creates the Barrier Effect
 		if (i == 8 - 1) {	//Sets the white color ring
