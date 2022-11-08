@@ -36,34 +36,26 @@ int collisionCircle(Position a_center, float a_radius, Position b_center, float 
 }
 
 int collisionCircleRect(Position circle, float radius, Position rect, float width, float height) {
-	
 	// temporary variables to set edges for testing
 	float testX = circle.x;
 	float testY = circle.y;
-	
-	
+
 	// which edge is closest
 	if (circle.x < rect.x) testX = rect.x;      // test left edge
 	else if (circle.x > rect.x + width) testX = rect.x + width;   // right edge
 	if (circle.y < rect.y) testY = rect.y;      // top edge
 	else if (circle.y > rect.y + height) testY = rect.y + height;   // bottom edge
 
-	
 	// get distance from closest edges
 	float distX = circle.x - testX;
 	float distY = circle.y - testY;
 	float distance = sqrt((distX * distX) + (distY * distY));
-
-
 
 	// if the distance is less than the radius, collision!
 	if (distance <= radius) {
 		return TRUE;
 	}
 	return FALSE;
-	
-
-
 }
 
 float positionDistance(Position a, Position b) {
@@ -72,7 +64,36 @@ float positionDistance(Position a, Position b) {
 	return sqrt((distX * distX) + (distY * distY));
 }
 
+int IsAreaClicked(float area_center_x, float area_center_y, float area_width, float area_height, float click_x, float click_y)
+{
+	float boundaryBotY = area_center_y + area_height; //Find the highest point the mousePos can go 
+	float boundaryTopY = area_center_y - area_height; //Find the lowest point the mousePos can go
 
+	float boundaryLeftX = area_center_x - area_width; //Find the most left the mousePos can go 
+	float boundaryRightX = area_center_x + area_width; //Find the most right the mousePos can go
+
+	if (click_x >= boundaryLeftX && click_x <= boundaryRightX && click_y <= boundaryBotY && click_y >= boundaryTopY) //if ur mouse is within the box
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+int IsCircleClicked(float circle_center_x, float circle_center_y, float diameter, float click_x, float click_y)
+{
+	if (click_x <= circle_center_x + diameter && click_x >= circle_center_x - diameter && click_y <= circle_center_y + diameter && click_y >= circle_center_y - diameter)  //if ur mouse is within the circle
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+
+}
 /*
 void DeflectProjectiles(char source, int projectile_index, Entity entities[]) {
 	entities[projectile_index].projectile.source = source;
