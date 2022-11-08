@@ -1,4 +1,5 @@
 #include "mobs.h"
+#include "player.h"
 //what each mob had run
 //when each mob is running on the screen, each codes runs
 BOOL mob_isNear = 0;
@@ -11,19 +12,16 @@ void expansion_mob_size(Entity entities[], int mob_idx)
 	float mob_dia = mob->diameter; //initialising in the local variable
 	float circle_expansion_cap = 20.0f;
 
-	mob->diameter++; //plusing the global variable 
+	//mob->diameter++; //plusing the global variable 
 	
 
 	if (mob_dia >= 100.0f)
 	{
-		
 		entities[mob_idx].type = entity_null;
 	}
 }
 
-
-
-void mob_explosion(int player_idx, Entity entities[], int mob_idx)
+void mob_explosion(int player_idx, Entity entities[], int mob_idx, int wall_pos[GRID_ROWS][GRID_COLS])
 {
 	
 	
@@ -46,22 +44,44 @@ void mob_explosion(int player_idx, Entity entities[], int mob_idx)
 
 	//mob_isNear = 0;
 	//collision of enemy and the player
-	if (collisionCircle(mob->pos, mob_dia * 2.0f ,player->pos, player_dia * 2.0f)) //give a certain distance
+
+	if (collisionCircle(mob->pos, mob_dia * 5.0f, player->pos, player_dia * 5.0f)) //give a certain distance
 	{
-		mob->is_exploding = 1;
-		moveEntity(&(mob->pos), direction.x * 50.0f, direction.y * 50.0f); //the enemy will move
-		
+		//moveEntity(&(mob->pos), direction.x * 50.0f, direction.y * 50.0f); //the enemy will move
+		int mob_at_xborder, mob_at_xwall, mob_at_yborder, mob_at_ywall;
+		float futureX = mob->pos.x, futureY = mob->pos.y;
+
+		mob_at_xborder = !((futureX < (CP_System_GetWindowWidth() - ((mob->diameter)))) && (futureX > (0.0f + ((mob->diameter))))),
+			mob_at_xwall = check_collision((Position) { .x = futureX, .y = mob->pos.y }, mob->diameter, wall_pos);
+
+		mob_at_yborder = !((futureY < (CP_System_GetWindowHeight() - ((mob->diameter)))) && (futureY > (0.0f + ((mob->diameter))))),
+			mob_at_ywall = check_collision((Position) { .x = mob->pos.x, .y = futureY }, mob->diameter, wall_pos);
+
+		if (!(mob_at_xborder || mob_at_xwall))
+			moveEntity(&(mob->pos), direction.x * 50.0f, direction.y * 0.0f); //the enemy will move
+		if (!(mob_at_yborder || mob_at_ywall))
+			moveEntity(&(mob->pos), direction.x * 0.0f, direction.y * 50.0f); //the enemy will move
+
+		if (collisionCircle(mob->pos, mob_dia * 2.0f, player->pos, player_dia * 2.0f))
+		{
+			mob->is_exploding = 1;
+		}
 	}
 	if (mob->is_exploding)
 	{
 		expansion_mob_size(entities, mob_idx); //and runs the function that expands the size of the mob
 	}
 
-	//if (collisionCircle(mob->pos, explosion_radius, player->pos, explosion_radius))
-	//{
-	//	//player health loss
-	//}
+	//
+	/*if(collisionCircle(mob->pos, projectile size, player->pos, projectile size))
+	{
+		mob->health -= 1;
+	}*/
+}
 
+void mob_ranged(int player_idx, Entity entities[], int mob_idx, int wall_pos[GRID_ROWS][GRID_COLS])
+{
+	init_projectile();
 }
 
 entity_struct init_mob() {
@@ -84,8 +104,8 @@ entity_struct init_mob() {
 	return (entity_struct) {.mob = mob};
 }
 
-void update_mob(int mob_idx, int player_idx, Entity entities[]) 
+void update_mob(int mob_idx, int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS])
 {
-	mob_explosion(player_idx, entities, mob_idx);
+	mob_explosion(player_idx, entities, mob_idx, wall_pos);
 }
 
