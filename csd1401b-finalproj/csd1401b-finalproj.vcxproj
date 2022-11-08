@@ -178,6 +178,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
   <ItemGroup>
     <Text Include="..\Assets\maps.txt" />
     <Text Include="..\Assets\NextRoom.txt" />
+    <Text Include="..\Assets\Room_Wall.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\Assets\EXIT.png" />
