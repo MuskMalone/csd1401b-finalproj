@@ -184,6 +184,15 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <Image Include="..\Assets\HOWTOPLAY.png" />
     <Image Include="..\Assets\main.png" />
     <Image Include="..\Assets\startbutton.png" />
+    <Image Include="..\Assets\Tiles\Boss\BossAtk1.png" />
+    <Image Include="..\Assets\Tiles\Boss\BossAtk2.png" />
+    <Image Include="..\Assets\Tiles\Boss\BossAtk3.png" />
+    <Image Include="..\Assets\Tiles\Boss\BossRest.png" />
+    <Image Include="..\Assets\Tiles\tile_0000.png" />
+    <Image Include="..\Assets\Tiles\tile_0012.png" />
+    <Image Include="..\Assets\Tiles\tile_0065.png" />
+    <Image Include="..\Assets\Tiles\tile_0074.png" />
+    <Image Include="..\Assets\Tiles\tile_0082.png" />
     <Image Include="..\Assets\Title.png" />
     <Image Include="..\Assets\TUTS.png" />
     <Image Include="..\Assets\xBut.png" />

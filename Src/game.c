@@ -11,6 +11,13 @@
 // @todo auto resize the array
 Entity entities[ENTITY_CAP];
 int wall_pos[SIZE][GRID_ROWS][GRID_COLS];
+int tilemap[GRID_ROWS][GRID_COLS];
+CP_Image Flat_Floor = NULL;
+CP_Image Rock_Floor = NULL;
+CP_Image grave = NULL;
+CP_Image Anvil = NULL;
+CP_Image Barrel = NULL;
+CP_Image ImageList[10];
 
 void game_init(void)
 {
@@ -59,13 +66,62 @@ void game_init(void)
 		}
 		
 	}*/
+
+	Flat_Floor = CP_Image_Load("./Assets/Tiles/tile_0000.png");
+	Rock_Floor = CP_Image_Load("./Assets/Tiles/tile_0012.png");
+	grave = CP_Image_Load("./Assets/Tiles/tile_0065.png");
+	Anvil = CP_Image_Load("./Assets/Tiles/tile_0074.png");
+	Barrel = CP_Image_Load("./Assets/Tiles/tile_0082.png");
+	ImageList[0] = Flat_Floor;
+	ImageList[1] = Rock_Floor;
+	ImageList[2] = grave;
+	ImageList[3] = Anvil;
+	ImageList[4] = Barrel;
+
+
+
+	int num = 1;
+	CP_Graphics_ClearBackground(CP_Color_Create(255, 255, 255, 255));
+	for (int i = 0; i < GRID_ROWS; i++) {
+		for (int j = 0; j < GRID_COLS; ++j) {
+			if (wall_pos[num][i][j]) {
+				unsigned int random_int = CP_Random_RangeInt(0, 90);
+				tilemap[i][j] = (random_int < 30) ? 2 : (random_int < 60) ? 3 : 4;
+			}
+			else {
+				unsigned int random_int = CP_Random_RangeInt(0, 100);
+				tilemap[i][j] = (random_int > 5) ? 0 :1;
+			}
+		}
+	}
+
+	//Wall = CP_Image_Load("./Assets/Justins_face.png");
 	
 }
 
 void game_update(void)
 {
+	//Floor = CP_Image_Load("./Assets/Tiles/tile_0000.png");
 	int num = 1;
-	CP_Graphics_ClearBackground(CP_Color_Create(150, 150, 150, 255));
+	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
+	CP_Graphics_ClearBackground(CP_Color_Create(255,255,255, 255));
+	//CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
+	for (int i = 0; i < GRID_ROWS; i++) {
+		for (int j = 0; j < GRID_COLS; ++j) {
+			if (tilemap[i][j] > 1)
+				CP_Image_Draw(Flat_Floor, (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
+			else {
+				CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
+			}
+		}
+	}
+	for (int i = 0; i < GRID_ROWS; i++) {
+		for (int j = 0; j < GRID_COLS; ++j) {
+			if (tilemap[i][j] > 1) {
+				CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM*1.2 , WALL_DIM*1.2, 255);
+			}
+		}
+	}
 
 	// calls each entity's update function
 	for (int i = 0; i < ENTITY_CAP; ++i) {
@@ -77,14 +133,7 @@ void game_update(void)
 		case entity_projectile: update_projectile(i, entities, wall_pos[num]); break;
 		}
 	}
-	for (int i = 0; i < GRID_ROWS; i++) {
-		for (int j = 0; j < GRID_COLS; ++j) {
-			if (wall_pos[num][i][j]) {
-				CP_Settings_StrokeWeight(0.0);
-				CP_Graphics_DrawRect(j * WALL_DIM, i * WALL_DIM, WALL_DIM, WALL_DIM);
-			}
-		}
-	}
+	
 	if (CP_Input_KeyTriggered(KEY_Q)) {
 		Position Mousepos = (Position){ CP_Input_GetMouseX(),CP_Input_GetMouseY() };
 		Position startposb;
@@ -96,6 +145,14 @@ void game_update(void)
 		}
 	}
 
+	/*if (CP_Input_KeyTriggered(KEY_1))
+		CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP);
+	else if (CP_Input_KeyTriggered(KEY_2))
+		CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
+	else if (CP_Input_KeyTriggered(KEY_3))
+		CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_REPEAT);
+	else if (CP_Input_KeyTriggered(KEY_4))
+	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_MIRROR);*/
 }
 
 void game_exit(void)
