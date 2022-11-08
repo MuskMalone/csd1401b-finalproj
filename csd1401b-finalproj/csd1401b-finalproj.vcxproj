@@ -158,7 +158,6 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <ClCompile Include="..\Src\game.c" />
     <ClCompile Include="..\Src\main.c" />
     <ClCompile Include="..\Src\mainmenu.c" />
-    <ClCompile Include="..\Src\map.c" />
     <ClCompile Include="..\Src\mobs.c" />
     <ClCompile Include="..\Src\player.c" />
     <ClCompile Include="..\Src\projectiles.c" />
@@ -176,16 +175,6 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Assets\maps.txt" />
-    <Text Include="..\Assets\NextRoom.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\Assets\EXIT.png" />
-    <Image Include="..\Assets\HOWTOPLAY.png" />
-    <Image Include="..\Assets\main.png" />
-    <Image Include="..\Assets\startbutton.png" />
-    <Image Include="..\Assets\Title.png" />
-    <Image Include="..\Assets\TUTS.png" />
-    <Image Include="..\Assets\xBut.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

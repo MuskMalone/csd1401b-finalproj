@@ -39,9 +39,6 @@
     <ClCompile Include="..\Src\boss.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\map.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Inc\mainmenu.h">
@@ -73,31 +70,5 @@
     <Text Include="..\Assets\maps.txt">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="..\Assets\NextRoom.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\Assets\EXIT.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Assets\HOWTOPLAY.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Assets\main.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Assets\startbutton.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Assets\Title.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Assets\TUTS.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Assets\xBut.png">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
 </Project>
