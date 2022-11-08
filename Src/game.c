@@ -18,6 +18,7 @@ CP_Image grave = NULL;
 CP_Image Anvil = NULL;
 CP_Image Barrel = NULL;
 CP_Image ImageList[10];
+static int boss_idx = 1;
 
 void game_init(void)
 {
@@ -51,7 +52,8 @@ void game_init(void)
 
 	fclose(map);
 
-	insert_to_entity_array(entity_boss, entities, init_boss);
+	insert_to_entity_array(entity_mob, entities, init_mob);
+	boss_idx = insert_to_entity_array(entity_boss, entities, init_boss);
 	//Mob m = init_mob();
 	//entities[2].type = entity_mob;
 	//entities[2].mob = m;
@@ -128,8 +130,8 @@ void game_update(void)
 		if (entities[i].type == entity_null) continue;
 		switch (entities[i].type) {
 		case entity_player: update_player(PLAYER_IDX, entities, wall_pos[num]); break;
-		case entity_mob: update_mob(i, PLAYER_IDX, entities); break;
-		case entity_boss: update_boss(BOSS_IDX, PLAYER_IDX, entities, wall_pos[num]); break;
+		case entity_mob: update_mob(i, PLAYER_IDX, entities, wall_pos[num]); break;
+		case entity_boss: update_boss(boss_idx, PLAYER_IDX, entities, wall_pos[num]); break;
 		case entity_projectile: update_projectile(i, entities, wall_pos[num]); break;
 		}
 	}

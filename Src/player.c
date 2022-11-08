@@ -25,7 +25,9 @@ int check_collision(Position p, float diameter, int wall_pos[GRID_ROWS][GRID_COL
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (wall_pos[i][j]) {
 				int collided = collisionCircleRect(p, diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM);
-				if (collided) return collided;
+				if (collided) {
+					return collided;
+				}
 			}
 		}
 	}
