@@ -1,19 +1,22 @@
 #include "projectiles.h"
 static float Lifespan_count = 0;
 
-Projectile init_projectile(char Source, char type, int radius, Position Start_Pos, CP_Vector Direction_Vector) {
+entity_struct init_projectile(void) {
 	Projectile Proj;
-	Proj.type = type;			// 2 Projectile types. Static (For melee or exploding enemy) and Mobile (Ranged mobs)
-	Proj.pos.x = Start_Pos.x;
-	Proj.pos.y = Start_Pos.y;
-	Proj.Direction = Direction_Vector;
-	Proj.radius = radius;	   // default size 20
 	Proj.speed = 1000;
-	Proj.source = Source;	  // The owner of the projectile. Prevents the projectile from attacking its owner
-	Proj.Future_Pos = Proj.pos;
-	Proj.toRebound_NextFrame = 'n';
-	Proj.LifeSpan = 0.01;
-	return Proj;
+	return (entity_struct) {.projectile = Proj};
+}
+void set_projectile_values(Projectile* Proj, char Source, char type, int radius, Position Start_Pos, CP_Vector Direction_Vector) {
+	Proj->type = type;			// 2 Projectile types. Static (For melee or exploding enemy) and Mobile (Ranged mobs)
+	Proj->pos.x = Start_Pos.x;
+	Proj->pos.y = Start_Pos.y;
+	Proj->Direction = Direction_Vector;
+	Proj->radius = radius;	   // default size 20
+	
+	Proj->source = Source;	  // The owner of the projectile. Prevents the projectile from attacking its owner
+	Proj->Future_Pos = Proj->pos;
+	Proj->toRebound_NextFrame = 'n';
+	Proj->LifeSpan = 0.01;
 }
 void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Projectile* proj = &(entities[index].projectile);
