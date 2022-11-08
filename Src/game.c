@@ -171,100 +171,15 @@ void game_update(void)
 		}
 	}
 
-	/*if (state == loading) {
-
-		draw_room(0);
-		//if (insert_to_entity_array(entity_mob, entities, init_mob) >= 0);
-		//insert_to_entity_array(entity_player, entities, init_player);
-
-
-	}
-	else {
-
-		if (state == room_active) {
-
-			draw_room_wall();
-			draw_room(rand() % 3 + 2);
-
-			if (insert_to_entity_array(entity_mob, entities, init_mob) == 0 || (insert_to_entity_array(entity_boss, entities, init_boss)) == 0) {
-
-				state = room_clear;
-			}
-		}
-		if (state == room_clear) {
-
-			draw_door();
-
-			for (int i = 0; i < GRID_ROWS; ++i) {
-				for (int j = 0; j < GRID_COLS; ++j) {
-
-					if ((collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM))) {
-
-						state = loading;
-
-					}
-				}
-				}
-
-			}
-			
-	}
-
-	if (entities[PLAYER_IDX].player.health != 0) { //need check if player is alive
-
-		//set map idx to the starting room when new_room is 0
-		if (count_new_room == 0) {
-
-			map_idx = 0;
-		}
-		//set map idx to the boss room when 4 room is cleared
-		else if (count_new_room == 5) {
-
-			map_idx = 1;
-
-			//when boss is dead, reset count to 0
-			if (entities[BOSS_IDX].boss.health == 0) {
-
-				count_new_room = 0;
-			}
-		}
-
-		if (entities[MOB] == 0) { //check if room is empty
-
-			check = 1; //spawn doors when no enemy
-
-			for (int i = 0; i < GRID_ROWS; ++i) {
-				for (int j = 0; j < GRID_COLS; ++j) {
-
-					if (door_pos[i][j]) {
-
-						if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) { //when touch door
-
-							map_idx = rand() % 3 + 2; //set map idx to a random range between 2 to 5
-							count_new_room++; //count how many time next room is spawn
-
-						}
-					}
-
-				}
-			}
-
-
-		}
-	}
-
-	draw_room_wall();
-	draw_room(map_idx);
-	draw_door(check);*/
-
 	if (state == room_active) {
 
 		draw_room_wall();
 
-		if (mob == 0 || boss == 0) {
+		//idk wat functions to use here help
+		/*if (mob == 0 || boss == 0) {
 
 			state = room_clear;
-		}
+		}*/
 
 	}
 	else if (state == room_clear) {
@@ -277,7 +192,6 @@ void game_update(void)
 
 					if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) { //when touch door
 
-						map_idx = rand() % 3 + 2; //set map idx to a random range between 2 to 5
 						state = loading;
 
 					}
@@ -288,7 +202,12 @@ void game_update(void)
 	}
 	else if (state == loading) {
 
-		entities[MOB].type = entity_null;
+		//i oso dk wat functions to use here help
+		//entities[MOB].type = entity_null;
+		map_idx = rand() % 3 + 2; //set map idx to a random range between 2 to 5
+		draw_room(map_idx);
+		state = room_active;
+
 	}
 
 	if (CP_Input_MouseClicked(MOUSE_BUTTON_1)) {
