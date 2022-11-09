@@ -79,6 +79,9 @@
     <Text Include="..\Assets\NextRoom.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="..\Assets\Room_Wall.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\Assets\EXIT.png">
