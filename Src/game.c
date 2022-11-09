@@ -5,7 +5,7 @@
 
 #define BOSS_IDX 1
 
-#define SIZE 7
+#define SIZE 5
 // to disable vs warning for fopen function
 #pragma warning(disable : 4996)
 
