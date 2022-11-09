@@ -135,7 +135,6 @@ void game_update(void)
 		case entity_projectile: update_projectile(i, entities, wall_pos[num]); break;
 		}
 	}
-	
 	if (CP_Input_KeyTriggered(KEY_Q)) {
 		Position Mousepos = (Position){ CP_Input_GetMouseX(),CP_Input_GetMouseY() };
 		Position startposb;
