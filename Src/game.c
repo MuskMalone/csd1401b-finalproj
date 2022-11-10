@@ -104,7 +104,7 @@ void game_update(void)
 {
 	//Floor = CP_Image_Load("./Assets/Tiles/tile_0000.png");
 	int num = 1;
-	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
+	//CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
 	CP_Graphics_ClearBackground(CP_Color_Create(255,255,255, 255));
 	//CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
 	for (int i = 0; i < GRID_ROWS; i++) {
@@ -151,14 +151,14 @@ void game_update(void)
 		}
 	}
 
-	/*if (CP_Input_KeyTriggered(KEY_1))
+	if (CP_Input_KeyTriggered(KEY_1))
 		CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP);
 	else if (CP_Input_KeyTriggered(KEY_2))
 		CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
 	else if (CP_Input_KeyTriggered(KEY_3))
 		CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_REPEAT);
 	else if (CP_Input_KeyTriggered(KEY_4))
-	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_MIRROR);*/
+	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_MIRROR);
 }
 
 void game_exit(void)

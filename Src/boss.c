@@ -30,6 +30,8 @@ CP_Image boss_def = NULL;
 CP_Image boss_atk1 = NULL;
 CP_Image boss_atk2 = NULL;
 CP_Image boss_atk3 = NULL;
+CP_Image boss_atk4 = NULL;
+//CP_Image boss_atk5 = NULL;
 
 
 Boss init_boss(void) {
@@ -58,11 +60,13 @@ Boss init_boss(void) {
 void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Boss* boss = &(entities[boss_idx].boss);
 	Player* player = &(entities[player_idx].boss);
-	boss_def = CP_Image_Load("./Assets/Tiles/Boss/BossRest.png");
+	boss_def = CP_Image_Load("./Assets/Tiles/Boss/Boss_Base.png");
 	boss_atk1 = CP_Image_Load("./Assets/Tiles/Boss/BossAtk1.png");
 	boss_atk2 = CP_Image_Load("./Assets/Tiles/Boss/BossAtk2.png");
 	boss_atk3 = CP_Image_Load("./Assets/Tiles/Boss/BossAtk3.png");
-	CP_Image Boss_Image[] = { boss_def,boss_atk1 ,boss_atk2 ,boss_atk3,boss_def };
+	boss_atk4 = CP_Image_Load("./Assets/Tiles/Boss/BossAtk4.png");
+	//boss_atk5 = CP_Image_Load("./Assets/Tiles/Boss/BossAtk5.png");
+	CP_Image Boss_Image[] = { boss_def,boss_atk1 ,boss_atk2 ,boss_atk3,boss_atk4,boss_def };
 
 	if (boss->health) {
 		for (int i = 1, stroke_weight = 3, radius_size = BOSS_PARRY_RAD, parry_color = 255, parry_weight = boss->Parry_BaseWeight; i < (BOSS_RAD_GRADIENT + 1); ++i) {	//Creates the Barrier Effect
@@ -78,7 +82,7 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 		CP_Settings_StrokeWeight(0.0f);
 		CP_Settings_Fill(CP_Color_Create(255 / (11 - boss->health), 255, 255, 255));
 		
-		CP_Image_Draw(Boss_Image[(int)animationcount%5], boss->pos.x, boss->pos.y, boss->diameter*2, boss->diameter*2, 255);
+		CP_Image_Draw(Boss_Image[(int)animationcount % 6], boss->pos.x, boss->pos.y, boss->diameter * 2, boss->diameter * 2, 255);
 		//CP_Graphics_DrawCircle(boss->pos.x, boss->pos.y, boss->diameter);
 
 
@@ -160,7 +164,7 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 
 	
 	
-	animationcount+= CP_System_GetDt()*2;
+	animationcount+= CP_System_GetDt()*10;
 
 }
 void Destory_Wall(int wall_pos[GRID_ROWS][GRID_COLS], Position Boss_Pos, int boss_diameter, int parry_rad ,int parry_ammo, int wall_width, int wall_height) {
