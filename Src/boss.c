@@ -33,8 +33,7 @@ CP_Image boss_atk3 = NULL;
 CP_Image boss_atk4 = NULL;
 //CP_Image boss_atk5 = NULL;
 
-
-Boss init_boss(void) {
+entity_struct init_boss(void) {
 	Boss boss;
 	boss.health = BOSS_HEALTH;
 	boss.atk_cd = BOSS_ATK_CD;
@@ -51,11 +50,7 @@ Boss init_boss(void) {
 		Acceleration += i;
 	}
 	target_location = boss.pos;
-	return boss;
-
-	
-	
-	
+	return (entity_struct) { .boss = boss };
 }
 void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Boss* boss = &(entities[boss_idx].boss);
@@ -81,10 +76,11 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 		//Prints the Boss Object
 		CP_Settings_StrokeWeight(0.0f);
 		CP_Settings_Fill(CP_Color_Create(255 / (11 - boss->health), 255, 255, 255));
+
 		
 		CP_Image_Draw(Boss_Image[(int)animationcount % 6], boss->pos.x, boss->pos.y, boss->diameter * 2, boss->diameter * 2, 255);
-		//CP_Graphics_DrawCircle(boss->pos.x, boss->pos.y, boss->diameter);
 
+		
 
 		//Boss Deflect
 		if (!Parry_On_Cd) {
@@ -139,13 +135,9 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 				boss->pos = target_location;
 				//Draw the Boss atked Animation 
 				Destory_Wall(wall_pos, boss->pos, boss->diameter, boss->parryrad, boss->parry_ammo, WALL_DIM, WALL_DIM);
-				for (int i = 0; i < ENTITY_CAP; ++i) {
-					if (entities[i].type == entity_null) {
-						Projectile proj = init_projectile('e', 's', boss->parryrad, boss->pos, CP_Vector_Set(0, 0));
-						entities[i].type = entity_projectile;
-						entities[i].projectile = proj;
-						break;
-					}
+				int p_idx = insert_to_entity_array(entity_projectile, entities, init_projectile);
+				if (p_idx > -1) {
+					set_projectile_values(&(entities[p_idx].projectile), 'e', 's', boss->parryrad, boss->pos, CP_Vector_Set(0, 0));
 				}
 				To_Atk = 0;
 				Acceleration_Count = 1;
@@ -162,9 +154,8 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 	}
 
 
-	
-	
 	animationcount+= CP_System_GetDt()*10;
+
 
 }
 void Destory_Wall(int wall_pos[GRID_ROWS][GRID_COLS], Position Boss_Pos, int boss_diameter, int parry_rad ,int parry_ammo, int wall_width, int wall_height) {

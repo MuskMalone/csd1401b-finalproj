@@ -1,11 +1,12 @@
 #pragma once
 #include "utils.h"
-#define WALL_DIM 50.0f
+#define WALL_DIM 3.0f * ((float)CP_System_GetDisplayHeight()/100.0f)
 #define ENTITY_CAP 100
 #define PLAYER_IDX 0
 #define GRID_ROWS 25
 #define GRID_COLS 30
 // for player
+
 typedef enum player_state { resting, moving, dashing, dead } player_state;
 typedef struct Player
 {
@@ -28,7 +29,10 @@ typedef struct Mob {
 	float diameter;
 	float radius_damage;
 	float health;
+	int bullet_count;
+	//float degree;
 	BOOL is_exploding;
+	BOOL is_melee;
 } Mob;
 // for projectiles
 typedef struct Projectile {
@@ -55,6 +59,12 @@ typedef struct Boss {
 	float Parry_BaseWeight;
 }Boss;
 // overarching entity struct
+typedef union entity_struct {
+	Player player;
+	Mob mob;
+	Boss boss;
+	Projectile projectile;
+} entity_struct;
 typedef enum entity_type {
 	entity_null,
 	entity_player,
@@ -65,10 +75,7 @@ typedef enum entity_type {
 typedef struct Entity
 {
 	entity_type type;
-	union {
-		Player player;
-		Mob mob;
-		Boss boss;
-		Projectile projectile;
-	};
+	entity_struct;
 } Entity;
+
+int insert_to_entity_array(entity_type type, Entity entities[], entity_struct(*init_func)());
