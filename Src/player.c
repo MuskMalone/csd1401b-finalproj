@@ -14,15 +14,13 @@ static float radius_reduction = 4.8f;
 static float dashed_duration = .0f;
 static int is_cooldown = 0;
 static float cooldown = .0f;
-CP_Image PlayerIdle = NULL;
-CP_Image PlayerWalk1 = NULL;
-CP_Image PlayerWalk2 = NULL;
-void init_cooldown(void) {
+
+static void init_cooldown(void) {
 	stamina = 0.0f;
 	cooldown = COOLDOWN_DURATION;
 	is_cooldown = 1;
 }
-int check_collision(Position p, float diameter, int wall_pos[GRID_ROWS][GRID_COLS]) {
+static int check_collision(Position p, float diameter, int wall_pos[GRID_ROWS][GRID_COLS]) {
 	for (int i = 0; i < GRID_ROWS; ++i) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (wall_pos[i][j]) {
@@ -33,7 +31,7 @@ int check_collision(Position p, float diameter, int wall_pos[GRID_ROWS][GRID_COL
 	}
 	return 0;
 }
-void player_deflect_projectile(Player *p, Entity entities[]) {
+static void player_deflect_projectile(Player *p, Entity entities[]) {
 	for (int i = 0; i < ENTITY_CAP; ++i) {
 		if (entities[i].type == entity_projectile) {
 			Projectile* projectile = &(entities[i].projectile);
@@ -44,7 +42,7 @@ void player_deflect_projectile(Player *p, Entity entities[]) {
 		}
 	}
 }
-void set_state(Player* p, player_state state) {
+static void set_state(Player* p, player_state state) {
 	// only allow state from dashing to resting;
 	if (p->state == dashing) {
 		if (state == resting) p->state = state;
@@ -72,9 +70,7 @@ entity_struct init_player(void) {
 }
 void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Player* player = &(entities[player_idx].player);
-	PlayerIdle = CP_Image_Load("./Assets/Tiles/Player/player_idle1.png");
-	PlayerWalk1 = CP_Image_Load("./Assets/Tiles/Player/player_walking1.png");
-	PlayerWalk2 = CP_Image_Load("./Assets/Tiles/Player/player_walking2.png");
+
 	// if player is dead, stop doing anything;aa
 	if (player->health <= 0) {
 		set_state(player, dead);
@@ -240,4 +236,8 @@ int damage_player(Player *p) {
 		return 1;
 	}
 	return 0;
+}
+
+void set_player_position(Player* player, Position pos) {
+	player->pos = pos;
 }
