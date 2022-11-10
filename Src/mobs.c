@@ -2,7 +2,9 @@
 //what each mob had run
 //when each mob is running on the screen, each codes runs
 BOOL mob_isNear = 0;
-
+CP_Image Mob1Idle1 = NULL;
+CP_Image Mob1Idle2 = NULL;
+float animationcount = 0;
 void expansion_mob_size(Entity entities[], int mob_idx)
 {
 	float currentElapsedTime = CP_System_GetDt();
@@ -26,7 +28,10 @@ void expansion_mob_size(Entity entities[], int mob_idx)
 void mob_explosion(int player_idx, Entity entities[], int mob_idx)
 {
 	
-	
+	Mob1Idle1 = CP_Image_Load("./Assets/Tiles/Slime_Idle1.png");
+	Mob1Idle2 = CP_Image_Load("./Assets/Tiles/Slime_Idle2.png");
+
+	CP_Image SlimeAnimation[] = { Mob1Idle1,Mob1Idle2 };
 	Player* player = &(entities[player_idx].player);
 	Mob* mob = &(entities[mob_idx].mob);
 
@@ -40,8 +45,8 @@ void mob_explosion(int player_idx, Entity entities[], int mob_idx)
 	CP_Settings_Fill(CP_Color_Create(51, 255, 173, 255));
 	CP_Vector direction = getVectorBetweenPositions(&(mob->pos), &(player->pos));
 	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
-	CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob_dia);
-
+	//CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob_dia);
+	CP_Image_Draw(SlimeAnimation[(int)animationcount % 2], mob->pos.x, mob->pos.y, mob->diameter, mob->diameter, 255);
 	//mob_isNear = collisionCircle(mob->pos, mob_dia * 2.0f, player->pos, player_dia * 2.0f) ? 1 : 0;
 
 	//mob_isNear = 0;
@@ -87,5 +92,7 @@ entity_struct init_mob() {
 void update_mob(int mob_idx, int player_idx, Entity entities[]) 
 {
 	mob_explosion(player_idx, entities, mob_idx);
+	animationcount += CP_System_GetDt() * 2;
+
 }
 

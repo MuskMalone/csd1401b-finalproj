@@ -14,7 +14,9 @@ static float radius_reduction = 4.8f;
 static float dashed_duration = .0f;
 static int is_cooldown = 0;
 static float cooldown = .0f;
-
+CP_Image PlayerIdle = NULL;
+CP_Image PlayerWalk1 = NULL;
+CP_Image PlayerWalk2 = NULL;
 void init_cooldown(void) {
 	stamina = 0.0f;
 	cooldown = COOLDOWN_DURATION;
@@ -70,7 +72,9 @@ entity_struct init_player(void) {
 }
 void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Player* player = &(entities[player_idx].player);
-
+	PlayerIdle = CP_Image_Load("./Assets/Tiles/Player/player_idle1.png");
+	PlayerWalk1 = CP_Image_Load("./Assets/Tiles/Player/player_walking1.png");
+	PlayerWalk2 = CP_Image_Load("./Assets/Tiles/Player/player_walking2.png");
 	// if player is dead, stop doing anything;aa
 	if (player->health <= 0) {
 		set_state(player, dead);
