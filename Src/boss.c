@@ -67,7 +67,9 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 	CP_Image Boss_Image[] = { boss_def,boss_atk1 ,boss_atk2 ,boss_atk3,boss_atk4,boss_def };
 
 	if (boss->health) {
-		CP_Image_Draw(Boss_Barrier_Img, boss->pos.x, boss->pos.y, boss->parryrad * 2, boss->parryrad * 2, boss->Parry_BaseWeight);
+		CP_Graphics_DrawCircle(boss->pos.x, boss->pos.y, boss->parryrad * 2);
+		//CP_Image_Draw(Boss_Barrier_Img, boss->pos.x, boss->pos.y, boss->parryrad * 2, boss->parryrad * 2, boss->Parry_BaseWeight);
+		
 		//Prints the Boss Object
 		CP_Settings_StrokeWeight(0.0f);
 		CP_Settings_Fill(CP_Color_Create(255 / (11 - boss->health), 255, 255, 255));
@@ -109,7 +111,7 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 		Atk_Time_Tracker += CP_System_GetDt();
 		//Boss movement
 		if (Atk_Time_Tracker > boss->atk_cd) {
-			//To_Atk = 1;
+			To_Atk = 1;
 			Atk_Time_Tracker = 0;
 			D_vector = CP_Vector_Normalize(CP_Vector_Set(player->pos.x - boss->pos.x, player->pos.y - boss->pos.y));
 			CP_Vector offset_Vector = CP_Vector_Negate(CP_Vector_Scale(D_vector, (boss->parryrad - (boss->diameter)) / CP_Vector_Length(D_vector)));

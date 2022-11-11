@@ -44,7 +44,7 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 
 			for (int i = 0; i < GRID_ROWS; ++i) {
 				for (int j = 0; j < GRID_COLS; ++j) {
-					if (wall_pos[i][j]) {
+					if (wall_pos[i][j]==1) {
 						if(!to_Rebound)
 						if (Wall_Edge_Check(proj, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) {
 							to_Rebound = 1;
