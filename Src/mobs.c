@@ -188,6 +188,6 @@ void update_mob(int mob_idx, int player_idx, Entity entities[], int wall_pos[GRI
 	//mob_explosion(player_idx, entities, mob_idx, wall_pos);
 	//mob_ranged(player_idx, entities, mob_idx);
 	mob_melee(player_idx, entities, mob_idx, wall_pos);
-	mob_explosion(player_idx, entities, mob_idx);
+	mob_explosion(player_idx, entities, mob_idx, wall_pos);
 }
 

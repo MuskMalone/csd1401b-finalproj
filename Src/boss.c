@@ -27,6 +27,7 @@ static float Parry_CD_Timer = 0;
 static float animationcount = 0;
 
 CP_Image boss_def = NULL;
+CP_Image Boss_Barrier_Img = NULL;
 CP_Image boss_atk1 = NULL;
 CP_Image boss_atk2 = NULL;
 CP_Image boss_atk3 = NULL;
@@ -34,6 +35,7 @@ CP_Image boss_atk4 = NULL;
 //CP_Image boss_atk5 = NULL;
 
 entity_struct init_boss(void) {
+
 	Boss boss;
 	boss.health = BOSS_HEALTH;
 	boss.atk_cd = BOSS_ATK_CD;
@@ -50,6 +52,7 @@ entity_struct init_boss(void) {
 		Acceleration += i;
 	}
 	target_location = boss.pos;
+	Boss_Barrier_Img = CP_Image_Load("./Assets/Tiles/Boss/Boss_Barrier.png");
 	return (entity_struct) { .boss = boss };
 }
 void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
@@ -64,15 +67,7 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 	CP_Image Boss_Image[] = { boss_def,boss_atk1 ,boss_atk2 ,boss_atk3,boss_atk4,boss_def };
 
 	if (boss->health) {
-		for (int i = 1, stroke_weight = 3, radius_size = BOSS_PARRY_RAD, parry_color = 255, parry_weight = boss->Parry_BaseWeight; i < (BOSS_RAD_GRADIENT + 1); ++i) {	//Creates the Barrier Effect
-			CP_Settings_StrokeWeight(stroke_weight);
-			CP_Settings_Stroke(CP_Color_Create(parry_color, 50, 0, parry_weight));
-			CP_Settings_Fill(CP_Color_Create(0, 0, 0, 0));
-			CP_Graphics_DrawCircle(boss->pos.x, boss->pos.y, radius_size * 2);
-			radius_size -= (BOSS_PARRY_RAD / BOSS_RAD_GRADIENT) - stroke_weight * 2;
-			parry_color -= (255 / BOSS_RAD_GRADIENT);
-			parry_weight -= (boss->Parry_BaseWeight / BOSS_RAD_GRADIENT);
-		}
+		CP_Image_Draw(Boss_Barrier_Img, boss->pos.x, boss->pos.y, boss->parryrad * 2, boss->parryrad * 2, boss->Parry_BaseWeight);
 		//Prints the Boss Object
 		CP_Settings_StrokeWeight(0.0f);
 		CP_Settings_Fill(CP_Color_Create(255 / (11 - boss->health), 255, 255, 255));

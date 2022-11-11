@@ -1,6 +1,6 @@
 #pragma once
 #include "utils.h"
-#define WALL_DIM 3.0f * ((float)CP_System_GetDisplayHeight()/100.0f)
+#define WALL_DIM 3.5f * ((float)CP_System_GetDisplayHeight()/100.0f)
 #define ENTITY_CAP 100
 #define PLAYER_IDX 0
 #define GRID_ROWS 25

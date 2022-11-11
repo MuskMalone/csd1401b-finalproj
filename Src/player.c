@@ -14,6 +14,7 @@ static float radius_reduction = 4.8f;
 static float dashed_duration = .0f;
 static int is_cooldown = 0;
 static float cooldown = .0f;
+CP_Image Player_Barrier_Img = NULL;
 
 static void init_cooldown(void) {
 	stamina = 0.0f;
@@ -51,6 +52,8 @@ static void set_state(Player* p, player_state state) {
 	p->state = state;
 }
 entity_struct init_player(void) {
+
+	Player_Barrier_Img = CP_Image_Load("./Assets/Tiles/Player/Player_Barrier4.png");
 	Player player;
 	float Window_Width = CP_System_GetWindowWidth();
 	float Window_Height = CP_System_GetWindowHeight();
@@ -191,6 +194,7 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 	char buffer[500] = { 0 };
 	sprintf_s(buffer, _countof(buffer), "player state: %d, cooldown: %f, health: %d", player->state, cooldown, player->health);
 	CP_Font_DrawText(buffer, 30, 30);
+	/*
 	for (int i = 0, sw = 2, radius_size = (int) radius_reduction, parry_color = 255, parry_weight = (int) stamina; i < 8; ++i) {	//Creates the Barrier Effect
 		if (i == 8 - 1) {	//Sets the white color ring
 			radius_size = radius_reduction;
@@ -208,8 +212,10 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 		CP_Settings_Fill(CP_Color_Create(218, 240, 255, 0));
 		CP_Graphics_DrawCircle(player->pos.x, player->pos.y, (player->parryrad * 2.0f) - (float)radius_size);
 	}
+	*/
 	//Increases the barrier's opacity over time ( Uncomment this if you want to change the opacity of the barrier when user click space)
 
+	CP_Image_Draw(Player_Barrier_Img, player->pos.x, player->pos.y, player->parryrad*2, player->parryrad * 2, stamina);
 	if (is_cooldown) {
 		if (cooldown >= .0f)
 			cooldown -= CP_System_GetDt();

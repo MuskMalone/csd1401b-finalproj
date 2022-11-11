@@ -136,6 +136,7 @@ static void draw_room_wall(void) {
 			if (tilemap[i][j] > 1)
 				CP_Image_Draw(Flat_Floor, (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
 			else {
+				CP_Graphics_DrawRect((j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM);
 				CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
 			}
 		}
@@ -143,7 +144,8 @@ static void draw_room_wall(void) {
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (tilemap[i][j] > 1) {
-				CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM * 1.2, WALL_DIM * 1.2, 255);
+				//CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM * 1.2, WALL_DIM * 1.2, 255);
+				CP_Graphics_DrawRect((j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM);
 			}
 		}
 	}
@@ -179,7 +181,7 @@ void game_update(void)
 {
 
 	CP_Graphics_ClearBackground(CP_Color_Create(150, 150, 150, 255));
-
+	
 	// draws the tiles
 	//Floor = CP_Image_Load("./Assets/Tiles/tile_0000.png");
 
@@ -202,9 +204,9 @@ void game_update(void)
 	}
 	else {
 		if (state == loading) {
-			map_idx = rand() % 5; //set map idx to a random range between 0 to 4
+			map_idx = 1;//rand() % 5; //set map idx to a random range between 0 to 4
 			generate_current_map();
-			
+			CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
 			//draws the tiles
 			CP_Graphics_ClearBackground(CP_Color_Create(255, 255, 255, 255));
 			for (int i = 0; i < GRID_ROWS; i++) {
@@ -229,7 +231,7 @@ void game_update(void)
 				if (entities[i].type == entity_null) continue;
 				switch (entities[i].type) {
 				case entity_player: update_player(PLAYER_IDX, entities, room_wall_pos); break;
-				case entity_mob: update_mob(i, PLAYER_IDX, entities); break;
+				case entity_mob: update_mob(i, PLAYER_IDX, entities, room_wall_pos); break;
 				case entity_boss: update_boss(BOSS_IDX, PLAYER_IDX, entities, room_wall_pos); break;
 				case entity_projectile: update_projectile(i, entities, room_wall_pos); break;
 				}
@@ -260,15 +262,16 @@ void game_update(void)
 			}
 		}
 	}
-
+	/*
 	if (CP_Input_KeyTriggered(KEY_1))
 		CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP);
 	else if (CP_Input_KeyTriggered(KEY_2))
-		CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
+		
 	else if (CP_Input_KeyTriggered(KEY_3))
 		CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_REPEAT);
 	else if (CP_Input_KeyTriggered(KEY_4))
-	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_MIRROR);
+		CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_MIRROR);
+		*/
 }
 
 void game_exit(void)
