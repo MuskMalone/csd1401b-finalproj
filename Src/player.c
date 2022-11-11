@@ -3,17 +3,46 @@
 #include "player.h"
 #define COOLDOWN_DURATION 2.0f
 #define MAX_COOLDOWN 8.0f
-#define MAX_PARRYRADIUS 50.0f
+#define MAX_PARRYRADIUS WALL_DIM * 1.4f
 #define DASH_DURATION .15f
 #define STAMINA_COST 70.0f
+#define STAMINA_COST_HOLD 90.0f * CP_System_GetDt()
 #define NORMAL_SPEED 200
 #define DASH_SPEED NORMAL_SPEED*5
+#define HOLDING_PROJ_SPEED 50.0f
+#define ACCESS_ALL_ENTITIES for (int i = 0; i < ENTITY_CAP; ++i) 
 
 static float stamina = 255.0f;
 static float radius_reduction = 4.8f;
 static float dashed_duration = .0f;
 static int is_cooldown = 0;
 static float cooldown = .0f;
+static int melee_deflect_triggered = 0;
+
+void release_held_projectiles(Player * player, Entity entities[]) {
+	set_state(player, resting);
+	melee_deflect_triggered = 0;
+	ACCESS_ALL_ENTITIES{
+		if (entities[i].type == entity_projectile) {
+			Projectile* proj = &(entities[i].projectile);
+			if (collisionCircle(player->pos, MAX_PARRYRADIUS, proj->pos, proj->radius)) {
+				int dir_x, dir_y;
+				if (player->horizontal_dir == 0 && player->vertical_dir == 0) {
+					//sets a random direction
+					dir_x = rand() % 1, dir_y = rand() % 2;
+					(dir_x) ? (dir_x = 1) : (dir_x = -1);
+					(dir_y) ? (dir_y = 1) : (dir_y = -1);
+				}
+				else {
+					dir_x = player->horizontal_dir;
+					dir_y = player->vertical_dir;
+				}
+				set_projectile_values(&(entities[i].projectile), PLAYER_PROJ_SOURCE1, 'm', 10, proj->pos, CP_Vector_Normalize(CP_Vector_Set((float)dir_x, (float)dir_y)));
+				proj->speed = 1000;
+			}
+		}
+	}
+}
 
 static void init_cooldown(void) {
 	stamina = 0.0f;
@@ -36,15 +65,19 @@ static void player_deflect_projectile(Player *p, Entity entities[]) {
 		if (entities[i].type == entity_projectile) {
 			Projectile* projectile = &(entities[i].projectile);
 			int collided = collisionCircle(p->pos, p->parryrad, projectile->pos, projectile->radius);
-			if (collided && projectile->source != (char) 'p') {
-				deflectprojectiles((char)'p', i, entities);
+			if (collided && projectile->source != (char) PLAYER_PROJ_SOURCE1) {
+				deflectprojectiles((char)PLAYER_PROJ_SOURCE1, i, entities);
 			}
 		}
 	}
 }
-static void set_state(Player* p, player_state state) {
+void set_state(Player* p, player_state state) {
 	// only allow state from dashing to resting;
 	if (p->state == dashing) {
+		if (state == resting) p->state = state;
+		return;
+	}
+	else if (p->state == holding) {
 		if (state == resting) p->state = state;
 		return;
 	}
@@ -60,7 +93,7 @@ entity_struct init_player(void) {
 	player.speed = NORMAL_SPEED;
 	player.horizontal_dir = 0, player.vertical_dir = 0;
 	player.state = resting;
-	player.diameter = 50.0f;
+	player.diameter = WALL_DIM;//50.0f;
 	p.x = (Window_Width / 2) - (player.diameter / 2);
 	p.y = (Window_Height / 2) - (player.diameter / 2);
 	player.pos = p;
@@ -79,25 +112,48 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 	//Reduces the barrier strength whenever the player clicks spacebar
 	// If you want to reduce the opacity of the barrier, uncomment the "basewieght" variable in the "if" statement bellow
 	// If you want to reduce the size of the barrier, uncomment the "radius_reduction" variable in the "if" statement bellow
-	if (CP_Input_KeyTriggered(KEY_K)) {
-		if (is_cooldown) {
-			if (cooldown <= MAX_COOLDOWN)
-				cooldown += .5f;
-		}
-		else {
-			if (stamina >= STAMINA_COST) {
-				player_deflect_projectile(player, entities);
-				stamina -= STAMINA_COST; // if stamina 
+	if (CP_Input_KeyDown(KEY_K)) {
+		if (!is_cooldown)
+			set_state(player, holding);
+		if (!melee_deflect_triggered) {
+			if (is_cooldown) {
+				if (cooldown <= MAX_COOLDOWN)
+					cooldown += .5f;
 			}
 			else {
-				init_cooldown();
+				if (stamina >= STAMINA_COST) {
+					player_deflect_projectile(player, entities);
+					stamina -= STAMINA_COST; // if stamina 
+				}
+				else {
+					init_cooldown();
+				}
 			}
+			melee_deflect_triggered = 1;
 		}
-		//radius_reduction += 2;
+		else {
+			if (is_cooldown && cooldown <= MAX_COOLDOWN) {
+				cooldown += 3.0 * CP_System_GetDt();
+			}
+			else {
+				if (stamina >= STAMINA_COST_HOLD) {
+					stamina -= STAMINA_COST_HOLD;
+				}
+				else {
+					release_held_projectiles(player, entities);
+					init_cooldown();
+				}
+			}
+
+		}
+	}
+
+	if (CP_Input_KeyReleased(KEY_K)) {
+		release_held_projectiles(player, entities);
 	}
 	if (CP_Input_KeyTriggered(KEY_L)) {
 		// make sure player is moving
-		if (player->horizontal_dir || player->vertical_dir) {
+		if ((player->horizontal_dir || player->vertical_dir) && player->state != holding) {
 
 			// if cooldown, penalize the player by adding cooldown
 			if (is_cooldown) {
@@ -145,26 +201,42 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 		player->vertical_dir = 0;
 	}
 
+	// if holding
+	if (player->state == holding) {
+		float line_dist_x = WALL_DIM * (float)player->horizontal_dir, line_dist_y = WALL_DIM * (float)player->vertical_dir;
+		float start_x = player->pos.x + ((float)player->horizontal_dir * (MAX_PARRYRADIUS / 2.0f)),
+			start_y = player->pos.y + ((float)player->vertical_dir * (MAX_PARRYRADIUS / 2.0f));
+		CP_Settings_Stroke(CP_Color_Create(255, 160, 20, 255));
+		CP_Settings_StrokeWeight(10.0f);
+		CP_Graphics_DrawLine(start_x, start_y, start_x + line_dist_x, start_y + line_dist_y);
+		ACCESS_ALL_ENTITIES {
+			if (entities[i].type == entity_projectile) {
+				Projectile* proj = &(entities[i].projectile);
+				if (collisionCircle(player->pos, MAX_PARRYRADIUS, proj->pos, proj->radius) && proj->source != PLAYER_PROJ_SOURCE1) {
+					proj->speed = 0; proj->source = PLAYER_PROJ_SOURCE2;
+					Position pos = (Position){ start_x, start_y };
+					CP_Vector dir = getVectorBetweenPositions(&(proj->pos), &pos);
+					moveEntity(&(proj->pos), dir.x * HOLDING_PROJ_SPEED, dir.y * HOLDING_PROJ_SPEED);
+				}
 
-	// if player is in dashing state
-	if (player->state == dashing) {
-		player->speed = DASH_SPEED;
-		dashed_duration += CP_System_GetDt();
- 		if (dashed_duration > DASH_DURATION) {
-			player->speed = NORMAL_SPEED;
-			set_state(player, resting);
-			dashed_duration = .0f;
+			}
 		}
 	}
 	else {
-		player->speed = NORMAL_SPEED;
-	}
-
-	if ((player->horizontal_dir == 0) && (player->vertical_dir == 0)) {
-		set_state(player, resting);
-	}
-	else {
-		// check for collision
+		// if dashing
+		if (player->state == dashing) {
+			player->speed = DASH_SPEED;
+			dashed_duration += CP_System_GetDt();
+			if (dashed_duration > DASH_DURATION) {
+				player->speed = NORMAL_SPEED;
+				set_state(player, resting);
+				dashed_duration = .0f;
+			}
+		}
+		// moving or resting state
+		else if (player->state == moving){
+			player->speed = NORMAL_SPEED;
+		}
 		int player_at_xborder, player_at_xwall, player_at_yborder, player_at_ywall;
 		float xspeed = (float)(player->horizontal_dir * player->speed),
 			yspeed = (float)(player->vertical_dir * player->speed);
@@ -189,7 +261,7 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 	CP_Settings_TextSize(20.0f);
 
 	char buffer[500] = { 0 };
-	sprintf_s(buffer, _countof(buffer), "player state: %d, cooldown: %f, health: %d", player->state, cooldown, player->health);
+	sprintf_s(buffer, _countof(buffer), "player state: %d, cooldown: %f, health: %d, stamina: %f", player->state, cooldown, player->health, stamina);
 	CP_Font_DrawText(buffer, 30, 30);
 	for (int i = 0, sw = 2, radius_size = (int) radius_reduction, parry_color = 255, parry_weight = (int) stamina; i < 8; ++i) {	//Creates the Barrier Effect
 		if (i == 8 - 1) {	//Sets the white color ring
@@ -220,7 +292,7 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 
 	}
 	else {
-		if (stamina < 255.0f) {
+		if (stamina < 255.0f && player->state != holding) {
 			stamina += 60.0f * CP_System_GetDt();
 		}
 	}

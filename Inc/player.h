@@ -10,3 +10,4 @@ entity_struct init_player(void);
 void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]);
 int damage_player(Player *p);
 int set_player_pos(Player *player, Position pos);
+void set_state(Player* p, player_state state);

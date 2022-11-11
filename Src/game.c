@@ -191,7 +191,7 @@ void game_update(void)
 		startposb.y = ((float)CP_System_GetWindowHeight() * 1 / 4);
 		int p_idx = insert_to_entity_array(entity_projectile, entities, init_projectile);
 		if (p_idx > -1) {
-			set_projectile_values(&(entities[p_idx].projectile), 'p', 'm', 10, startposb, getVectorBetweenPositions(&(startposb), &(Mousepos)));
+			set_projectile_values(&(entities[p_idx].projectile), 'a', 'm', 10, startposb, getVectorBetweenPositions(&(startposb), &(Mousepos)));
 		}
 	}
 	if (CP_Input_KeyTriggered(KEY_F)) {
@@ -203,7 +203,7 @@ void game_update(void)
 	}
 	else {
 		if (state == loading) {
-			map_idx = rand() % 5; //set map idx to a random range between 0 to 4
+			map_idx = 1;//rand() % 5; //set map idx to a random range between 0 to 4
 			generate_current_map();
 			
 			//draws the tiles
@@ -230,7 +230,7 @@ void game_update(void)
 				if (entities[i].type == entity_null) continue;
 				switch (entities[i].type) {
 				case entity_player: update_player(PLAYER_IDX, entities, room_wall_pos); break;
-				case entity_mob: update_mob(i, PLAYER_IDX, entities); break;
+				case entity_mob: update_mob(i, PLAYER_IDX, entities, room_wall_pos); break;
 				case entity_boss: update_boss(BOSS_IDX, PLAYER_IDX, entities, room_wall_pos); break;
 				case entity_projectile: update_projectile(i, entities, room_wall_pos); break;
 				}
@@ -239,7 +239,7 @@ void game_update(void)
 			if (state == room_active) {
 				for (int i = 0; i < ENTITY_CAP; ++i) {
 					// if the entities are not player or null
-					if (entities[i].type != entity_player && entities[i].type != entity_null)
+					if (entities[i].type != entity_player && entities[i].type != entity_null && entities[i].type != entity_projectile)
 						break;
 					if (i == ENTITY_CAP - 1)
 						state = room_clear;

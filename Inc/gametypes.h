@@ -5,9 +5,10 @@
 #define PLAYER_IDX 0
 #define GRID_ROWS 25
 #define GRID_COLS 30
+
 // for player
 
-typedef enum player_state { resting, moving, dashing, dead } player_state;
+typedef enum player_state { resting, moving, dashing, dead, holding } player_state;
 typedef struct Player
 {
 	player_state state;
