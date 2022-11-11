@@ -3,7 +3,7 @@ static float Lifespan_count = 0;
 
 entity_struct init_projectile(void) {
 	Projectile Proj;
-	Proj.speed = 500;
+	Proj.speed = 700;
 	return (entity_struct) {.projectile = Proj};
 }
 void set_projectile_values(Projectile* Proj, char Source, char type, int radius, Position Start_Pos, CP_Vector Direction_Vector) {
@@ -20,10 +20,10 @@ void set_projectile_values(Projectile* Proj, char Source, char type, int radius,
 }
 void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Projectile* proj = &(entities[index].projectile);
-	int red_rgb = proj->source == 'p' ? 0 : 255;
-	int blue_rgb = proj->source == 'p' ? 255 : 0;
+	//int red_rgb = proj->source == 'p' ? 0 : 255;
+	//int blue_rgb = proj->source == 'p' ? 255 : 0;
 	int to_Rebound = 0;
-	CP_Settings_Fill(CP_Color_Create(red_rgb, blue_rgb, 0, 255));
+	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
 	
 	if (proj->type == 'm') {
 		if (proj->toRebound_NextFrame != 'n') {
@@ -127,7 +127,8 @@ int Entities_Collision_Check(Projectile* proj, int index, Entity entities[]){
 	int Proj_Collided = 0;
 	for (int i = 0; i < ENTITY_CAP; ++i) {
 		if (entities[i].type == entity_null) continue;
-		if (proj->source != 'p') {
+		// if
+		if (proj->source != PLAYER_PROJ_SOURCE1 && proj->source != PLAYER_PROJ_SOURCE2) {
 			if (entities[i].type == entity_player) {
 				if (collisionCircle(entities[i].player.pos, entities[i].player.diameter / 2, proj->pos, proj->radius)) {
 					damage_player(&(entities[i].player));

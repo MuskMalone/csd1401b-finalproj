@@ -192,7 +192,7 @@ void game_update(void)
 		startposb.y = ((float)CP_System_GetWindowHeight() * 1 / 4);
 		int p_idx = insert_to_entity_array(entity_projectile, entities, init_projectile);
 		if (p_idx > -1) {
-			set_projectile_values(&(entities[p_idx].projectile), 'p', 'm', 10, startposb, getVectorBetweenPositions(&(startposb), &(Mousepos)));
+			set_projectile_values(&(entities[p_idx].projectile), 'a', 'm', 10, startposb, getVectorBetweenPositions(&(startposb), &(Mousepos)));
 		}
 	}
 	if (CP_Input_KeyTriggered(KEY_F)) {
@@ -240,7 +240,7 @@ void game_update(void)
 			if (state == room_active) {
 				for (int i = 0; i < ENTITY_CAP; ++i) {
 					// if the entities are not player or null
-					if (entities[i].type != entity_player && entities[i].type != entity_null)
+					if (entities[i].type != entity_player && entities[i].type != entity_null && entities[i].type != entity_projectile)
 						break;
 					if (i == ENTITY_CAP - 1)
 						state = room_clear;

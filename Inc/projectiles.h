@@ -2,6 +2,8 @@
 #include "utils.h"
 #include "cprocessing.h"
 #include "gametypes.h"
+#define PLAYER_PROJ_SOURCE1 'p'
+#define PLAYER_PROJ_SOURCE2 'q'
 
 entity_struct init_projectile(void);
 void set_projectile_values(Projectile* Proj, char Source, char type, int radius, Position Start_Pos, CP_Vector Direction_Vector);
