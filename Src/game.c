@@ -11,22 +11,27 @@
 
 // @todo auto resize the array
 Entity entities[ENTITY_CAP];
-int map_pos[SIZE][GRID_ROWS][GRID_COLS];
-int door_pos[GRID_ROWS][GRID_COLS];
-int room_wall_pos[GRID_ROWS][GRID_COLS];
+static int map_pos[SIZE][GRID_ROWS][GRID_COLS];
+static int door_pos[GRID_ROWS][GRID_COLS];
+static int room_wall_pos[GRID_ROWS][GRID_COLS];
 static int count_new_room = 0;
 static int map_idx = 0;
 typedef enum room_state { room_pause, room_active, room_clear, loading } room_state;
 enum tile_type { FLOOR_TILE, WALL_TILE, MOB_TILE, BOSS_TILE };
 static room_state state = loading;
 
-int tilemap[GRID_ROWS][GRID_COLS];
+// map of the tiles that the game will draw
+static int tilemap[GRID_ROWS][GRID_COLS];
 CP_Image Flat_Floor = NULL;
 CP_Image Rock_Floor = NULL;
 CP_Image grave = NULL;
 CP_Image Anvil = NULL;
 CP_Image Barrel = NULL;
 CP_Image ImageList[10];
+
+static void draw_individual_wall(int tile_val) {
+
+}
 
 static void load_maps(void) {
 
@@ -130,49 +135,30 @@ static void draw_room_wall(void) {
 
 	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
 	CP_Graphics_ClearBackground(CP_Color_Create(255, 255, 255, 255));
-	CP_Settings_Fill((CP_Color_Create(255, 255, 255, 255)));
-	//CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
-	for (int i = 0; i < GRID_ROWS; i++) {
-		for (int j = 0; j < GRID_COLS; ++j) {
-			if (tilemap[i][j] > 1)
-				CP_Image_Draw(Flat_Floor, (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
-			else {
-				//CP_Graphics_DrawRect((j * WALL_DIM), (i * WALL_DIM), WALL_DIM, WALL_DIM);
-				CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
-			}
-		}
-	}
-	for (int i = 0; i < GRID_ROWS; i++) {
-		for (int j = 0; j < GRID_COLS; ++j) {
-			if (tilemap[i][j] > 1) {
-				//CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM * 1.2, WALL_DIM * 1.2, 255);
-				//CP_Graphics_DrawRect((j * WALL_DIM), (i * WALL_DIM), WALL_DIM, WALL_DIM);
-			}
-		}
-	}
-
-}
-
-static void draw_room_floor(void) {
-
 	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
-	CP_Graphics_ClearBackground(CP_Color_Create(255, 255, 255, 255));
-	CP_Settings_Fill((CP_Color_Create(255, 255, 255, 255)));
-	//CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
+	
+	//draws the floor tiles
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
-			if (tilemap[i][j] > 1)
-				CP_Image_Draw(Flat_Floor, (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
+			// if it is a wall, itll draw a floor tile beneath that spot
+			if (tilemap[i][j] > 1) {
+				if (room_wall_pos[i][j])
+					CP_Image_Draw(Flat_Floor, (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
+				else
+					tilemap[i][j] = room_wall_pos[i][j];
+
+			}
 			else {
-				//CP_Graphics_DrawRect((j * WALL_DIM), (i * WALL_DIM), WALL_DIM, WALL_DIM);
+				CP_Graphics_DrawRect((j * WALL_DIM), (i * WALL_DIM), WALL_DIM, WALL_DIM);
 				CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
 			}
 		}
 	}
+	//draw the walls
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (tilemap[i][j] > 1) {
-				//CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM * 1.2, WALL_DIM * 1.2, 255);
+				CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM * 1.2, WALL_DIM * 1.2, 255);
 				//CP_Graphics_DrawRect((j * WALL_DIM), (i * WALL_DIM), WALL_DIM, WALL_DIM);
 			}
 		}
@@ -254,7 +240,6 @@ void game_update(void)
 			state = room_active;
 		}
 		else {
-			draw_room_floor();	
 			draw_room_wall();
 			for (int i = 0; i < ENTITY_CAP; ++i) {
 				if (entities[i].type == entity_null) continue;
@@ -269,7 +254,7 @@ void game_update(void)
 			if (state == room_active) {
 				for (int i = 0; i < ENTITY_CAP; ++i) {
 					// if the entities are not player or null
-					if (entities[i].type != entity_player && entities[i].type != entity_null && entities[i].type != entity_projectile)
+					if (entities[i].type != entity_player && entities[i].type != entity_null)
 						break;
 					if (i == ENTITY_CAP - 1)
 						state = room_clear;

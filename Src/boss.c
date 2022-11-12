@@ -1,6 +1,7 @@
 #include "boss.h"
 #include "projectiles.h"
 #include "utils.h"
+#include <stdlib.h>
 
 
 #define  BOSS_HEALTH 10
@@ -108,14 +109,22 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 	Boss* boss = &(entities[boss_idx].boss);
 	Player* player = &(entities[player_idx].boss);
 	if (boss->health) {
-		//CP_Graphics_DrawCircle(boss->pos.x, boss->pos.y, boss->diameter);
+
+		CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
+		CP_Settings_TextSize(20.0f);
+
+		char buffer[500] = { 0 };
+		sprintf_s(buffer, _countof(buffer), "health: %d", boss->health);
+		CP_Font_DrawText(buffer, 30, 50);
 		draw_boss(boss);
+
+		
 
 		//Boss Deflect
 		if (!Parry_On_Cd) {
 			for (int i = 0; i < ENTITY_CAP; ++i) {
 				if (entities[i].type != entity_null && entities[i].type == entity_projectile) {
-					if (collisionCircle(boss->pos, boss->parryrad, entities[i].projectile.pos, entities[i].projectile.radius) && entities[i].projectile.source == 'p') {
+					if (collisionCircle(boss->pos, boss->parryrad, entities[i].projectile.pos, entities[i].projectile.radius) && entities[i].projectile.source == 'p' && entities[i].projectile.type == PROJ_TYPE_MOBILE) {
 						if (boss->parry_ammo > 0) {
 							deflectprojectiles('e', i, entities);
 							boss->parry_ammo--;

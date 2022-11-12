@@ -1,5 +1,5 @@
 #include "projectiles.h"
-static float Lifespan_count = 0;
+static float Lifespan_count = 0.0f;
 
 entity_struct init_projectile(void) {
 	Projectile Proj;
@@ -15,20 +15,24 @@ void set_projectile_values(Projectile* Proj, char Source, char type, int radius,
 	
 	Proj->source = Source;	  // The owner of the projectile. Prevents the projectile from attacking its owner
 	Proj->Future_Pos = Proj->pos;
-	Proj->toRebound_NextFrame = 'n';
-	Proj->LifeSpan = 0.01;
+	Proj->toRebound_NextFrame = PROJ_NOT_REBOUNDING;
+	if (type == PROJ_TYPE_STATIC)
+		Proj->LifeSpan = PROJ_MELEE_LIFESPAN;
+	else if (type == PROJ_TYPE_MOBILE)
+		Proj->rebound_count = 0;
 }
 void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Projectile* proj = &(entities[index].projectile);
 	//int red_rgb = proj->source == 'p' ? 0 : 255;
 	//int blue_rgb = proj->source == 'p' ? 255 : 0;
 	int to_Rebound = 0;
-	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
 	
-	if (proj->type == 'm') {
-		if (proj->toRebound_NextFrame != 'n') {
+	if (proj->type == PROJ_TYPE_MOBILE) {
+		if (proj->toRebound_NextFrame != PROJ_NOT_REBOUNDING) {
 			proj->pos = proj->Future_Pos;
 			deflectprojectiles(proj->toRebound_NextFrame, index, entities);
+			if (proj->rebound_count++ >= MAX_REBOUND_COUNT)
+				entities[index].type = entity_null;
 		}
 		else {
 			moveEntity(&(proj->pos), proj->Direction.x * proj->speed, proj->Direction.y * proj->speed);
@@ -38,7 +42,7 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 			Position Right_Edge_Wall = (Position){ CP_System_GetWindowWidth() , 0 };
 			Position Top_Edge_Wall = (Position){ 0,-WALL_DIM };
 			Position Bottom_Edge_Wall = (Position){ 0 , CP_System_GetWindowHeight() };
-			proj->toRebound_NextFrame = 'n';
+			proj->toRebound_NextFrame = PROJ_NOT_REBOUNDING;
 		
 
 
@@ -62,35 +66,38 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 					}
 				}
 			}	
-		CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius * 2);
 		}
 	}
 	else {
-		//Draw the static proj explosion animation here
-		Entities_Collision_Check(proj, index, entities);
-		Lifespan_count += CP_System_GetDt();
-		if (Lifespan_count >= proj->LifeSpan) {	
+		proj->LifeSpan -= CP_System_GetDt();
+		if (0.0f >= proj->LifeSpan) {	
+			//only checks for the collision at the end of the lifespan
+			Entities_Collision_Check(proj, index, entities);
 			entities[index].type = entity_null;
 		}
-
-		
 	}
+	draw_projectile(proj);
 }
 
 void deflectprojectiles(char source,int index, Entity entities[]) {
 	Projectile* proj = &(entities[index].projectile);
 
-	if (proj->type == 'm') {
-		if (source == 'x') {
+	if (proj->type == PROJ_TYPE_MOBILE) {
+		if (source == PROJ_VERTICAL_WALL) {
 			proj->Direction.x *= -1;
 		}
-		else if (source == 'y') {
+		else if (source == PROJ_HORIZONTAL_WALL) {
 			proj->Direction.y *= -1;
 		}
 		else {			
 			proj->Direction = CP_Vector_Negate(proj->Direction);
 			proj->source = source;
 		}
+	}
+	if (proj->type == PROJ_TYPE_STATIC) {
+		proj->source = source;
+		proj->LifeSpan = PROJ_MELEE_LIFESPAN;
+		proj->radius *= 2.0f;
 	}
 }
 
@@ -113,12 +120,12 @@ int Wall_Edge_Check(Projectile* proj, Position rect, float width, float height) 
 		float x_diff = (abs((proj->Future_Pos.x+ proj->radius) - rect.x) < abs((proj->Future_Pos.x- proj->radius) - (rect.x + width))) ? ((proj->Future_Pos.x+proj->radius) - rect.x) : ((proj->Future_Pos.x-proj->radius) - (rect.x + width));
 
 		if (abs(y_diff) < abs(x_diff)) {
-			proj->toRebound_NextFrame = 'y';
+			proj->toRebound_NextFrame = PROJ_HORIZONTAL_WALL;
 			int direction = (abs((proj->Future_Pos.y + proj->radius) - rect.y) < abs((proj->Future_Pos.y - proj->radius) - (rect.y + height))) ? -1 : 1;
 			proj->Future_Pos.y = Rect_Center.y + direction * ((height / 2) + proj->radius);
 		}
 		else {
-			proj->toRebound_NextFrame = 'x';
+			proj->toRebound_NextFrame = PROJ_VERTICAL_WALL;
 			int direction = (abs((proj->Future_Pos.x + proj->radius) - rect.x) < abs((proj->Future_Pos.x - proj->radius) - (rect.x + width))) ? -1 : 1;
 			proj->Future_Pos.x = Rect_Center.x + direction * ((width / 2) + proj->radius);
 		}
@@ -143,10 +150,18 @@ int Entities_Collision_Check(Projectile* proj, int index, Entity entities[]){
 			}
 
 		}
-		else {
+		else if (proj->source == PLAYER_PROJ_SOURCE1) {
 			if (entities[i].type == entity_boss) {
 				if (collisionCircle(entities[i].boss.pos, entities[i].boss.diameter / 2, proj->pos, proj->radius)) {
 					damage_boss(&(entities[i].boss));
+					entities[index].type = entity_null;
+					Proj_Collided = 1;
+					break;
+				}
+			}
+			if (entities[i].type == entity_mob) {
+				if (collisionCircle(entities[i].mob.pos, entities[i].mob.diameter / 2, proj->pos, proj->radius)) {
+					damage_mob(&(entities[i].mob));
 					entities[index].type = entity_null;
 					Proj_Collided = 1;
 					break;
@@ -160,5 +175,17 @@ int Entities_Collision_Check(Projectile* proj, int index, Entity entities[]){
 	}
 	return Proj_Collided;
 }
+void draw_projectile(Projectile* proj) {
+	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
 
+	if (proj->type == PROJ_TYPE_MOBILE) {
+		CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius * 2);
+	}
+	else {
+		//Draw the static proj explosion animation here
+		CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius * 2);
+		if (0.0f >= proj->LifeSpan) {
+		}
+	}
+}
 

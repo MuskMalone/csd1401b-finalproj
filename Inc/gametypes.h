@@ -21,19 +21,19 @@ typedef struct Player
 } Player;
 
 // for mobs
-typedef enum attack_type { range, melee } attack_type;
-typedef enum mob_id { mob1 } mob_id;
+typedef enum attack_type { range, melee, explode } attack_type;
+typedef enum melee_attack_state { mob_resting, mob_moving, mob_attacking, mob_attacked } melee_attack_state;
 typedef struct Mob {
-	mob_id id;
 	attack_type type;
 	Position pos;
 	float diameter;
-	float radius_damage;
-	float health;
-	int bullet_count;
-	//float degree;
-	BOOL is_exploding;
-	BOOL is_melee;
+	float timer;
+	int health;
+	union {
+		BOOL is_exploding;
+		melee_attack_state melee_state;
+	};
+
 } Mob;
 // for projectiles
 typedef struct Projectile {
@@ -45,7 +45,11 @@ typedef struct Projectile {
 	char source;
 	char type;
 	char toRebound_NextFrame;
-	float LifeSpan;
+	union {
+		float LifeSpan;
+		int rebound_count;
+	};
+	
 } Projectile;
 // for boss
 typedef struct Boss {
