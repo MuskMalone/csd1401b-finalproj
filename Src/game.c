@@ -29,10 +29,6 @@ CP_Image Anvil = NULL;
 CP_Image Barrel = NULL;
 CP_Image ImageList[10];
 
-static void draw_individual_wall(int tile_val) {
-
-}
-
 static void load_maps(void) {
 
 	int ch, idx;
@@ -166,6 +162,10 @@ static void draw_room_wall(void) {
 
 }
 
+static void draw_room_floor(void) {
+
+}
+
 void game_init(void)
 {
 	//initialized the player as idx 0
@@ -240,6 +240,7 @@ void game_update(void)
 			state = room_active;
 		}
 		else {
+			draw_room_floor();
 			draw_room_wall();
 			for (int i = 0; i < ENTITY_CAP; ++i) {
 				if (entities[i].type == entity_null) continue;
