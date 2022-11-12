@@ -25,7 +25,7 @@ void release_held_projectiles(Player * player, Entity entities[]) {
 	ACCESS_ALL_ENTITIES{
 		if (entities[i].type == entity_projectile) {
 			Projectile* proj = &(entities[i].projectile);
-			if (collisionCircle(player->pos, MAX_PARRYRADIUS, proj->pos, proj->radius)) {
+			if (collisionCircle(player->pos, MAX_PARRYRADIUS, proj->pos, proj->radius) && proj->source != PLAYER_PROJ_SOURCE1 && proj->type != PROJ_TYPE_STATIC) {
 				int dir_x, dir_y;
 				if (player->horizontal_dir == 0 && player->vertical_dir == 0) {
 					//sets a random direction
@@ -50,14 +50,11 @@ static void init_cooldown(void) {
 	is_cooldown = 1;
 }
 static int check_collision(Position p, float diameter, int wall_pos[GRID_ROWS][GRID_COLS]) {
-	CP_Graphics_ClearBackground(CP_Color_Create(255, 0, 0, 255));
 	for (int i = 0; i < GRID_ROWS; ++i) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (wall_pos[i][j]) {
 				int collided = collisionCircleRect(p, diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM);
-				
 				if (collided) {
-					CP_Graphics_DrawRect((j* WALL_DIM), (i* WALL_DIM), WALL_DIM, WALL_DIM);
 					return collided;
 				}
 			}
@@ -66,11 +63,11 @@ static int check_collision(Position p, float diameter, int wall_pos[GRID_ROWS][G
 	return 0;
 }
 static void player_deflect_projectile(Player *p, Entity entities[]) {
-	for (int i = 0; i < ENTITY_CAP; ++i) {
+	ACCESS_ALL_ENTITIES {
 		if (entities[i].type == entity_projectile) {
 			Projectile* projectile = &(entities[i].projectile);
 			int collided = collisionCircle(p->pos, p->parryrad, projectile->pos, projectile->radius);
-			if (collided && projectile->source != (char) PLAYER_PROJ_SOURCE1) {
+			if (collided && projectile->source != (char) PLAYER_PROJ_SOURCE1 && projectile->type == PROJ_TYPE_STATIC) {
 				deflectprojectiles((char)PLAYER_PROJ_SOURCE1, i, entities);
 			}
 		}
@@ -217,7 +214,7 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 		ACCESS_ALL_ENTITIES {
 			if (entities[i].type == entity_projectile) {
 				Projectile* proj = &(entities[i].projectile);
-				if (collisionCircle(player->pos, MAX_PARRYRADIUS, proj->pos, proj->radius) && proj->source != PLAYER_PROJ_SOURCE1) {
+				if (collisionCircle(player->pos, MAX_PARRYRADIUS, proj->pos, proj->radius) && proj->source != PLAYER_PROJ_SOURCE1 && proj->type != PROJ_TYPE_STATIC) {
 					proj->speed = 0; proj->source = PLAYER_PROJ_SOURCE2;
 					Position pos = (Position){ start_x, start_y };
 					CP_Vector dir = getVectorBetweenPositions(&(proj->pos), &pos);

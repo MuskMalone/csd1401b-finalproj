@@ -1,6 +1,7 @@
 #include "boss.h"
 #include "projectiles.h"
 #include "utils.h"
+#include <stdlib.h>
 
 
 #define  BOSS_HEALTH 10
@@ -67,6 +68,12 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 	CP_Image Boss_Image[] = { boss_def,boss_atk1 ,boss_atk2 ,boss_atk3,boss_atk4,boss_def };
 
 	if (boss->health) {
+		CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
+		CP_Settings_TextSize(20.0f);
+
+		char buffer[500] = { 0 };
+		sprintf_s(buffer, _countof(buffer), "health: %d", boss->health);
+		CP_Font_DrawText(buffer, 30, 50);
 		CP_Graphics_DrawCircle(boss->pos.x, boss->pos.y, boss->parryrad * 2);
 		//CP_Image_Draw(Boss_Barrier_Img, boss->pos.x, boss->pos.y, boss->parryrad * 2, boss->parryrad * 2, boss->Parry_BaseWeight);
 		
@@ -83,7 +90,7 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 		if (!Parry_On_Cd) {
 			for (int i = 0; i < ENTITY_CAP; ++i) {
 				if (entities[i].type != entity_null && entities[i].type == entity_projectile) {
-					if (collisionCircle(boss->pos, boss->parryrad, entities[i].projectile.pos, entities[i].projectile.radius) && entities[i].projectile.source == 'p') {
+					if (collisionCircle(boss->pos, boss->parryrad, entities[i].projectile.pos, entities[i].projectile.radius) && entities[i].projectile.source == 'p' && entities[i].projectile.type == PROJ_TYPE_MOBILE) {
 						if (boss->parry_ammo > 0) {
 							deflectprojectiles('e', i, entities);
 							boss->parry_ammo--;

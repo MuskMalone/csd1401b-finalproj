@@ -45,7 +45,11 @@ typedef struct Projectile {
 	char source;
 	char type;
 	char toRebound_NextFrame;
-	float LifeSpan;
+	union {
+		float LifeSpan;
+		int rebound_count;
+	};
+	
 } Projectile;
 // for boss
 typedef struct Boss {

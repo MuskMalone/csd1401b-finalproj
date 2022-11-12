@@ -1,5 +1,5 @@
 #include "projectiles.h"
-static float Lifespan_count = 0;
+static float Lifespan_count = 0.0f;
 
 entity_struct init_projectile(void) {
 	Projectile Proj;
@@ -15,8 +15,11 @@ void set_projectile_values(Projectile* Proj, char Source, char type, int radius,
 	
 	Proj->source = Source;	  // The owner of the projectile. Prevents the projectile from attacking its owner
 	Proj->Future_Pos = Proj->pos;
-	Proj->toRebound_NextFrame = 'n';
-	Proj->LifeSpan = 0.01;
+	Proj->toRebound_NextFrame = PROJ_NOT_REBOUNDING;
+	if (type == PROJ_TYPE_STATIC)
+		Proj->LifeSpan = PROJ_MELEE_LIFESPAN;
+	else if (type == PROJ_TYPE_MOBILE)
+		Proj->rebound_count = 0;
 }
 void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Projectile* proj = &(entities[index].projectile);
@@ -25,10 +28,12 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 	int to_Rebound = 0;
 	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
 	
-	if (proj->type == 'm') {
-		if (proj->toRebound_NextFrame != 'n') {
+	if (proj->type == PROJ_TYPE_MOBILE) {
+		if (proj->toRebound_NextFrame != PROJ_NOT_REBOUNDING) {
 			proj->pos = proj->Future_Pos;
 			deflectprojectiles(proj->toRebound_NextFrame, index, entities);
+			if (proj->rebound_count++ >= MAX_REBOUND_COUNT)
+				entities[index].type = entity_null;
 		}
 		else {
 			moveEntity(&(proj->pos), proj->Direction.x * proj->speed, proj->Direction.y * proj->speed);
@@ -38,7 +43,7 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 			Position Right_Edge_Wall = (Position){ CP_System_GetWindowWidth() , 0 };
 			Position Top_Edge_Wall = (Position){ 0,-WALL_DIM };
 			Position Bottom_Edge_Wall = (Position){ 0 , CP_System_GetWindowHeight() };
-			proj->toRebound_NextFrame = 'n';
+			proj->toRebound_NextFrame = PROJ_NOT_REBOUNDING;
 		
 
 
@@ -67,9 +72,12 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 	}
 	else {
 		//Draw the static proj explosion animation here
-		Entities_Collision_Check(proj, index, entities);
-		Lifespan_count += CP_System_GetDt();
-		if (Lifespan_count >= proj->LifeSpan) {	
+		CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius * 2);
+
+		proj->LifeSpan -= CP_System_GetDt();
+		if (0.0f >= proj->LifeSpan) {	
+			//only checks for the collision at the end of the lifespan
+			Entities_Collision_Check(proj, index, entities);
 			entities[index].type = entity_null;
 		}
 
@@ -80,17 +88,22 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 void deflectprojectiles(char source,int index, Entity entities[]) {
 	Projectile* proj = &(entities[index].projectile);
 
-	if (proj->type == 'm') {
-		if (source == 'x') {
+	if (proj->type == PROJ_TYPE_MOBILE) {
+		if (source == PROJ_VERTICAL_WALL) {
 			proj->Direction.x *= -1;
 		}
-		else if (source == 'y') {
+		else if (source == PROJ_HORIZONTAL_WALL) {
 			proj->Direction.y *= -1;
 		}
 		else {			
 			proj->Direction = CP_Vector_Negate(proj->Direction);
 			proj->source = source;
 		}
+	}
+	if (proj->type == PROJ_TYPE_STATIC) {
+		proj->source = source;
+		proj->LifeSpan = PROJ_MELEE_LIFESPAN;
+		proj->radius *= 2.0f;
 	}
 }
 
@@ -100,25 +113,29 @@ int Wall_Edge_Check(Projectile* proj, Position rect, float width, float height) 
 		Position Future_Pos = (Position){ proj->pos.x + (proj->Direction.x * (proj->speed / i) * CP_System_GetDt()) , proj->pos.y + (proj->Direction.y * (proj->speed / i) * CP_System_GetDt()) };
 		if (collisionCircleRect(Future_Pos, proj->radius, rect, width, height)) {
 			proj->Future_Pos = Future_Pos;
+			proj->pos = Future_Pos;
 			collided = 1;
 			break;
 		}
 	}
 	if (collided){
-		Position Rect_Center = (Position){rect.x+(width/2),rect.y + (height/2)};
-		float y_diff = (abs(proj->Future_Pos.y - rect.y) < abs(proj->Future_Pos.y - (rect.y + height))) ? (proj->Future_Pos.y - rect.y) : (proj->Future_Pos.y - (rect.y + height));
-		float x_diff = (abs(proj->Future_Pos.x - rect.x) < abs(proj->Future_Pos.x - (rect.x + width))) ? (proj->Future_Pos.x - rect.x) : (proj->Future_Pos.x - (rect.x + width));
 		
+		
+		Position Rect_Center = (Position){ rect.x + (width / 2),rect.y + (height / 2) };
+		float y_diff = (abs((proj->Future_Pos.y+proj->radius) - rect.y) < abs((proj->Future_Pos.y-proj->radius) - (rect.y + height))) ? ((proj->Future_Pos.y+ proj->radius) - rect.y) : ((proj->Future_Pos.y-proj->radius) - (rect.y + height));
+		float x_diff = (abs((proj->Future_Pos.x+ proj->radius) - rect.x) < abs((proj->Future_Pos.x- proj->radius) - (rect.x + width))) ? ((proj->Future_Pos.x+proj->radius) - rect.x) : ((proj->Future_Pos.x-proj->radius) - (rect.x + width));
+
 		if (abs(y_diff) < abs(x_diff)) {
-			proj->toRebound_NextFrame = 'y';
-			int direction = (abs(proj->Future_Pos.y - rect.y) < abs(proj->Future_Pos.y - (rect.y + height))) ? -1 : 1;
+			proj->toRebound_NextFrame = PROJ_HORIZONTAL_WALL;
+			int direction = (abs((proj->Future_Pos.y + proj->radius) - rect.y) < abs((proj->Future_Pos.y - proj->radius) - (rect.y + height))) ? -1 : 1;
 			proj->Future_Pos.y = Rect_Center.y + direction * ((height / 2) + proj->radius);
 		}
 		else {
-			proj->toRebound_NextFrame = 'x';
-			int direction = (abs(proj->Future_Pos.x - rect.x) < abs(proj->Future_Pos.x - (rect.x + width))) ? -1 : 1;
+			proj->toRebound_NextFrame = PROJ_VERTICAL_WALL;
+			int direction = (abs((proj->Future_Pos.x + proj->radius) - rect.x) < abs((proj->Future_Pos.x - proj->radius) - (rect.x + width))) ? -1 : 1;
 			proj->Future_Pos.x = Rect_Center.x + direction * ((width / 2) + proj->radius);
 		}
+		
 	}
 	return collided;
 }
