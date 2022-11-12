@@ -156,10 +156,18 @@ int Entities_Collision_Check(Projectile* proj, int index, Entity entities[]){
 			}
 
 		}
-		else {
+		else if (proj->source == PLAYER_PROJ_SOURCE1) {
 			if (entities[i].type == entity_boss) {
 				if (collisionCircle(entities[i].boss.pos, entities[i].boss.diameter / 2, proj->pos, proj->radius)) {
 					damage_boss(&(entities[i].boss));
+					entities[index].type = entity_null;
+					Proj_Collided = 1;
+					break;
+				}
+			}
+			if (entities[i].type == entity_mob) {
+				if (collisionCircle(entities[i].mob.pos, entities[i].mob.diameter / 2, proj->pos, proj->radius)) {
+					damage_mob(&(entities[i].mob));
 					entities[index].type = entity_null;
 					Proj_Collided = 1;
 					break;

@@ -2,7 +2,7 @@
 #include "utils.h"
 #include "cprocessing.h"
 #include "gametypes.h"
-#define PROJ_MELEE_LIFESPAN .5f
+#define PROJ_MELEE_LIFESPAN .8f
 #define MAX_REBOUND_COUNT 2
 #define PLAYER_PROJ_SOURCE1 'p'
 #define PLAYER_PROJ_SOURCE2 'q'
