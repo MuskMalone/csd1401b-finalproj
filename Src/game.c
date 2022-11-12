@@ -137,7 +137,7 @@ static void draw_room_wall(void) {
 			if (tilemap[i][j] > 1)
 				CP_Image_Draw(Flat_Floor, (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
 			else {
-				CP_Graphics_DrawRect((j * WALL_DIM), (i * WALL_DIM), WALL_DIM, WALL_DIM);
+				//CP_Graphics_DrawRect((j * WALL_DIM), (i * WALL_DIM), WALL_DIM, WALL_DIM);
 				CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
 			}
 		}
@@ -146,7 +146,34 @@ static void draw_room_wall(void) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (tilemap[i][j] > 1) {
 				//CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM * 1.2, WALL_DIM * 1.2, 255);
-				CP_Graphics_DrawRect((j * WALL_DIM), (i * WALL_DIM), WALL_DIM, WALL_DIM);
+				//CP_Graphics_DrawRect((j * WALL_DIM), (i * WALL_DIM), WALL_DIM, WALL_DIM);
+			}
+		}
+	}
+
+}
+
+static void draw_room_floor(void) {
+
+	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
+	CP_Graphics_ClearBackground(CP_Color_Create(255, 255, 255, 255));
+	CP_Settings_Fill((CP_Color_Create(255, 255, 255, 255)));
+	//CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
+	for (int i = 0; i < GRID_ROWS; i++) {
+		for (int j = 0; j < GRID_COLS; ++j) {
+			if (tilemap[i][j] > 1)
+				CP_Image_Draw(Flat_Floor, (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
+			else {
+				//CP_Graphics_DrawRect((j * WALL_DIM), (i * WALL_DIM), WALL_DIM, WALL_DIM);
+				CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
+			}
+		}
+	}
+	for (int i = 0; i < GRID_ROWS; i++) {
+		for (int j = 0; j < GRID_COLS; ++j) {
+			if (tilemap[i][j] > 1) {
+				//CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM * 1.2, WALL_DIM * 1.2, 255);
+				//CP_Graphics_DrawRect((j * WALL_DIM), (i * WALL_DIM), WALL_DIM, WALL_DIM);
 			}
 		}
 	}
@@ -164,7 +191,7 @@ void game_init(void)
 	load_maps();
 	generate_door();
 	
-		Flat_Floor = CP_Image_Load("./Assets/Tiles/tile_0000.png");
+	Flat_Floor = CP_Image_Load("./Assets/Tiles/tile_0000.png");
 	Rock_Floor = CP_Image_Load("./Assets/Tiles/tile_0012.png");
 	grave = CP_Image_Load("./Assets/Tiles/tile_0065.png");
 	Anvil = CP_Image_Load("./Assets/Tiles/tile_0074.png");
@@ -227,6 +254,7 @@ void game_update(void)
 			state = room_active;
 		}
 		else {
+			draw_room_floor();	
 			draw_room_wall();
 			for (int i = 0; i < ENTITY_CAP; ++i) {
 				if (entities[i].type == entity_null) continue;

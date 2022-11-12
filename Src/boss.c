@@ -219,7 +219,6 @@ void damage_boss(Boss* b) {
 
 void draw_boss(Boss* b) {
 	CP_Image_Draw(Boss_Barrier_Img, b->pos.x, b->pos.y, b->parryrad * 2, b->parryrad * 2, b->Parry_BaseWeight);
-	//CP_Image_Draw(boss_def, b->pos.x, b->pos.y, (33.0/44.0)* b->diameter, b->diameter, 255);
 	int animationnum = (int)animationcount % 2;
 	float img_size_mod = (*(boss_img) == boss_def) ? ((float)CP_Image_GetWidth(boss_def)/ (float)CP_Image_GetHeight(boss_def)) : 1;
 	int size = (*(boss_img) == boss_def) ? 70 : 175;
