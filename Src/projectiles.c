@@ -104,8 +104,8 @@ int Wall_Edge_Check(Projectile* proj, Position rect, float width, float height) 
 		}
 	}
 	if (collided){
-		proj->speed = 0;
-		/*
+
+		
 		Position Rect_Center = (Position){rect.x+(width/2),rect.y + (height/2)};
 		float y_diff = (abs((proj->Future_Pos.y+proj->radius) - rect.y) < abs((proj->Future_Pos.y- proj->radius) - (rect.y + height))) ? ((proj->Future_Pos.y + proj->radius) - rect.y) : ((proj->Future_Pos.y - proj->radius) - (rect.y + height));
 		float x_diff = (abs((proj->Future_Pos.x+proj->radius) - rect.x) < abs((proj->Future_Pos.x - proj->radius) - (rect.x + width))) ? ((proj->Future_Pos.x + proj->radius) - rect.x) : ((proj->Future_Pos.x - proj->radius) - (rect.x + width));
@@ -120,7 +120,7 @@ int Wall_Edge_Check(Projectile* proj, Position rect, float width, float height) 
 			int direction = (abs((proj->Future_Pos.x + proj->radius) - rect.x) < abs((proj->Future_Pos.x - proj->radius) - (rect.x + width))) ? -1 : 1;
 			proj->Future_Pos.x = Rect_Center.x + direction * ((width / 2) + proj->radius);
 		}
-		*/
+		
 	}
 	return collided;
 }
