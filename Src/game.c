@@ -130,6 +130,7 @@ static void draw_room_wall(void) {
 
 	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
 	CP_Graphics_ClearBackground(CP_Color_Create(255, 255, 255, 255));
+	CP_Settings_Fill((CP_Color_Create(255, 255, 255, 255)));
 	//CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
