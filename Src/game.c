@@ -131,7 +131,7 @@ static void draw_room_wall(void) {
 
 	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
 	CP_Graphics_ClearBackground(CP_Color_Create(255, 255, 255, 255));
-	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
+	//CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
 	
 	//draws the floor tiles
 	for (int i = 0; i < GRID_ROWS; i++) {
@@ -223,6 +223,7 @@ void game_update(void)
 			CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
 			//draws the tiles
 			CP_Graphics_ClearBackground(CP_Color_Create(255, 255, 255, 255));
+			/*
 			for (int i = 0; i < GRID_ROWS; i++) {
 				for (int j = 0; j < GRID_COLS; ++j) {
 					if (room_wall_pos[i][j]) {
@@ -236,6 +237,7 @@ void game_update(void)
 				}
 
 			}
+			*/
 			//Wall = CP_Image_Load("./Assets/Justins_face.png");
 			state = room_active;
 		}
