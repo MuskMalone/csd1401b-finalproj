@@ -18,3 +18,4 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 void deflectprojectiles(char source, int index, Entity entities[]);
 int Wall_Edge_Check(Projectile* proj, Position rect, float width, float height);
 int Entities_Collision_Check(Projectile* proj, int index, Entity entities[]);
+void draw_projectile(Projectile* proj);

@@ -54,11 +54,9 @@ void mob_explosion(int player_idx, Entity entities[], int mob_idx, int wall_pos[
 	float explosion_radius = 100.0f;
 	
 	//creating of the mob
-	CP_Settings_StrokeWeight(0.0f);
-	CP_Settings_Fill(CP_Color_Create(51, 255, 173, 255));
+
 	CP_Vector direction = getVectorBetweenPositions(&(mob->pos), &(player->pos));
-	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
-	CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob_dia);
+
 
 	if (mob->is_exploding)
 	{
@@ -102,9 +100,7 @@ void mob_ranged(int player_idx, Entity entities[], int mob_idx)
 	int proj_radius = 10;
 
 	//creating of the mob
-	CP_Settings_StrokeWeight(0.0f);
-	CP_Settings_Fill(CP_Color_Create(0, 255, 0, 255));
-	CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob_dia);
+
 
 	
 	mob->timer -= CP_System_GetDt();
@@ -130,10 +126,6 @@ void mob_melee(int player_idx, Entity entities[], int mob_idx, int wall_pos[GRID
 	float proj_radius = 25.0f;
 	float player_dia = player->diameter;
 
-	//creating of the mob
-	CP_Settings_StrokeWeight(0.0f);
-	CP_Settings_Fill(CP_Color_Create(0, 0, 255, 255));
-	CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob_dia);
 
 	if (mob->melee_state == mob_resting) {
 		if (collisionCircle(mob->pos, mob_dia * 5.0f, player->pos, player_dia * 5.0f)) //give a certain distance
@@ -232,6 +224,7 @@ entity_struct init_mob() {
 		break;
 	}
 	//mob.degree = 0.0f;
+
 	return (entity_struct) {.mob = mob};
 }
 
@@ -254,9 +247,29 @@ void update_mob(int mob_idx, int player_idx, Entity entities[], int wall_pos[GRI
 		mob_explosion(player_idx, entities, mob_idx, wall_pos);
 		break;
 	}
+	draw_mob(mob);
 }
 
 void damage_mob(Mob* mob) {
 	(mob->health)--;
+}
+void draw_mob(Mob* mob) {
+	switch (mob->type) {
+	case(range):
+		CP_Settings_StrokeWeight(0.0f);
+		CP_Settings_Fill(CP_Color_Create(0, 255, 0, 255));
+		CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob->diameter);
+		break;
+	case(melee):
+		CP_Settings_StrokeWeight(0.0f);
+		CP_Settings_Fill(CP_Color_Create(0, 0, 255, 255));
+		CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob->diameter);
+		break;
+	case(explode):
+		CP_Settings_StrokeWeight(0.0f);
+		CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
+		CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob->diameter);
+		break;
+	}
 }
 

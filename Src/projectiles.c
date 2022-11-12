@@ -26,7 +26,6 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 	//int red_rgb = proj->source == 'p' ? 0 : 255;
 	//int blue_rgb = proj->source == 'p' ? 255 : 0;
 	int to_Rebound = 0;
-	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
 	
 	if (proj->type == PROJ_TYPE_MOBILE) {
 		if (proj->toRebound_NextFrame != PROJ_NOT_REBOUNDING) {
@@ -67,22 +66,17 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 					}
 				}
 			}	
-		CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius * 2);
 		}
 	}
 	else {
-		//Draw the static proj explosion animation here
-		CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius * 2);
-
 		proj->LifeSpan -= CP_System_GetDt();
 		if (0.0f >= proj->LifeSpan) {	
 			//only checks for the collision at the end of the lifespan
 			Entities_Collision_Check(proj, index, entities);
 			entities[index].type = entity_null;
 		}
-
-		
 	}
+	draw_projectile(proj);
 }
 
 void deflectprojectiles(char source,int index, Entity entities[]) {
@@ -181,5 +175,17 @@ int Entities_Collision_Check(Projectile* proj, int index, Entity entities[]){
 	}
 	return Proj_Collided;
 }
+void draw_projectile(Projectile* proj) {
+	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
 
+	if (proj->type == PROJ_TYPE_MOBILE) {
+		CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius * 2);
+	}
+	else {
+		//Draw the static proj explosion animation here
+		CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius * 2);
+		if (0.0f >= proj->LifeSpan) {
+		}
+	}
+}
 

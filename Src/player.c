@@ -208,9 +208,6 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 		float line_dist_x = WALL_DIM * (float)player->horizontal_dir, line_dist_y = WALL_DIM * (float)player->vertical_dir;
 		float start_x = player->pos.x + ((float)player->horizontal_dir * (MAX_PARRYRADIUS / 2.0f)),
 			start_y = player->pos.y + ((float)player->vertical_dir * (MAX_PARRYRADIUS / 2.0f));
-		CP_Settings_Stroke(CP_Color_Create(255, 160, 20, 255));
-		CP_Settings_StrokeWeight(10.0f);
-		CP_Graphics_DrawLine(start_x, start_y, start_x + line_dist_x, start_y + line_dist_y);
 		ACCESS_ALL_ENTITIES {
 			if (entities[i].type == entity_projectile) {
 				Projectile* proj = &(entities[i].projectile);
@@ -257,15 +254,43 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 			moveEntity(&(player->pos), 0.0f, yspeed);
 	}
 
+	if (is_cooldown) {
+		if (cooldown >= .0f)
+			cooldown -= CP_System_GetDt();
+		else {
+			is_cooldown = 0;
+			cooldown = .0f;
+		}
+
+	}
+	else {
+		if (stamina < 255.0f && player->state != holding) {
+			stamina += 60.0f * CP_System_GetDt();
+		}
+	}
+	draw_player(player);
+}
+
+int damage_player(Player *p) {
+	if (p->state != dashing) {
+		p->health -= 1;
+		return 1;
+	}
+	return 0;
+}
+
+void set_player_position(Player* player, Position pos) {
+	player->pos = pos;
+}
+void draw_player(Player* player) {
 	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
 
 	CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
 	CP_Settings_TextSize(20.0f);
-
 	char buffer[500] = { 0 };
 	sprintf_s(buffer, _countof(buffer), "player state: %d, cooldown: %f, health: %d, stamina: %f", player->state, cooldown, player->health, stamina);
 	CP_Font_DrawText(buffer, 30, 30);
-	for (int i = 0, sw = 2, radius_size = (int) radius_reduction, parry_color = 255, parry_weight = (int) stamina; i < 8; ++i) {	//Creates the Barrier Effect
+	for (int i = 0, sw = 2, radius_size = (int)radius_reduction, parry_color = 255, parry_weight = (int)stamina; i < 8; ++i) {	//Creates the Barrier Effect
 		if (i == 8 - 1) {	//Sets the white color ring
 			radius_size = radius_reduction;
 			parry_color = 255;
@@ -283,35 +308,8 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 		CP_Graphics_DrawCircle(player->pos.x, player->pos.y, (player->parryrad * 2.0f) - (float)radius_size);
 	}
 	//Increases the barrier's opacity over time ( Uncomment this if you want to change the opacity of the barrier when user click space)
-
-	if (is_cooldown) {
-		if (cooldown >= .0f)
-			cooldown -= CP_System_GetDt();
-		else {
-			is_cooldown = 0;
-			cooldown = .0f;
-		}
-
-	}
-	else {
-		if (stamina < 255.0f && player->state != holding) {
-			stamina += 60.0f * CP_System_GetDt();
-		}
-	}
 	//Prints the player Object
 	CP_Settings_StrokeWeight(0.0f);
 	CP_Settings_Fill(CP_Color_Create(51, 255, 173, 255));
 	CP_Graphics_DrawCircle(player->pos.x, player->pos.y, player->diameter);
-}
-
-int damage_player(Player *p) {
-	if (p->state != dashing) {
-		p->health -= 1;
-		return 1;
-	}
-	return 0;
-}
-
-void set_player_position(Player* player, Position pos) {
-	player->pos = pos;
 }
