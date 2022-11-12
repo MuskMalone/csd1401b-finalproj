@@ -1,6 +1,6 @@
 #pragma once
 #include "utils.h"
-#define WALL_DIM 50.0f
+#define WALL_DIM 30.0f
 #define ENTITY_CAP 100
 #define PLAYER_IDX 0
 #define GRID_ROWS 25

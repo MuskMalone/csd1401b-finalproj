@@ -78,10 +78,11 @@ void game_update(void)
 		case entity_projectile: update_projectile(i, entities, wall_pos[num]); break;
 		}
 	}
+	CP_Settings_StrokeWeight(2.0);
+	CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (wall_pos[num][i][j]) {
-				CP_Settings_StrokeWeight(0.0);
 				CP_Graphics_DrawRect(j * WALL_DIM, i * WALL_DIM, WALL_DIM, WALL_DIM);
 			}
 		}
@@ -92,8 +93,8 @@ void game_update(void)
 				//entities[BOSS_IDX].boss.health--;
 				Position Mousepos = (Position){ CP_Input_GetMouseX(),CP_Input_GetMouseY() };
 				Position startposb;
-				startposb.x = ((float)CP_System_GetWindowWidth() / 2) ;
-				startposb.y = ((float)CP_System_GetWindowHeight() * 1 / 4);
+				startposb.x = ((float)CP_System_GetWindowWidth() * 4/ 4) ;
+				startposb.y = ((float)CP_System_GetWindowHeight() * 3 / 4);
 				Projectile projb = init_projectile('p', 'm',10, startposb, getVectorBetweenPositions(&(startposb), &(Mousepos)));
 				entities[i].type = entity_projectile;
 				entities[i].projectile = projb;

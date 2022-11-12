@@ -97,7 +97,7 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Assets\xBut.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Source Files</Filter>
     </Image>
   </ItemGroup>
 </Project>

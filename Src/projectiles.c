@@ -8,7 +8,7 @@ Projectile init_projectile(char Source, char type, int radius, Position Start_Po
 	Proj.pos.y = Start_Pos.y;
 	Proj.Direction = Direction_Vector;
 	Proj.radius = radius;	   // default size 20
-	Proj.speed = 1000;
+	Proj.speed = 500;
 	Proj.source = Source;	  // The owner of the projectile. Prevents the projectile from attacking its owner
 	Proj.Future_Pos = Proj.pos;
 	Proj.toRebound_NextFrame = 'n';
@@ -42,10 +42,11 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 			for (int i = 0; i < GRID_ROWS; ++i) {
 				for (int j = 0; j < GRID_COLS; ++j) {
 					if (wall_pos[i][j]) {
-						if(!to_Rebound)
-						if (Wall_Edge_Check(proj, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) {
-							to_Rebound = 1;
-							break;
+							if(!to_Rebound){
+							if (Wall_Edge_Check(proj, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) {
+								to_Rebound = 1;
+								break;
+							}
 						}
 					}
 				}
@@ -97,25 +98,29 @@ int Wall_Edge_Check(Projectile* proj, Position rect, float width, float height) 
 		Position Future_Pos = (Position){ proj->pos.x + (proj->Direction.x * (proj->speed / i) * CP_System_GetDt()) , proj->pos.y + (proj->Direction.y * (proj->speed / i) * CP_System_GetDt()) };
 		if (collisionCircleRect(Future_Pos, proj->radius, rect, width, height)) {
 			proj->Future_Pos = Future_Pos;
+			proj->pos = Future_Pos;
 			collided = 1;
 			break;
 		}
 	}
 	if (collided){
+		proj->speed = 0;
+		/*
 		Position Rect_Center = (Position){rect.x+(width/2),rect.y + (height/2)};
-		float y_diff = (abs(proj->Future_Pos.y - rect.y) < abs(proj->Future_Pos.y - (rect.y + height))) ? (proj->Future_Pos.y - rect.y) : (proj->Future_Pos.y - (rect.y + height));
-		float x_diff = (abs(proj->Future_Pos.x - rect.x) < abs(proj->Future_Pos.x - (rect.x + width))) ? (proj->Future_Pos.x - rect.x) : (proj->Future_Pos.x - (rect.x + width));
+		float y_diff = (abs((proj->Future_Pos.y+proj->radius) - rect.y) < abs((proj->Future_Pos.y- proj->radius) - (rect.y + height))) ? ((proj->Future_Pos.y + proj->radius) - rect.y) : ((proj->Future_Pos.y - proj->radius) - (rect.y + height));
+		float x_diff = (abs((proj->Future_Pos.x+proj->radius) - rect.x) < abs((proj->Future_Pos.x - proj->radius) - (rect.x + width))) ? ((proj->Future_Pos.x + proj->radius) - rect.x) : ((proj->Future_Pos.x - proj->radius) - (rect.x + width));
 		
-		if (abs(y_diff) < abs(x_diff)) {
+		if (abs(y_diff) <= abs(x_diff)) {
 			proj->toRebound_NextFrame = 'y';
-			int direction = (abs(proj->Future_Pos.y - rect.y) < abs(proj->Future_Pos.y - (rect.y + height))) ? -1 : 1;
+			int direction = (abs((proj->Future_Pos.y + proj->radius) - rect.y) < abs((proj->Future_Pos.y - proj->radius) - (rect.y + height))) ? -1 : 1;
 			proj->Future_Pos.y = Rect_Center.y + direction * ((height / 2) + proj->radius);
 		}
 		else {
 			proj->toRebound_NextFrame = 'x';
-			int direction = (abs(proj->Future_Pos.x - rect.x) < abs(proj->Future_Pos.x - (rect.x + width))) ? -1 : 1;
+			int direction = (abs((proj->Future_Pos.x + proj->radius) - rect.x) < abs((proj->Future_Pos.x - proj->radius) - (rect.x + width))) ? -1 : 1;
 			proj->Future_Pos.x = Rect_Center.x + direction * ((width / 2) + proj->radius);
 		}
+		*/
 	}
 	return collided;
 }
