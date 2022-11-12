@@ -50,11 +50,16 @@ static void init_cooldown(void) {
 	is_cooldown = 1;
 }
 static int check_collision(Position p, float diameter, int wall_pos[GRID_ROWS][GRID_COLS]) {
+	CP_Graphics_ClearBackground(CP_Color_Create(255, 0, 0, 255));
 	for (int i = 0; i < GRID_ROWS; ++i) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (wall_pos[i][j]) {
 				int collided = collisionCircleRect(p, diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM);
-				if (collided) return collided;
+				
+				if (collided) {
+					CP_Graphics_DrawRect((j* WALL_DIM), (i* WALL_DIM), WALL_DIM, WALL_DIM);
+					return collided;
+				}
 			}
 		}
 	}

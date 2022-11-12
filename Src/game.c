@@ -136,7 +136,7 @@ static void draw_room_wall(void) {
 			if (tilemap[i][j] > 1)
 				CP_Image_Draw(Flat_Floor, (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
 			else {
-				CP_Graphics_DrawRect((j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM);
+				CP_Graphics_DrawRect((j * WALL_DIM), (i * WALL_DIM), WALL_DIM, WALL_DIM);
 				CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
 			}
 		}
@@ -144,8 +144,8 @@ static void draw_room_wall(void) {
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (tilemap[i][j] > 1) {
-				//CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM * 1.2, WALL_DIM * 1.2, 255);
-				CP_Graphics_DrawRect((j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM);
+				CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM * 1.2, WALL_DIM * 1.2, 255);
+				//CP_Graphics_DrawRect((j * WALL_DIM), (i * WALL_DIM), WALL_DIM, WALL_DIM);
 			}
 		}
 	}
