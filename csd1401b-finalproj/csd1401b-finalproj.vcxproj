@@ -155,6 +155,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Src\boss.c" />
+    <ClCompile Include="..\Src\camera.c" />
     <ClCompile Include="..\Src\game.c" />
     <ClCompile Include="..\Src\gametypes.c" />
     <ClCompile Include="..\Src\main.c" />
@@ -166,10 +167,10 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Inc\boss.h" />
+    <ClInclude Include="..\Inc\camera.h" />
     <ClInclude Include="..\Inc\gamestates.h" />
     <ClInclude Include="..\Inc\gametypes.h" />
     <ClInclude Include="..\Inc\game.h" />
-    <ClInclude Include="..\Inc\mainmenu.h" />
     <ClInclude Include="..\Inc\mobs.h" />
     <ClInclude Include="..\Inc\player.h" />
     <ClInclude Include="..\Inc\projectiles.h" />
@@ -193,8 +194,6 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <Image Include="..\Assets\Tiles\Player\player_idle1.png" />
     <Image Include="..\Assets\Tiles\Player\Player_walking1.png" />
     <Image Include="..\Assets\Tiles\Player\Player_walking2.png" />
-    <Image Include="..\Assets\Tiles\Slime_Idle1.png" />
-    <Image Include="..\Assets\Tiles\Slime_Idle2.png" />
     <Image Include="..\Assets\Tiles\tile_0000.png" />
     <Image Include="..\Assets\Tiles\tile_0012.png" />
     <Image Include="..\Assets\Tiles\tile_0065.png" />

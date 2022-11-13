@@ -1,5 +1,6 @@
 
-#include "mainmenu.h"
+#include "gamestates.h"
+#include "camera.h"
 #include "game.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,21 +19,13 @@ static int room_wall_pos[GRID_ROWS][GRID_COLS];
 static unsigned int random_tile_number;
 static int rooms_cleared = 0;
 static int map_idx = 0;
-typedef enum room_state { room_pause, room_active, room_clear, loading, room_failed } room_state;
+
 enum tile_type { FLOOR_TILE, WALL_TILE, MOB_TILE, BOSS_TILE };
 static room_state state = loading;
 
 // map of the tiles that the game will draw
 static int tilemap[GRID_ROWS][GRID_COLS];
-CP_Image TopWall = NULL;
-CP_Image BottomWall = NULL;
-CP_Image RightWall = NULL;
-CP_Image LeftWall = NULL;
-CP_Image Rock_Floor = NULL;
-CP_Image grave = NULL;
-CP_Image Anvil = NULL;
-CP_Image Barrel = NULL;
-CP_Image ImageList[10];
+CP_Image tile_list[ROOM_TILE_TYPES];
 
 static void pause_menu(void) {
 
@@ -134,7 +127,7 @@ static void generate_current_map(void) {
 	}
 }
 
-static void draw_door(void) {
+void draw_door(void) {
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (door_pos[i][j]) {
@@ -145,7 +138,7 @@ static void draw_door(void) {
 	}
 }
 
-static void draw_room_wall(void) {
+void draw_room_wall(void) {
 
 	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
 	
@@ -162,20 +155,20 @@ static void draw_room_wall(void) {
 	
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
-			if (tilemap[i][j]>1) {
-				CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
+			if (tilemap[i][j]>1 && room_wall_pos[i][j] == WALL_TILE) {
+				CP_Image_Draw(tile_list[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
 			}
 		}
 	}
 
 }
 
-static void draw_room_floor(void) {
+void draw_room_floor(void) {
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (tilemap[i][j]==1) { //Draw a flat floor bellow wall/object
 				CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
-				CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
+				CP_Image_Draw(tile_list[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
 			}
 		}
 	}
@@ -183,6 +176,7 @@ static void draw_room_floor(void) {
 
 void game_init(void)
 {
+	init_sprites();
 	rooms_cleared = 0;
 	map_idx = 0;
 	state = loading;
@@ -197,28 +191,10 @@ void game_init(void)
 
 	load_maps();
 	generate_door();
-	
-	TopWall = CP_Image_Load("./Assets/Tiles/TopWall.png");
-	BottomWall = CP_Image_Load("./Assets/Tiles/BottomWall.png");
-	RightWall = CP_Image_Load("./Assets/Tiles/RightWall.png");
-	LeftWall = CP_Image_Load("./Assets/Tiles/LeftWall.png");
-	Rock_Floor = CP_Image_Load("./Assets/Tiles/tile_0012.png");
-	grave = CP_Image_Load("./Assets/Tiles/tile_0065.png");
-	Anvil = CP_Image_Load("./Assets/Tiles/tile_0074.png");
-	Barrel = CP_Image_Load("./Assets/Tiles/tile_0082.png");
-	ImageList[1] = Rock_Floor;
-	ImageList[2] = grave;
-	ImageList[3] = Anvil;
-	ImageList[4] = Barrel;
-
-	
 }
 
 void game_update(void)
 {
-	CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
-
-	CP_Graphics_ClearBackground(CP_Color_Create(88, 88, 88, 255));
 	if (CP_Input_KeyTriggered(KEY_Q)) {
 		Position Mousepos = (Position){ CP_Input_GetMouseX(),CP_Input_GetMouseY() };
 		Position startposb;
@@ -236,19 +212,10 @@ void game_update(void)
 
 		// draw ur room failed stuff here
 		clear_all_entities();
-		CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
-		CP_Settings_TextSize(50.0f);
-
-		char buffer[500] = { 0 };
-		sprintf_s(buffer, _countof(buffer), "YOU DIED\nR to main menu, ESC to quit");
-		CP_Font_DrawText(buffer, 200, 200);
 		if (CP_Input_KeyTriggered(KEY_ESCAPE)) exit(EXIT_SUCCESS);
 		else if (CP_Input_KeyTriggered(KEY_R)) CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
 	}
 	else if (state == room_pause) {
-
-		//draw the stuff here
-		pause_menu();
 
 		//resume game
 		if (CP_Input_KeyTriggered(KEY_ESCAPE)) {
@@ -283,8 +250,6 @@ void game_update(void)
 		}
 		else {
 			//CP_Graphics_ClearBackground(CP_Color_Create(255, 255, 255, 255));
-			draw_room_floor();
-			draw_room_wall();
 			for (int i = 0; i < ENTITY_CAP; ++i) {
 				if (entities[i].type == entity_null) continue;
 				switch (entities[i].type) {
@@ -312,7 +277,6 @@ void game_update(void)
 			}
 			else if (state == room_clear) {
 				clear_all_entities();
-				draw_door();
 				for (int i = 0; i < GRID_ROWS; ++i) {
 					for (int j = 0; j < GRID_COLS; ++j) {
 						if (door_pos[i][j]) {
@@ -331,14 +295,8 @@ void game_update(void)
 			}
 		}
 	}
-	
-	CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
-	CP_Settings_TextSize(20.0f);
 
-	char buffer[500] = { 0 };
-	sprintf_s(buffer, _countof(buffer), "room state: %d, cleared rooms: %d", state, rooms_cleared);
-	CP_Font_DrawText(buffer, 30, 50);	CP_Font_DrawText(buffer, 30, 50);
-
+	draw_all(entities, tilemap, state);
 }
 
 void game_exit(void)

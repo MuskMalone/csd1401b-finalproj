@@ -2,7 +2,7 @@
 #include "utils.h"
 #include "cprocessing.h"
 #include "gametypes.h"
-#define MOB_EXP_TIMER 2.0f
+#define MOB_EXP_TIMER .7f
 #define MOB_MELEE_TIMER 1.0f // 2 seconds
 #define MOB_RANGED_TIMER CP_Random_RangeFloat(1.0f, 3.0f);
 #define MOB_HEALTH 1

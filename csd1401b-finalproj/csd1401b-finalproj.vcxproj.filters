@@ -42,11 +42,11 @@
     <ClCompile Include="..\Src\gametypes.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\camera.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Inc\mainmenu.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Inc\game.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -69,6 +69,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Inc\gamestates.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Inc\camera.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -130,12 +133,6 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Assets\Tiles\Boss\BossRest.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Assets\Tiles\Slime_Idle1.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Assets\Tiles\Slime_Idle2.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Assets\Tiles\Player\player_idle1.png">

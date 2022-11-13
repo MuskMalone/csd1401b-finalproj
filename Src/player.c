@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "player.h"
+#include "camera.h"
 #define COOLDOWN_DURATION 2.0f
 #define MAX_COOLDOWN 8.0f
 #define MAX_PARRYRADIUS WALL_DIM * 1.4f
@@ -19,7 +20,8 @@ static int is_cooldown = 0;
 static float cooldown = .0f;
 static int melee_deflect_triggered = 0;
 
-CP_Image playerHeart = NULL;
+CP_Image Player_Barrier_Img;
+
 
 void release_held_projectiles(Player * player, Entity entities[]) {
 	set_state(player, resting);
@@ -95,8 +97,6 @@ entity_struct init_player(void) {
 
 	player.health = 5;
 
-	playerHeart = CP_Image_Load("./Assets/PlayerLife.png");
-
 	player.speed = NORMAL_SPEED;
 	player.horizontal_dir = 0, player.vertical_dir = 0;
 	player.state = resting;
@@ -118,11 +118,6 @@ entity_struct init_player(void) {
 }
 void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Player* player = &(entities[player_idx].player);
-
-	for (int i = 1; i <= player->health; i++)
-	{
-		CP_Image_Draw(playerHeart, 32 * i, 64, 32, 32, 255);
-	}
 
 	// if player is dead, stop doing anything;aa
 	if (player->health <= 0) {
@@ -286,12 +281,11 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 			stamina += 60.0f * CP_System_GetDt();
 		}
 	}
-	draw_player(player);
 }
 
 int damage_player(Player *p) {
 	if (p->state != dashing) {
-		p->health -= 1;
+		//p->health -= 1;
 		return 1;
 	}
 	return 0;
@@ -301,14 +295,6 @@ void set_player_position(Player* player, Position pos) {
 	player->pos = pos;
 }
 void draw_player(Player* player) {
-	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
-
-	CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
-	CP_Settings_TextSize(20.0f);
-	char buffer[500] = { 0 };
-	sprintf_s(buffer, _countof(buffer), "player state: %d, cooldown: %f, health: %d, stamina: %f", player->state, cooldown, player->health, 3.5f * ((float)CP_System_GetDisplayHeight() / 100.0f));//stamina);
-	CP_Font_DrawText(buffer, 30, 30);
-
 	if (player->state == holding) {
 		float line_dist_x = WALL_DIM * (float)player->horizontal_dir, line_dist_y = WALL_DIM * (float)player->vertical_dir;
 		float start_x = player->pos.x + ((float)player->horizontal_dir * (MAX_PARRYRADIUS / 2.0f)),
@@ -317,26 +303,9 @@ void draw_player(Player* player) {
 		CP_Settings_StrokeWeight(10.0f);
 		CP_Graphics_DrawLine(start_x, start_y, start_x + line_dist_x, start_y + line_dist_y);
 	}
-	for (int i = 0, sw = 2, radius_size = (int)radius_reduction, parry_color = 255, parry_weight = (int)stamina; i < 8; ++i) {	//Creates the Barrier Effect
-		if (i == 8 - 1) {	//Sets the white color ring
-			radius_size = radius_reduction;
-			parry_color = 255;
-			parry_weight = stamina;
-			sw = 3;
-		}
-		else { // Sets the translucent blue barrier effect 
-			radius_size += 4;
-			parry_color -= 30;
-			parry_weight -= 255 / 8;
-		}
-		CP_Settings_StrokeWeight(sw);
-		CP_Settings_Stroke(CP_Color_Create(parry_color, 255, 255, parry_weight));
-		CP_Settings_Fill(CP_Color_Create(218, 240, 255, 0));
-		CP_Graphics_DrawCircle(player->pos.x, player->pos.y, (player->parryrad * 2.0f) - (float)radius_size);
-	}
-	//Increases the barrier's opacity over time ( Uncomment this if you want to change the opacity of the barrier when user click space)
-	//Prints the player Object
+
 	CP_Settings_StrokeWeight(0.0f);
+	CP_Image_Draw(Player_Barrier_Img, player->pos.x, player->pos.y, player->parryrad*2, player->parryrad * 2, stamina);
 	CP_Settings_Fill(CP_Color_Create(51, 255, 173, 255));
 	CP_Graphics_DrawCircle(player->pos.x, player->pos.y, player->diameter);
 }

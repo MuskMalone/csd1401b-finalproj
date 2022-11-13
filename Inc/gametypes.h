@@ -6,6 +6,7 @@
 #define GRID_ROWS 25
 #define GRID_COLS 30
 
+typedef enum room_state { room_pause, room_active, room_clear, loading, room_failed } room_state;
 // for player
 
 typedef enum player_state { resting, moving, dashing, dead, holding } player_state;
@@ -37,9 +38,11 @@ typedef struct Mob {
 } Mob;
 // for projectiles
 typedef struct Projectile {
+	int frame_idx;
 	Position pos;
 	Position Future_Pos;
 	CP_Vector Direction;
+	CP_Image *Proj_Img;
 	float radius;
 	int speed;
 	char source;
