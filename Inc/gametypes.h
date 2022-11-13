@@ -37,6 +37,7 @@ typedef struct Mob {
 } Mob;
 // for projectiles
 typedef struct Projectile {
+	int frame_idx;
 	Position pos;
 	Position Future_Pos;
 	CP_Vector Direction;

@@ -1,4 +1,5 @@
 #include "projectiles.h"
+#include <stdlib.h>
 static CP_Image Mobile_Proj_E = NULL;
 static CP_Image Mobile_Proj_P = NULL;
 static CP_Image *Proj_Img = NULL;
@@ -7,6 +8,7 @@ static CP_Image *Proj_Img = NULL;
 entity_struct init_projectile(void) {
 	Projectile Proj;
 	Proj.speed = 500;
+	Proj.frame_idx = 0;
 	return (entity_struct) {.projectile = Proj};
 }
 void set_projectile_values(Projectile* Proj, char Source, char type, int radius, Position Start_Pos, CP_Vector Direction_Vector) {
@@ -26,14 +28,12 @@ void set_projectile_values(Projectile* Proj, char Source, char type, int radius,
 	Proj->Future_Pos = Proj->pos;
 	Proj->toRebound_NextFrame = PROJ_NOT_REBOUNDING;
 	if (type == PROJ_TYPE_STATIC)
-		Proj->LifeSpan = PROJ_MELEE_LIFESPAN;
+		Proj->LifeSpan = 0.0f;//PROJ_MELEE_LIFESPAN;
 	else if (type == PROJ_TYPE_MOBILE)
 		Proj->rebound_count = 0;
 }
 void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Projectile* proj = &(entities[index].projectile);
-	//int red_rgb = proj->source == 'p' ? 0 : 255;
-	//int blue_rgb = proj->source == 'p' ? 255 : 0;
 	int to_Rebound = 0;
 	
 	if (proj->type == PROJ_TYPE_MOBILE) {
@@ -78,8 +78,8 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 		}
 	}
 	else {
-		proj->LifeSpan -= CP_System_GetDt();
-		if (0.0f >= proj->LifeSpan) {	
+		proj->LifeSpan += CP_System_GetDt();
+		if (PROJ_MELEE_LIFESPAN <= proj->LifeSpan) {	
 			//only checks for the collision at the end of the lifespan
 			Entities_Collision_Check(proj, index, entities);
 			entities[index].type = entity_null;
@@ -106,7 +106,8 @@ void deflectprojectiles(char source,int index, Entity entities[]) {
 	}
 	if (proj->type == PROJ_TYPE_STATIC) {
 		proj->source = source;
-		proj->LifeSpan = PROJ_MELEE_LIFESPAN;
+		proj->LifeSpan = 0.0f;
+		proj->frame_idx = 0;
 		proj->radius *= 2.0f;
 	}
 }
@@ -186,7 +187,23 @@ int Entities_Collision_Check(Projectile* proj, int index, Entity entities[]){
 	return Proj_Collided;
 }
 void draw_projectile(Projectile* proj) {
-	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
+	static CP_Image player_projectile_sprites[6];
+	player_projectile_sprites[0] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P1.png");
+	player_projectile_sprites[1] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P2.png");
+	player_projectile_sprites[2] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P3.png");
+	player_projectile_sprites[3] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P4.png");
+	player_projectile_sprites[4] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P5.png");
+	player_projectile_sprites[5] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P6.png");
+
+	static CP_Image enemy_projectile_sprites[6]; 
+	enemy_projectile_sprites[0] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E1.png");
+	enemy_projectile_sprites[1] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E2.png");
+	enemy_projectile_sprites[2] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E3.png");
+	enemy_projectile_sprites[3] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E4.png");
+	enemy_projectile_sprites[4] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E5.png");
+	enemy_projectile_sprites[5] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E6.png");
+
+	//CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
 
 	if (proj->type == PROJ_TYPE_MOBILE) {
 		//CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius * 2);
@@ -194,12 +211,16 @@ void draw_projectile(Projectile* proj) {
 		CP_Image_Draw(*Proj_Img, proj->pos.x, proj->pos.y, proj->radius * 2, proj->radius * 2, 255);
 	}
 	else {
-		//Draw the static proj explosion animation here
-		/*
-		CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius * 2);
-		if (0.0f >= proj->LifeSpan) {
+
+		float diff = (float)(proj->frame_idx % 6);
+		if (proj->frame_idx > 5) return;
+		if (proj->LifeSpan >= (PROJ_MELEE_FRAME_DT * diff)) {
+			(proj->frame_idx)++;
 		}
-		*/
+		if (proj->source == PLAYER_PROJ_SOURCE1)
+			CP_Image_Draw(player_projectile_sprites[proj->frame_idx % 6], proj->pos.x, proj->pos.y, proj->radius * 2, proj->radius * 2, 255);
+		else if (proj->source == MOB_PROJ_SOURCE)
+			CP_Image_Draw(enemy_projectile_sprites[proj->frame_idx % 6], proj->pos.x, proj->pos.y, proj->radius * 2, proj->radius * 2, 255);
 	}
 }
 

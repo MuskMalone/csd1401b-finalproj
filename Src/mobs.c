@@ -35,7 +35,7 @@ void expansion_mob_size(Entity entities[], int mob_idx)
 		{
 			Projectile* p = &(entities[p_idx].projectile);
 			Mob* m = &(entities[mob_idx].mob);
-			set_projectile_values(p, 'e', PROJ_TYPE_STATIC, mob->diameter / 2.0f, m->pos, getVectorBetweenPositions(&(m->pos), &(entities[PLAYER_IDX].player.pos)));
+			set_projectile_values(p, MOB_PROJ_SOURCE, PROJ_TYPE_STATIC, mob->diameter / 2.0f, m->pos, getVectorBetweenPositions(&(m->pos), &(entities[PLAYER_IDX].player.pos)));
 		}
 		entities[mob_idx].type = entity_null;
 	}
@@ -107,7 +107,7 @@ void mob_ranged(int player_idx, Entity entities[], int mob_idx)
 	if (mob->timer < 0.0f) {
 		int p_idx = insert_to_entity_array(entity_projectile, entities, init_projectile);
 		if (p_idx > 0) {
-			set_projectile_values(&(entities[p_idx].projectile), 'e', 'm', proj_radius, mob_pos, getVectorBetweenPositions(&(mob_pos), &(position_player)));
+			set_projectile_values(&(entities[p_idx].projectile), MOB_PROJ_SOURCE, 'm', proj_radius, mob_pos, getVectorBetweenPositions(&(mob_pos), &(position_player)));
 			// timer between 1 and 5 seconds
 			mob->timer = MOB_RANGED_TIMER;
 		}
@@ -169,7 +169,7 @@ void mob_melee(int player_idx, Entity entities[], int mob_idx, int wall_pos[GRID
 				CP_Vector v = getVectorBetweenPositions(&(mob_pos), &(position_player));
 				set_projectile_values(
 						&(entities[p_idx].projectile),
-						'e', 's',
+						MOB_PROJ_SOURCE, 's',
 						proj_radius,
 						(Position) {
 							mob->pos.x + (mob->diameter * v.x), 
@@ -267,13 +267,13 @@ void draw_mob(Mob* mob) {
 		CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob->diameter);
 		break;
 	case(melee):
-		meleeMob[0] = MeleeIdle1 = CP_Image_Load("./Assets/Tiles/Slime_Idle1.png");
-		meleeMob[1] = MeleeIdle2 = CP_Image_Load("./Assets/Tiles/Slime_Idle2.png");
+		meleeMob[0] = MeleeIdle1 = CP_Image_Load("./Assets/Tiles/Mobs/Melee/Slime_Idle1.png");
+		meleeMob[1] = MeleeIdle2 = CP_Image_Load("./Assets/Tiles/Mobs/Melee/Slime_Idle2.png");
 		CP_Image_Draw(meleeMob[(int)animationMelee % 2], mob->pos.x, mob->pos.y, mob->diameter, mob->diameter, 255);
 		break;
 	case(explode):
-		meleeMob[0] = MeleeIdle1 = CP_Image_Load("./Assets/Tiles/ExplodeSlime_Idle1.png");
-		meleeMob[1] = MeleeIdle2 = CP_Image_Load("./Assets/Tiles/ExplodeSlime_Idle2.png");
+		meleeMob[0] = MeleeIdle1 = CP_Image_Load("./Assets/Tiles/Mobs/Explode/ExplodeSlime_Idle1.png");
+		meleeMob[1] = MeleeIdle2 = CP_Image_Load("./Assets/Tiles/Mobs/Explode/ExplodeSlime_Idle2.png");
 		CP_Image_Draw(meleeMob[(int)animationMelee % 2], mob->pos.x, mob->pos.y, mob->diameter, mob->diameter, 255);
 
 		break;
