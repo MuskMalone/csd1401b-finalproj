@@ -1,14 +1,25 @@
 #include "projectiles.h"
 static float Lifespan_count = 0.0f;
+static CP_Image Mobile_Proj_E = NULL;
+static CP_Image Mobile_Proj_P = NULL;
+static CP_Image Proj_Img[2w] = NULL;
+
 
 entity_struct init_projectile(void) {
 	Projectile Proj;
-	Proj.speed = 700;
+	Proj.speed = 500;
 	return (entity_struct) {.projectile = Proj};
 }
 void set_projectile_values(Projectile* Proj, char Source, char type, int radius, Position Start_Pos, CP_Vector Direction_Vector) {
 	Proj->type = type;			// 2 Projectile types. Static (For melee or exploding enemy) and Mobile (Ranged mobs)
-	Proj->pos.x = Start_Pos.x;
+	if (type = 'm') {
+		Mobile_Proj_E = CP_Image_Load("./Assets/Tiles/Projectiles/Mobile_Proj_E.png");;
+		Mobile_Proj_P = CP_Image_Load("./Assets/Tiles/Projectiles/Mobile_Proj_P.png");;
+		Proj_Img[0] = &Mobile_Proj_E;
+		Proj_Img[1] = &Mobile_Proj_P;
+	}
+	
+	Proj->pos.x = Start_Pos.x; 
 	Proj->pos.y = Start_Pos.y;
 	Proj->Direction = Direction_Vector;
 	Proj->radius = radius;	   // default size 20
@@ -92,6 +103,7 @@ void deflectprojectiles(char source,int index, Entity entities[]) {
 		else {			
 			proj->Direction = CP_Vector_Negate(proj->Direction);
 			proj->source = source;
+			Proj_Img = 
 		}
 	}
 	if (proj->type == PROJ_TYPE_STATIC) {
@@ -179,7 +191,8 @@ void draw_projectile(Projectile* proj) {
 	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
 
 	if (proj->type == PROJ_TYPE_MOBILE) {
-		CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius * 2);
+		//CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius * 2);
+		CP_Image_Draw(*Proj_Img, proj->pos.x, proj->pos.y, proj->radius * 2, proj->radius * 2, 255);
 	}
 	else {
 		//Draw the static proj explosion animation here
