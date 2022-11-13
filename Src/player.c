@@ -288,7 +288,7 @@ void draw_player(Player* player) {
 	CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
 	CP_Settings_TextSize(20.0f);
 	char buffer[500] = { 0 };
-	sprintf_s(buffer, _countof(buffer), "player state: %d, cooldown: %f, health: %d, stamina: %f", player->state, cooldown, player->health, stamina);
+	sprintf_s(buffer, _countof(buffer), "player state: %d, cooldown: %f, health: %d, stamina: %f", player->state, cooldown, player->health, 3.5f * ((float)CP_System_GetDisplayHeight() / 100.0f));//stamina);
 	CP_Font_DrawText(buffer, 30, 30);
 	for (int i = 0, sw = 2, radius_size = (int)radius_reduction, parry_color = 255, parry_weight = (int)stamina; i < 8; ++i) {	//Creates the Barrier Effect
 		if (i == 8 - 1) {	//Sets the white color ring
