@@ -39,9 +39,6 @@
     <ClCompile Include="..\Src\boss.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\map.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Src\gametypes.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -71,12 +68,18 @@
     <ClInclude Include="..\Inc\gametypes.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\Inc\gamestates.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Assets\maps.txt">
       <Filter>Resource Files</Filter>
     </Text>
     <Text Include="..\Assets\NextRoom.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="..\Assets\Room_Wall.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>
@@ -127,6 +130,24 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Assets\Tiles\Boss\BossRest.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Slime_Idle1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Slime_Idle2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Player\player_idle1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Player\Player_walking1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Player\Player_walking2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\PlayerLife.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

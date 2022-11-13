@@ -6,11 +6,20 @@
 #include "mobs.h"
 #include "projectiles.h"
 #include "boss.h"
+#include "gamestates.h"
 // put all structs and enums under ifndef
 
-void game_init(void);
+static void load_maps(void);
 
-void game_update(void);
+static void generate_door(void);
 
-void game_exit(void);
+static void clear_all_entities(void);
+
+static void generate_current_map(void);
+
+static void draw_door(void);
+
+static void draw_room_wall(void);
+
+static void draw_room_floor(void);
 
