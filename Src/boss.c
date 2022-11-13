@@ -7,7 +7,7 @@
 #define  BOSS_HEALTH 10
 #define  BOSS_ATK_CD 2
 #define  BOSS_SPEED 10
-#define  BOSS_DIAMETER 50.0f
+#define  BOSS_DIAMETER 70.0f
 #define  BOSS_PARRY_RAD 70.0f
 #define  BOSS_PARRY_AMMO  10
 #define  BOSS_PARRY_CD  5
@@ -26,13 +26,29 @@ static int To_Atk = 0;
 static int Acceleration_Count = 1;
 static float Parry_CD_Timer = 0;
 static float animationcount = 0;
+static int boss_direction = 0;
+
 
 CP_Image boss_def = NULL;
+CP_Image* boss_img = NULL;
 CP_Image Boss_Barrier_Img = NULL;
-CP_Image boss_atk1 = NULL;
-CP_Image boss_atk2 = NULL;
-CP_Image boss_atk3 = NULL;
-CP_Image boss_atk4 = NULL;
+CP_Image boss_atk1_Right = NULL;
+CP_Image boss_atk2_Right = NULL;
+CP_Image boss_atk3_Right = NULL;
+CP_Image boss_atk4_Right = NULL;
+CP_Image boss_atk5_Right = NULL;
+CP_Image boss_atk6_Right = NULL;
+CP_Image boss_atk7_Right = NULL;
+CP_Image boss_atk1_Left = NULL;
+CP_Image boss_atk2_Left = NULL;
+CP_Image boss_atk3_Left = NULL;
+CP_Image boss_atk4_Left = NULL;
+CP_Image boss_atk5_Left = NULL;
+CP_Image boss_atk6_Left = NULL;
+CP_Image boss_atk7_Left = NULL;
+CP_Image Boss_Atk_Right[7];
+CP_Image Boss_Atk_Left[7];
+CP_Image* Boss_Atk_Img[2];
 //CP_Image boss_atk5 = NULL;
 
 entity_struct init_boss(void) {
@@ -54,35 +70,53 @@ entity_struct init_boss(void) {
 	}
 	target_location = boss.pos;
 	Boss_Barrier_Img = CP_Image_Load("./Assets/Tiles/Boss/Boss_Barrier.png");
+	boss_def = CP_Image_Load("./Assets/Tiles/Boss/Boss_Base3.png");
+	CP_Image boss_atk1_Right = CP_Image_Load("./Assets/Tiles/Boss/BossAtk1.png");
+	CP_Image boss_atk2_Right = CP_Image_Load("./Assets/Tiles/Boss/BossAtk2.png");
+	CP_Image boss_atk3_Right = CP_Image_Load("./Assets/Tiles/Boss/BossAtk3.png");
+	CP_Image boss_atk4_Right = CP_Image_Load("./Assets/Tiles/Boss/BossAtk4.png");
+	CP_Image boss_atk5_Right = CP_Image_Load("./Assets/Tiles/Boss/BossAtk5.png");
+	CP_Image boss_atk6_Right = CP_Image_Load("./Assets/Tiles/Boss/BossAtk6.png");
+	CP_Image boss_atk7_Right = CP_Image_Load("./Assets/Tiles/Boss/BossAtk7.png");
+	Boss_Atk_Right[0] = boss_atk1_Right;
+	Boss_Atk_Right[1] = boss_atk2_Right;
+	Boss_Atk_Right[2] = boss_atk3_Right;
+	Boss_Atk_Right[3] = boss_atk4_Right;
+	Boss_Atk_Right[4] = boss_atk5_Right;
+	Boss_Atk_Right[5] = boss_atk6_Right;
+	Boss_Atk_Right[6] = boss_atk7_Right;
+	CP_Image boss_atk1_Left = CP_Image_Load("./Assets/Tiles/Boss/BossAtk1Left.png");
+	CP_Image boss_atk2_Left = CP_Image_Load("./Assets/Tiles/Boss/BossAtk2Left.png");
+	CP_Image boss_atk3_Left = CP_Image_Load("./Assets/Tiles/Boss/BossAtk3Left.png");
+	CP_Image boss_atk4_Left = CP_Image_Load("./Assets/Tiles/Boss/BossAtk4Left.png");
+	CP_Image boss_atk5_Left = CP_Image_Load("./Assets/Tiles/Boss/BossAtk5Left.png");
+	CP_Image boss_atk6_Left = CP_Image_Load("./Assets/Tiles/Boss/BossAtk6Left.png");
+	CP_Image boss_atk7_Left = CP_Image_Load("./Assets/Tiles/Boss/BossAtk7Left.png");
+	Boss_Atk_Left[0] = boss_atk1_Left;
+	Boss_Atk_Left[1] = boss_atk2_Left;
+	Boss_Atk_Left[2] = boss_atk3_Left;
+	Boss_Atk_Left[3] = boss_atk4_Left;
+	Boss_Atk_Left[4] = boss_atk5_Left;
+	Boss_Atk_Left[5] = boss_atk6_Left;
+	Boss_Atk_Left[6] = boss_atk7_Left;
+	Boss_Atk_Img[0] = Boss_Atk_Left;
+	Boss_Atk_Img[1] = Boss_Atk_Right;
+	
+	boss_img = &boss_def;
 	return (entity_struct) { .boss = boss };
 }
 void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Boss* boss = &(entities[boss_idx].boss);
 	Player* player = &(entities[player_idx].boss);
-	boss_def = CP_Image_Load("./Assets/Tiles/Boss/Boss_Base.png");
-	boss_atk1 = CP_Image_Load("./Assets/Tiles/Boss/BossAtk1.png");
-	boss_atk2 = CP_Image_Load("./Assets/Tiles/Boss/BossAtk2.png");
-	boss_atk3 = CP_Image_Load("./Assets/Tiles/Boss/BossAtk3.png");
-	boss_atk4 = CP_Image_Load("./Assets/Tiles/Boss/BossAtk4.png");
-	//boss_atk5 = CP_Image_Load("./Assets/Tiles/Boss/BossAtk5.png");
-	CP_Image Boss_Image[] = { boss_def,boss_atk1 ,boss_atk2 ,boss_atk3,boss_atk4,boss_def };
-
 	if (boss->health) {
+
 		CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
 		CP_Settings_TextSize(20.0f);
 
 		char buffer[500] = { 0 };
 		sprintf_s(buffer, _countof(buffer), "health: %d", boss->health);
 		CP_Font_DrawText(buffer, 30, 50);
-		CP_Graphics_DrawCircle(boss->pos.x, boss->pos.y, boss->parryrad * 2);
-		//CP_Image_Draw(Boss_Barrier_Img, boss->pos.x, boss->pos.y, boss->parryrad * 2, boss->parryrad * 2, boss->Parry_BaseWeight);
-		
-		//Prints the Boss Object
-		CP_Settings_StrokeWeight(0.0f);
-		CP_Settings_Fill(CP_Color_Create(255 / (11 - boss->health), 255, 255, 255));
-
-		
-		CP_Image_Draw(Boss_Image[(int)animationcount % 6], boss->pos.x, boss->pos.y, boss->diameter * 2, boss->diameter * 2, 255);
+		draw_boss(boss);
 
 		
 
@@ -106,6 +140,7 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 		}
 		else {
 			Parry_CD_Timer += CP_System_GetDt();
+
 			if (Parry_CD_Timer >= boss->parry_cd) {
 				boss->parry_ammo = BOSS_PARRY_AMMO;
 				boss->Parry_BaseWeight = 255;
@@ -120,6 +155,7 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 		if (Atk_Time_Tracker > boss->atk_cd) {
 			To_Atk = 1;
 			Atk_Time_Tracker = 0;
+			
 			D_vector = CP_Vector_Normalize(CP_Vector_Set(player->pos.x - boss->pos.x, player->pos.y - boss->pos.y));
 			CP_Vector offset_Vector = CP_Vector_Negate(CP_Vector_Scale(D_vector, (boss->parryrad - (boss->diameter)) / CP_Vector_Length(D_vector)));
 			target_location.x = player->pos.x + offset_Vector.x;
@@ -128,6 +164,8 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 			//Draw the Boss atk_prep animation
 		}
 		if (To_Atk) {
+			
+			boss_img = *(Boss_Atk_Img + boss_direction) + (int)(((float)Acceleration_Count / boss->speed) * 7);
 			for (int x = 10; x > 0; x--) { //Destroy any walls that it collides with
 				Position Next_Position;
 				Next_Position.x = boss->pos.x + (D_vector.x * (Acceleration_Count / Acceleration) / x);
@@ -143,12 +181,23 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 				if (p_idx > -1) {
 					set_projectile_values(&(entities[p_idx].projectile), 'e', 's', boss->parryrad, boss->pos, CP_Vector_Set(0, 0));
 				}
+				boss_img = *(Boss_Atk_Img + boss_direction) + 6;
 				To_Atk = 0;
 				Acceleration_Count = 1;
+				animationcount = 0;
 			}
 			else {
 				moveEntity(&(boss->pos), D_vector.x * (Acceleration_Count / Acceleration) * CP_System_GetFrameRate(), D_vector.y * (Acceleration_Count / Acceleration) * CP_System_GetFrameRate());
 				Acceleration_Count++;
+			}
+		}
+		else {
+			if (animationcount >= 0.5) {
+				boss_img = &boss_def;
+			}
+			if (Atk_Time_Tracker >= 3.0/4.0 * (float)boss->atk_cd) {
+				boss_direction = ((getVectorBetweenPositions(&(boss->pos), &(player->pos)).x > 0));
+				boss_img = *(Boss_Atk_Img + boss_direction);
 			}
 		}
 	}
@@ -156,10 +205,7 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 		entities[boss_idx].type = entity_null;
 
 	}
-
-
-	animationcount+= CP_System_GetDt()*10;
-
+	animationcount += CP_System_GetDt();
 
 }
 void Destory_Wall(int wall_pos[GRID_ROWS][GRID_COLS], Position Boss_Pos, int boss_diameter, int parry_rad ,int parry_ammo, int wall_width, int wall_height) {
@@ -177,4 +223,13 @@ void Destory_Wall(int wall_pos[GRID_ROWS][GRID_COLS], Position Boss_Pos, int bos
 
 void damage_boss(Boss* b) {
 	b->health -= 1;
+}
+
+
+void draw_boss(Boss* b) {
+	CP_Image_Draw(Boss_Barrier_Img, b->pos.x, b->pos.y, b->parryrad * 2, b->parryrad * 2, b->Parry_BaseWeight);
+	int animationnum = (int)animationcount % 2;
+	float img_size_mod = (*(boss_img) == boss_def) ? ((float)CP_Image_GetWidth(boss_def)/ (float)CP_Image_GetHeight(boss_def)) : 1;
+	int size = (*(boss_img) == boss_def) ? 70 : 175;
+	CP_Image_Draw(*boss_img, b->pos.x, b->pos.y, size*img_size_mod, size, 255);
 }
