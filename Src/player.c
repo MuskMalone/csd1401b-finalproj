@@ -291,7 +291,7 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 
 int damage_player(Player *p) {
 	if (p->state != dashing) {
-		//p->health -= 1;
+		p->health -= 1;
 		return 1;
 	}
 	return 0;
