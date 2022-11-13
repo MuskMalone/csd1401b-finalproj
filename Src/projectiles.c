@@ -90,7 +90,7 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 
 void deflectprojectiles(char source,int index, Entity entities[]) {
 	Projectile* proj = &(entities[index].projectile);
-	Proj_Img = &Mobile_Proj_P;//(source == PLAYER_PROJ_SOURCE1 || source == PLAYER_PROJ_SOURCE2) ? &Mobile_Proj_P : &Mobile_Proj_E;
+
 	if (proj->type == PROJ_TYPE_MOBILE) {
 		if (source == PROJ_VERTICAL_WALL) {
 			proj->Direction.x *= -1;
@@ -190,13 +190,16 @@ void draw_projectile(Projectile* proj) {
 
 	if (proj->type == PROJ_TYPE_MOBILE) {
 		//CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius * 2);
+		Proj_Img = (proj->source == PLAYER_PROJ_SOURCE1 || proj->source == PLAYER_PROJ_SOURCE2) ? &Mobile_Proj_P : &Mobile_Proj_E;
 		CP_Image_Draw(*Proj_Img, proj->pos.x, proj->pos.y, proj->radius * 2, proj->radius * 2, 255);
 	}
 	else {
 		//Draw the static proj explosion animation here
+		/*
 		CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius * 2);
 		if (0.0f >= proj->LifeSpan) {
 		}
+		*/
 	}
 }
 

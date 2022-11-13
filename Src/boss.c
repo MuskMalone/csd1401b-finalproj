@@ -157,7 +157,7 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 			Atk_Time_Tracker = 0;
 			
 			D_vector = CP_Vector_Normalize(CP_Vector_Set(player->pos.x - boss->pos.x, player->pos.y - boss->pos.y));
-			CP_Vector offset_Vector = CP_Vector_Negate(CP_Vector_Scale(D_vector, (boss->parryrad - (boss->diameter)) / CP_Vector_Length(D_vector)));
+			CP_Vector offset_Vector = CP_Vector_Negate(CP_Vector_Scale(D_vector, player->diameter)); ;//CP_Vector_Negate(CP_Vector_Scale(D_vector, (boss->parryrad - (boss->diameter)) / CP_Vector_Length(D_vector)));
 			target_location.x = player->pos.x + offset_Vector.x;
 			target_location.y = player->pos.y + offset_Vector.y;
 			D_vector = CP_Vector_Set(target_location.x - boss->pos.x, target_location.y - boss->pos.y);
@@ -213,6 +213,7 @@ void Destory_Wall(int wall_pos[GRID_ROWS][GRID_COLS], Position Boss_Pos, int bos
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (wall_pos[i][j]) {
 				int collided = 0;
+				collided = collisionCircleRect(Boss_Pos, parry_rad, (Position) { wall_width* (float)j, wall_height* (float)i }, wall_width, wall_height);			
 				if(parry_ammo){collided = collisionCircleRect(Boss_Pos, parry_rad, (Position) { wall_width* (float)j, wall_height* (float)i }, wall_width, wall_height); }
 				else { collided = collisionCircleRect(Boss_Pos, boss_diameter, (Position) { wall_width* (float)j, wall_height* (float)i }, wall_width, wall_height); }
 				if (collided) { wall_pos[i][j] = 0; }

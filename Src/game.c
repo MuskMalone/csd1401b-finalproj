@@ -162,7 +162,7 @@ static void draw_room_wall(void) {
 	
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
-			if (tilemap[i][j]>1) {
+			if (tilemap[i][j]>1 && room_wall_pos[i][j] == WALL_TILE) {
 				CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
 			}
 		}
