@@ -20,6 +20,7 @@ static float cooldown = .0f;
 static int melee_deflect_triggered = 0;
 
 CP_Image playerHeart = NULL;
+CP_Image Player_Barrier_Img = NULL;
 
 void release_held_projectiles(Player * player, Entity entities[]) {
 	set_state(player, resting);
@@ -96,6 +97,7 @@ entity_struct init_player(void) {
 	player.health = 5;
 
 	playerHeart = CP_Image_Load("./Assets/PlayerLife.png");
+	Player_Barrier_Img = CP_Image_Load("./Assets/Tiles/Player/Player_Barrier4.png");
 
 	player.speed = NORMAL_SPEED;
 	player.horizontal_dir = 0, player.vertical_dir = 0;
@@ -309,6 +311,7 @@ void draw_player(Player* player) {
 		CP_Settings_StrokeWeight(10.0f);
 		CP_Graphics_DrawLine(start_x, start_y, start_x + line_dist_x, start_y + line_dist_y);
 	}
+	/*
 	for (int i = 0, sw = 2, radius_size = (int)radius_reduction, parry_color = 255, parry_weight = (int)stamina; i < 8; ++i) {	//Creates the Barrier Effect
 		if (i == 8 - 1) {	//Sets the white color ring
 			radius_size = radius_reduction;
@@ -326,9 +329,11 @@ void draw_player(Player* player) {
 		CP_Settings_Fill(CP_Color_Create(218, 240, 255, 0));
 		CP_Graphics_DrawCircle(player->pos.x, player->pos.y, (player->parryrad * 2.0f) - (float)radius_size);
 	}
+	*/
 	//Increases the barrier's opacity over time ( Uncomment this if you want to change the opacity of the barrier when user click space)
 	//Prints the player Object
 	CP_Settings_StrokeWeight(0.0f);
+	CP_Image_Draw(Player_Barrier_Img, player->pos.x, player->pos.y, player->parryrad*2, player->parryrad * 2, stamina);
 	CP_Settings_Fill(CP_Color_Create(51, 255, 173, 255));
 	CP_Graphics_DrawCircle(player->pos.x, player->pos.y, player->diameter);
 }

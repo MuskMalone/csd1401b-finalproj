@@ -25,8 +25,10 @@ static int Parry_On_Cd = 0;
 static int To_Atk = 0;
 static int Acceleration_Count = 1;
 static float Parry_CD_Timer = 0;
+static float Cannon_Timer = 0;
 static float animationcount = 0;
 static int boss_direction = 0;
+
 
 
 CP_Image boss_def = NULL;
@@ -49,6 +51,7 @@ CP_Image boss_atk7_Left = NULL;
 CP_Image Boss_Atk_Right[7];
 CP_Image Boss_Atk_Left[7];
 CP_Image* Boss_Atk_Img[2];
+CP_Image Cannon_Img = NULL;
 //CP_Image boss_atk5 = NULL;
 
 entity_struct init_boss(void) {
@@ -70,6 +73,7 @@ entity_struct init_boss(void) {
 	}
 	target_location = boss.pos;
 	Boss_Barrier_Img = CP_Image_Load("./Assets/Tiles/Boss/Boss_Barrier.png");
+	Cannon_Img = CP_Image_Load("./Assets/Tiles/Boss/Cannon.png");
 	boss_def = CP_Image_Load("./Assets/Tiles/Boss/Boss_Base3.png");
 	CP_Image boss_atk1_Right = CP_Image_Load("./Assets/Tiles/Boss/BossAtk1.png");
 	CP_Image boss_atk2_Right = CP_Image_Load("./Assets/Tiles/Boss/BossAtk2.png");
@@ -124,7 +128,7 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 		if (!Parry_On_Cd) {
 			for (int i = 0; i < ENTITY_CAP; ++i) {
 				if (entities[i].type != entity_null && entities[i].type == entity_projectile) {
-					if (collisionCircle(boss->pos, boss->parryrad, entities[i].projectile.pos, entities[i].projectile.radius) && entities[i].projectile.source == 'p' && entities[i].projectile.type == PROJ_TYPE_MOBILE) {
+					if (collisionCircle(boss->pos, boss->parryrad, entities[i].projectile.pos, entities[i].projectile.radius) && entities[i].projectile.source != 'e' && entities[i].projectile.type == PROJ_TYPE_MOBILE) {
 						if (boss->parry_ammo > 0) {
 							deflectprojectiles('e', i, entities);
 							boss->parry_ammo--;
@@ -205,7 +209,9 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 		entities[boss_idx].type = entity_null;
 
 	}
+	Cannon_Fire_Proj(entities, player);
 	animationcount += CP_System_GetDt();
+	Cannon_Timer += CP_System_GetDt();
 
 }
 void Destory_Wall(int wall_pos[GRID_ROWS][GRID_COLS], Position Boss_Pos, int boss_diameter, int parry_rad ,int parry_ammo, int wall_width, int wall_height) {
@@ -233,4 +239,23 @@ void draw_boss(Boss* b) {
 	float img_size_mod = (*(boss_img) == boss_def) ? ((float)CP_Image_GetWidth(boss_def)/ (float)CP_Image_GetHeight(boss_def)) : 1;
 	int size = (*(boss_img) == boss_def) ? 70 : 175;
 	CP_Image_Draw(*boss_img, b->pos.x, b->pos.y, size*img_size_mod, size, 255);
+	CP_Image_DrawAdvanced(Cannon_Img, 0.5 * CP_System_GetWindowWidth(), 0 + WALL_DIM, WALL_DIM * 2, WALL_DIM * 2, 255,180);
+	CP_Image_Draw(Cannon_Img, 0.5 * CP_System_GetWindowWidth(), CP_System_GetWindowHeight() - WALL_DIM, WALL_DIM*2, WALL_DIM*2,255);
+}
+
+void Cannon_Fire_Proj(Entity entities[],Player *player) {
+	
+	Position CanonProj1 = (Position){0.5* CP_System_GetWindowWidth(),0+WALL_DIM+10};
+	Position CanonProj2 = (Position){ 0.5 * CP_System_GetWindowWidth(),CP_System_GetWindowHeight()-WALL_DIM-10 };
+	if(Cannon_Timer >= 2){
+		int p_idx1 = insert_to_entity_array(entity_projectile, entities, init_projectile);
+		if (p_idx1 > 0) {
+			set_projectile_values(&(entities[p_idx1].projectile), 'e', 'm', 10, CanonProj1, getVectorBetweenPositions(&(CanonProj1), &(player->pos)));
+		}
+		int p_idx2 = insert_to_entity_array(entity_projectile, entities, init_projectile);
+		if (p_idx1 > 0) {
+			set_projectile_values(&(entities[p_idx2].projectile), 'e', 'm', 10, CanonProj2, getVectorBetweenPositions(&(CanonProj2), &(player->pos)));
+		}
+		Cannon_Timer = 0;
+	}
 }
