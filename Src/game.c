@@ -243,7 +243,7 @@ void game_update(void)
 			if (state == room_active) {
 				for (int i = 0; i < ENTITY_CAP; ++i) {
 					// if the entities are not player or null
-					if (entities[i].type != entity_player && entities[i].type != entity_null)
+					if (entities[i].type != entity_player && entities[i].type != entity_null && entities[i].type != entity_projectile)
 						break;
 					if (i == ENTITY_CAP - 1)
 						state = room_clear;

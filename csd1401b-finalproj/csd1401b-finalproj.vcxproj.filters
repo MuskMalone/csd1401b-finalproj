@@ -129,5 +129,23 @@
     <Image Include="..\Assets\Tiles\Boss\BossRest.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\Assets\Tiles\Slime_Idle1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Slime_Idle2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Player\player_idle1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Player\Player_walking1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Player\Player_walking2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\PlayerLife.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

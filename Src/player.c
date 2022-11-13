@@ -19,6 +19,8 @@ static int is_cooldown = 0;
 static float cooldown = .0f;
 static int melee_deflect_triggered = 0;
 
+CP_Image playerHeart = NULL;
+
 void release_held_projectiles(Player * player, Entity entities[]) {
 	set_state(player, resting);
 	melee_deflect_triggered = 0;
@@ -92,6 +94,9 @@ entity_struct init_player(void) {
 	Position p;
 
 	player.health = 5;
+
+	playerHeart = CP_Image_Load("./Assets/PlayerLife.png");
+
 	player.speed = NORMAL_SPEED;
 	player.horizontal_dir = 0, player.vertical_dir = 0;
 	player.state = resting;
@@ -105,6 +110,11 @@ entity_struct init_player(void) {
 }
 void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Player* player = &(entities[player_idx].player);
+
+	for (int i = 1; i <= player->health; i++)
+	{
+		CP_Image_Draw(playerHeart, 32 * i, 64, 32, 32, 255);
+	}
 
 	// if player is dead, stop doing anything;aa
 	if (player->health <= 0) {
