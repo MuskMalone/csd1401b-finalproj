@@ -150,5 +150,11 @@
     <Image Include="..\Assets\PlayerLife.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\Assets\Tiles\ExplodeSlime_idle1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\ExplodeSlime_Idle2 .png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
