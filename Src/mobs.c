@@ -1,31 +1,49 @@
 #include "mobs.h"
+#include "player.h"
+#include "projectiles.h"
+#include "map.h"
+#include <stdlib.h>
 //what each mob had run
 //when each mob is running on the screen, each codes runs
-BOOL mob_isNear = 0;
+int collision_mob_wall(Position p, float diameter, int wall_pos[GRID_ROWS][GRID_COLS]) {
+	for (int i = 0; i < GRID_ROWS; ++i) {
+		for (int j = 0; j < GRID_COLS; ++j) {
+			if (wall_pos[i][j]) {
+				int collided = collisionCircleRect(p, diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM);
+				if (collided) {
+					return collided;
+				}
+			}
+		}
+	}
+	return 0;
+}
 
 void expansion_mob_size(Entity entities[], int mob_idx)
 {
-	float currentElapsedTime = CP_System_GetDt();
-
 	Mob* mob = &(entities[mob_idx].mob);
 	float mob_dia = mob->diameter; //initialising in the local variable
-	float circle_expansion_cap = 20.0f;
+	mob->timer -= CP_System_GetDt();
 
-	mob->diameter++; //plusing the global variable 
+	mob->diameter += 50.0f * CP_System_GetDt();
 	
-
-	if (mob_dia >= 100.0f)
+	//if times up
+	if (mob->timer <= 0.0f)//(mob_dia >= 100.0f)
 	{
-		
+		int p_idx = insert_to_entity_array(entity_projectile, entities, init_projectile);
+		if (p_idx > 0)
+		{
+			Projectile* p = &(entities[p_idx].projectile);
+			Mob* m = &(entities[mob_idx].mob);
+			set_projectile_values(p, 'e', PROJ_TYPE_STATIC, mob->diameter / 2.0f, m->pos, getVectorBetweenPositions(&(m->pos), &(entities[PLAYER_IDX].player.pos)));
+		}
 		entities[mob_idx].type = entity_null;
 	}
 }
 
-
-
-void mob_explosion(int player_idx, Entity entities[], int mob_idx)
+void mob_explosion(int player_idx, Entity entities[], int mob_idx, int wall_pos[GRID_ROWS][GRID_COLS])
 {
-	
+	float mob_speed = 100.0f;
 	
 	Player* player = &(entities[player_idx].player);
 	Mob* mob = &(entities[mob_idx].mob);
@@ -36,32 +54,148 @@ void mob_explosion(int player_idx, Entity entities[], int mob_idx)
 	float explosion_radius = 100.0f;
 	
 	//creating of the mob
-	CP_Settings_StrokeWeight(0.0f);
-	CP_Settings_Fill(CP_Color_Create(51, 255, 173, 255));
+
 	CP_Vector direction = getVectorBetweenPositions(&(mob->pos), &(player->pos));
-	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
-	CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob_dia);
 
-	//mob_isNear = collisionCircle(mob->pos, mob_dia * 2.0f, player->pos, player_dia * 2.0f) ? 1 : 0;
 
-	//mob_isNear = 0;
-	//collision of enemy and the player
-	if (collisionCircle(mob->pos, mob_dia * 2.0f ,player->pos, player_dia * 2.0f)) //give a certain distance
-	{
-		mob->is_exploding = 1;
-		moveEntity(&(mob->pos), direction.x * 50.0f, direction.y * 50.0f); //the enemy will move
-		
-	}
 	if (mob->is_exploding)
 	{
 		expansion_mob_size(entities, mob_idx); //and runs the function that expands the size of the mob
 	}
 
-	//if (collisionCircle(mob->pos, explosion_radius, player->pos, explosion_radius))
-	//{
-	//	//player health loss
-	//}
+	if (collisionCircle(mob->pos, mob_dia * 5.0f, player->pos, player_dia * 5.0f)) //give a certain distance
+	{
+		//moveEntity(&(mob->pos), direction.x * 50.0f, direction.y * 50.0f); //the enemy will move
+		int mob_at_xborder, mob_at_xwall, mob_at_yborder, mob_at_ywall;
+		float xspeed = (float)(direction.x * mob_speed),
+			yspeed = (float)(direction.y * mob_speed);
+		float futureX = mob->pos.x + xspeed * CP_System_GetDt(),
+			futureY = mob->pos.y + yspeed * CP_System_GetDt();
 
+		mob_at_xborder = !((futureX < (CP_System_GetWindowWidth() - ((mob->diameter) / 2.0f))) && (futureX > (0.0f + ((mob->diameter) / 2.0f)))),
+			mob_at_xwall = collision_mob_wall((Position) { .x = futureX, .y = mob->pos.y }, mob->diameter, wall_pos);
+
+		mob_at_yborder = !((futureY < (CP_System_GetWindowHeight() - ((mob->diameter) / 2.0f))) && (futureY > (0.0f + ((mob->diameter) / 2.0f)))),
+			mob_at_ywall = collision_mob_wall((Position) { .x = mob->pos.x, .y = futureY }, mob->diameter, wall_pos);
+
+		if (!(mob_at_xborder || mob_at_xwall))
+			moveEntity(&(mob->pos), xspeed, 0.0f); //the enemy will move
+		if (!(mob_at_yborder || mob_at_ywall))
+			moveEntity(&(mob->pos), 0.0f, yspeed); //the enemy will move
+
+		if (collisionCircle(mob->pos, mob_dia * 2.0f, player->pos, player_dia * 2.0f))
+		{
+			mob->is_exploding = 1;
+		}
+	}
+}
+
+void mob_ranged(int player_idx, Entity entities[], int mob_idx)
+{
+	Mob* mob = &(entities[mob_idx].mob);
+	Player* player = &(entities[player_idx].player);
+	Position position_player = player->pos;
+	Position mob_pos = mob->pos;
+	float mob_dia = mob->diameter;
+	int proj_radius = 10;
+
+	//creating of the mob
+
+
+	
+	mob->timer -= CP_System_GetDt();
+	if (mob->timer < 0.0f) {
+		int p_idx = insert_to_entity_array(entity_projectile, entities, init_projectile);
+		if (p_idx > 0) {
+			set_projectile_values(&(entities[p_idx].projectile), 'e', 'm', proj_radius, mob_pos, getVectorBetweenPositions(&(mob_pos), &(position_player)));
+			// timer between 1 and 5 seconds
+			mob->timer = MOB_RANGED_TIMER;
+		}
+	}
+}
+
+void mob_melee(int player_idx, Entity entities[], int mob_idx, int wall_pos[GRID_ROWS][GRID_COLS])
+{
+	float mob_speed = 100.0f;
+	Mob* mob = &(entities[mob_idx].mob);
+	Player* player = &(entities[player_idx].player);
+	CP_Vector direction = getVectorBetweenPositions(&(mob->pos), &(player->pos));
+	Position position_player = player->pos;
+	Position mob_pos = mob->pos;
+	float mob_dia = mob->diameter;
+	float proj_radius = 25.0f;
+	float player_dia = player->diameter;
+
+
+	if (mob->melee_state == mob_resting) {
+		if (collisionCircle(mob->pos, mob_dia * 5.0f, player->pos, player_dia * 5.0f)) //give a certain distance
+		{
+			mob->melee_state = mob_moving;
+		}
+	}
+	else if (mob->melee_state == mob_moving) {
+		if (collisionCircle(mob->pos, mob_dia / 2.0f, player->pos, player_dia))
+		{
+			mob->melee_state = mob_attacking;
+			return;
+		}
+		int mob_at_xborder, mob_at_xwall, mob_at_yborder, mob_at_ywall;
+		float xspeed = (float)(direction.x * mob_speed),
+			yspeed = (float)(direction.y * mob_speed);
+		float futureX = mob->pos.x + xspeed * CP_System_GetDt(),
+			futureY = mob->pos.y + yspeed * CP_System_GetDt();
+
+		mob_at_xborder = !((futureX < (CP_System_GetWindowWidth() - ((mob->diameter) / 2.0f))) && (futureX > (0.0f + ((mob->diameter) / 2.0f)))),
+			mob_at_xwall = collision_mob_wall((Position) { .x = futureX, .y = mob->pos.y }, mob->diameter, wall_pos);
+
+		mob_at_yborder = !((futureY < (CP_System_GetWindowHeight() - ((mob->diameter) / 2.0f))) && (futureY > (0.0f + ((mob->diameter) / 2.0f)))),
+			mob_at_ywall = collision_mob_wall((Position) { .x = mob->pos.x, .y = futureY }, mob->diameter, wall_pos);
+
+		if (!(mob_at_xborder || mob_at_xwall))
+			moveEntity(&(mob->pos), xspeed, 0.0f); //the enemy will move
+		if (!(mob_at_yborder || mob_at_ywall))
+			moveEntity(&(mob->pos), 0.0f, yspeed); //the enemy will move
+
+		//will move to somewhere near the player, not 100% on the player itself
+	}
+	else if (mob->melee_state == mob_attacking) {
+		mob->timer -= CP_System_GetDt();
+
+		if (mob->timer <= 0.0f)
+		{
+			mob->timer = MOB_MELEE_TIMER;
+			int p_idx = insert_to_entity_array(entity_projectile, entities, init_projectile);
+			if (p_idx > 0) {
+				CP_Vector v = getVectorBetweenPositions(&(mob_pos), &(position_player));
+				set_projectile_values(
+						&(entities[p_idx].projectile),
+						'e', 's',
+						proj_radius,
+						(Position) {
+							mob->pos.x + (mob->diameter * v.x), 
+							mob->pos.y + (mob->diameter * v.y)
+						},
+						v
+					);
+				mob->melee_state = mob_attacked;
+			}
+		}
+	}
+	else if (mob->melee_state == mob_attacked) {
+		mob->timer -= 2.0f * CP_System_GetDt();
+		if (mob->timer <= 0.0f)
+		{
+			mob->timer = MOB_MELEE_TIMER;
+			if (collisionCircle(mob->pos, mob_dia * 5.0f, player->pos, player_dia * 5.0f)) //give a certain distance
+			{
+				mob->melee_state = mob_moving;
+			}
+			else {
+				mob->melee_state = mob_resting;
+			}
+		}
+
+	}
 }
 
 entity_struct init_mob() {
@@ -70,22 +204,72 @@ entity_struct init_mob() {
 	float Window_Height = (float)CP_System_GetWindowHeight();
 	
 	//setting the mob position and the diameter
+	int type = rand() % 3;
 	Mob mob;
-	//Position p;
-	
-	//p.x = (Window_Width / 3);
-	//p.y = (Window_Height / 3);
-	mob.pos.x = CP_Random_RangeFloat(0.0f, Window_Width);
-	mob.pos.y = CP_Random_RangeFloat(0.0f, Window_Height);
-	mob.diameter = 50.0f;
-	mob.health = 50.0f;
-	mob.radius_damage = 100.0f;
-	mob.is_exploding = 0;
+	mob.type = (attack_type)type;
+	mob.diameter = WALL_DIM;
+	mob.health = MOB_HEALTH;
+
+	switch (mob.type) {
+	case(range):
+		mob.timer = MOB_RANGED_TIMER;
+		break;
+	case(melee):
+		mob.timer = MOB_MELEE_TIMER;
+		mob.melee_state = mob_resting;
+		break;
+	case(explode):
+		mob.timer = MOB_EXP_TIMER;
+		mob.is_exploding = 0;
+		break;
+	}
+	//mob.degree = 0.0f;
+
 	return (entity_struct) {.mob = mob};
 }
 
-void update_mob(int mob_idx, int player_idx, Entity entities[]) 
+void update_mob(int mob_idx, int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS])
 {
-	mob_explosion(player_idx, entities, mob_idx);
+	Mob* mob = &(entities[mob_idx].mob);
+	if (mob->health <= 0) {
+		entities[mob_idx].type = entity_null;
+		return;
+	}
+
+	switch (mob->type) {
+	case(range):
+		mob_ranged(player_idx, entities, mob_idx);
+		break;
+	case(melee):
+		mob_melee(player_idx, entities, mob_idx, wall_pos);
+		break;
+	case(explode):
+		mob_explosion(player_idx, entities, mob_idx, wall_pos);
+		break;
+	}
+	draw_mob(mob);
+}
+
+void damage_mob(Mob* mob) {
+	(mob->health)--;
+}
+void draw_mob(Mob* mob) {
+	switch (mob->type) {
+	case(range):
+		CP_Settings_StrokeWeight(0.0f);
+		CP_Settings_Fill(CP_Color_Create(0, 255, 0, 255));
+		CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob->diameter);
+		break;
+	case(melee):
+		CP_Settings_StrokeWeight(0.0f);
+		CP_Settings_Fill(CP_Color_Create(0, 0, 255, 255));
+		CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob->diameter);
+		break;
+	case(explode):
+		CP_Settings_StrokeWeight(0.0f);
+		CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
+		CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob->diameter);
+		break;
+	}
 }
 

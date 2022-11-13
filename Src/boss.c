@@ -1,6 +1,7 @@
 #include "boss.h"
 #include "projectiles.h"
 #include "utils.h"
+#include <stdlib.h>
 
 
 #define  BOSS_HEALTH 10
@@ -27,11 +28,15 @@ static float Parry_CD_Timer = 0;
 static float animationcount = 0;
 
 CP_Image boss_def = NULL;
+CP_Image Boss_Barrier_Img = NULL;
 CP_Image boss_atk1 = NULL;
 CP_Image boss_atk2 = NULL;
 CP_Image boss_atk3 = NULL;
+CP_Image boss_atk4 = NULL;
+//CP_Image boss_atk5 = NULL;
 
 entity_struct init_boss(void) {
+
 	Boss boss;
 	boss.health = BOSS_HEALTH;
 	boss.atk_cd = BOSS_ATK_CD;
@@ -48,39 +53,44 @@ entity_struct init_boss(void) {
 		Acceleration += i;
 	}
 	target_location = boss.pos;
+	Boss_Barrier_Img = CP_Image_Load("./Assets/Tiles/Boss/Boss_Barrier.png");
 	return (entity_struct) { .boss = boss };
 }
 void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Boss* boss = &(entities[boss_idx].boss);
 	Player* player = &(entities[player_idx].boss);
-	boss_def = CP_Image_Load("./Assets/Tiles/Boss/BossRest.png");
+	boss_def = CP_Image_Load("./Assets/Tiles/Boss/Boss_Base.png");
 	boss_atk1 = CP_Image_Load("./Assets/Tiles/Boss/BossAtk1.png");
 	boss_atk2 = CP_Image_Load("./Assets/Tiles/Boss/BossAtk2.png");
 	boss_atk3 = CP_Image_Load("./Assets/Tiles/Boss/BossAtk3.png");
-	CP_Image Boss_Image[] = { boss_def,boss_atk1 ,boss_atk2 ,boss_atk3,boss_def };
+	boss_atk4 = CP_Image_Load("./Assets/Tiles/Boss/BossAtk4.png");
+	//boss_atk5 = CP_Image_Load("./Assets/Tiles/Boss/BossAtk5.png");
+	CP_Image Boss_Image[] = { boss_def,boss_atk1 ,boss_atk2 ,boss_atk3,boss_atk4,boss_def };
 
 	if (boss->health) {
-		for (int i = 1, stroke_weight = 3, radius_size = BOSS_PARRY_RAD, parry_color = 255, parry_weight = boss->Parry_BaseWeight; i < (BOSS_RAD_GRADIENT + 1); ++i) {	//Creates the Barrier Effect
-			CP_Settings_StrokeWeight(stroke_weight);
-			CP_Settings_Stroke(CP_Color_Create(parry_color, 50, 0, parry_weight));
-			CP_Settings_Fill(CP_Color_Create(0, 0, 0, 0));
-			CP_Graphics_DrawCircle(boss->pos.x, boss->pos.y, radius_size * 2);
-			radius_size -= (BOSS_PARRY_RAD / BOSS_RAD_GRADIENT) - stroke_weight * 2;
-			parry_color -= (255 / BOSS_RAD_GRADIENT);
-			parry_weight -= (boss->Parry_BaseWeight / BOSS_RAD_GRADIENT);
-		}
+		CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
+		CP_Settings_TextSize(20.0f);
+
+		char buffer[500] = { 0 };
+		sprintf_s(buffer, _countof(buffer), "health: %d", boss->health);
+		CP_Font_DrawText(buffer, 30, 50);
+		CP_Graphics_DrawCircle(boss->pos.x, boss->pos.y, boss->parryrad * 2);
+		//CP_Image_Draw(Boss_Barrier_Img, boss->pos.x, boss->pos.y, boss->parryrad * 2, boss->parryrad * 2, boss->Parry_BaseWeight);
+		
 		//Prints the Boss Object
 		CP_Settings_StrokeWeight(0.0f);
 		CP_Settings_Fill(CP_Color_Create(255 / (11 - boss->health), 255, 255, 255));
-		//CP_Graphics_DrawCircle(boss->pos.x, boss->pos.y, boss->diameter);
-		CP_Image_Draw(Boss_Image[(int)animationcount % 5], boss->pos.x, boss->pos.y, boss->diameter * 2, boss->diameter * 2, 255);
+
+		
+		CP_Image_Draw(Boss_Image[(int)animationcount % 6], boss->pos.x, boss->pos.y, boss->diameter * 2, boss->diameter * 2, 255);
+
 		
 
 		//Boss Deflect
 		if (!Parry_On_Cd) {
 			for (int i = 0; i < ENTITY_CAP; ++i) {
 				if (entities[i].type != entity_null && entities[i].type == entity_projectile) {
-					if (collisionCircle(boss->pos, boss->parryrad, entities[i].projectile.pos, entities[i].projectile.radius) && entities[i].projectile.source == 'p') {
+					if (collisionCircle(boss->pos, boss->parryrad, entities[i].projectile.pos, entities[i].projectile.radius) && entities[i].projectile.source == 'p' && entities[i].projectile.type == PROJ_TYPE_MOBILE) {
 						if (boss->parry_ammo > 0) {
 							deflectprojectiles('e', i, entities);
 							boss->parry_ammo--;
@@ -108,7 +118,7 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 		Atk_Time_Tracker += CP_System_GetDt();
 		//Boss movement
 		if (Atk_Time_Tracker > boss->atk_cd) {
-			//To_Atk = 1;
+			To_Atk = 1;
 			Atk_Time_Tracker = 0;
 			D_vector = CP_Vector_Normalize(CP_Vector_Set(player->pos.x - boss->pos.x, player->pos.y - boss->pos.y));
 			CP_Vector offset_Vector = CP_Vector_Negate(CP_Vector_Scale(D_vector, (boss->parryrad - (boss->diameter)) / CP_Vector_Length(D_vector)));
@@ -148,9 +158,8 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 	}
 
 
-	
-	animationcount += CP_System_GetDt() * 2;
-	
+	animationcount+= CP_System_GetDt()*10;
+
 
 }
 void Destory_Wall(int wall_pos[GRID_ROWS][GRID_COLS], Position Boss_Pos, int boss_diameter, int parry_rad ,int parry_ammo, int wall_width, int wall_height) {
