@@ -1,11 +1,12 @@
 
+#include "mainmenu.h"
 #include "game.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 #define BOSS_IDX 1
-
-#define SIZE 5
+#define BOSS_ROOM_INTERVAL 6
+#define SIZE 11
 // to disable vs warning for fopen function
 #pragma warning(disable : 4996)
 
@@ -15,9 +16,9 @@ static int map_pos[SIZE][GRID_ROWS][GRID_COLS];
 static int door_pos[GRID_ROWS][GRID_COLS];
 static int room_wall_pos[GRID_ROWS][GRID_COLS];
 static unsigned int random_tile_number;
-static int count_new_room = 0;
+static int rooms_cleared = 0;
 static int map_idx = 0;
-typedef enum room_state { room_pause, room_active, room_clear, loading } room_state;
+typedef enum room_state { room_pause, room_active, room_clear, loading, room_failed } room_state;
 enum tile_type { FLOOR_TILE, WALL_TILE, MOB_TILE, BOSS_TILE };
 static room_state state = loading;
 
@@ -32,6 +33,14 @@ CP_Image grave = NULL;
 CP_Image Anvil = NULL;
 CP_Image Barrel = NULL;
 CP_Image ImageList[10];
+
+static void pause_menu(void) {
+
+
+	CP_Settings_RectMode(CP_POSITION_CENTER);
+	CP_Graphics_DrawRect(480, 480, 480, 480);
+
+}
 
 static void load_maps(void) {
 
@@ -80,6 +89,7 @@ static void generate_door(void) {
 	fclose(door);
 
 }
+
 //clears all entities except player
 static void clear_all_entities(void) {
 	for (int i = 0; i < ENTITY_CAP; ++i) {
@@ -138,18 +148,18 @@ static void draw_door(void) {
 static void draw_room_wall(void) {
 
 	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
-	/*
-	for (int i = 1; i < GRID_COLS-1; i+=2) {
+	
+	/*for (int i = 1; i < GRID_COLS - 1; i += 2) {
 		CP_Image_Draw(TopWall, ((i+1) * WALL_DIM), (WALL_DIM), WALL_DIM *2, WALL_DIM *2, 255);
 		CP_Image_Draw(BottomWall,((i + 1) * WALL_DIM), CP_System_GetWindowHeight() - (WALL_DIM), WALL_DIM * 2, WALL_DIM * 2, 255);
 	}
-	*/
-	/*
+	
+	
 	for (int i = 1; i < GRID_ROWS-1; i += 2) {
 		CP_Image_Draw(LeftWall, (WALL_DIM), ((i + 1) * WALL_DIM), WALL_DIM * 2, WALL_DIM * 2, 255);
 		CP_Image_Draw(RightWall, CP_System_GetWindowWidth() - (WALL_DIM), ((i + 1) * WALL_DIM), WALL_DIM * 2, WALL_DIM * 2, 255);
-	}
-	*/
+	}*/
+	
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (tilemap[i][j]>1) {
@@ -173,11 +183,17 @@ static void draw_room_floor(void) {
 
 void game_init(void)
 {
+	rooms_cleared = 0;
+	map_idx = 0;
+	state = loading;
 	//initialized the player as idx 0
 	for (int i = 0; i < ENTITY_CAP; ++i) {
 		entities[i].type = entity_null;
 	}
-	insert_to_entity_array(entity_player, entities, init_player);
+	entities[PLAYER_IDX] = (Entity){
+		entity_player,
+		init_player()
+	};
 
 	load_maps();
 	generate_door();
@@ -200,6 +216,7 @@ void game_init(void)
 
 void game_update(void)
 {
+	CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
 
 	CP_Graphics_ClearBackground(CP_Color_Create(88, 88, 88, 255));
 	if (CP_Input_KeyTriggered(KEY_Q)) {
@@ -215,13 +232,51 @@ void game_update(void)
 	if (CP_Input_KeyTriggered(KEY_F)) {
 		clear_all_entities();
 	}
+	if (state == room_failed) {
 
-	if (state == room_pause) {
+		// draw ur room failed stuff here
+		clear_all_entities();
+		CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
+		CP_Settings_TextSize(50.0f);
 
+		char buffer[500] = { 0 };
+		sprintf_s(buffer, _countof(buffer), "YOU DIED\nR to main menu, ESC to quit");
+		CP_Font_DrawText(buffer, 200, 200);
+		if (CP_Input_KeyTriggered(KEY_ESCAPE)) exit(EXIT_SUCCESS);
+		else if (CP_Input_KeyTriggered(KEY_R)) CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
+	}
+	else if (state == room_pause) {
+
+		//draw the stuff here
+		pause_menu();
+
+		//resume game
+		if (CP_Input_KeyTriggered(KEY_ESCAPE)) {
+
+			// explicitly goes to room_active state, or itll cause undefined behavior
+			// room_active will check if the game can go to room_cleared
+			state = room_active;//!room_pause;
+		}
+		//exit to main menu
+		else if (IsAreaClicked(480, 480, 480, 480, CP_Input_GetMouseX(), CP_Input_GetMouseY())) {
+
+			if (CP_Input_MouseClicked(MOUSE_BUTTON_LEFT)) {
+
+				CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
+				state = loading;
+			}
+		}
 	}
 	else {
 		if (state == loading) {
-			map_idx = 1;//rand() % 5; //set map idx to a random range between 0 to 4
+			//if it is boss room
+			if ((rooms_cleared % BOSS_ROOM_INTERVAL) == (BOSS_ROOM_INTERVAL - 1)) {
+				map_idx = 0;
+			}
+			else {
+				map_idx = rand() % 10 + 1; //set map idx to a random range between 0 to 4
+
+			}
 			generate_current_map();
 			
 			state = room_active;
@@ -235,11 +290,13 @@ void game_update(void)
 				switch (entities[i].type) {
 				case entity_player: update_player(PLAYER_IDX, entities, room_wall_pos); break;
 				case entity_mob: update_mob(i, PLAYER_IDX, entities, room_wall_pos); break;
-				case entity_boss: update_boss(BOSS_IDX, PLAYER_IDX, entities, room_wall_pos); break;
+				case entity_boss: update_boss(i, PLAYER_IDX, entities, room_wall_pos); break;
 				case entity_projectile: update_projectile(i, entities, room_wall_pos); break;
 				}
 			}
-			
+
+			//ends the game
+			if (entities[PLAYER_IDX].player.state == dead) state = room_failed;
 			if (state == room_active) {
 				for (int i = 0; i < ENTITY_CAP; ++i) {
 					// if the entities are not player or null
@@ -247,16 +304,25 @@ void game_update(void)
 						break;
 					if (i == ENTITY_CAP - 1)
 						state = room_clear;
+					if (CP_Input_KeyTriggered(KEY_ESCAPE)) {
+
+						state = room_pause;
+					}
 				}
 			}
 			else if (state == room_clear) {
 				clear_all_entities();
-				//draw_door();
+				draw_door();
 				for (int i = 0; i < GRID_ROWS; ++i) {
 					for (int j = 0; j < GRID_COLS; ++j) {
 						if (door_pos[i][j]) {
 							if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) { //when touch door
+								if (state != loading) rooms_cleared++;
 								state = loading;
+							}
+							if (CP_Input_KeyTriggered(KEY_ESCAPE)) {
+
+								state = room_pause;
 							}
 						}
 					}
@@ -266,15 +332,13 @@ void game_update(void)
 		}
 	}
 	
-	if (CP_Input_KeyTriggered(KEY_1))
-		CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP);
-	else if (CP_Input_KeyTriggered(KEY_2))
-		CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
-	else if (CP_Input_KeyTriggered(KEY_3))
-		CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_REPEAT);
-	else if (CP_Input_KeyTriggered(KEY_4))
-		CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_MIRROR);
-		
+	CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
+	CP_Settings_TextSize(20.0f);
+
+	char buffer[500] = { 0 };
+	sprintf_s(buffer, _countof(buffer), "room state: %d, cleared rooms: %d", state, rooms_cleared);
+	CP_Font_DrawText(buffer, 30, 50);	CP_Font_DrawText(buffer, 30, 50);
+
 }
 
 void game_exit(void)

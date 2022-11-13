@@ -159,7 +159,6 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <ClCompile Include="..\Src\gametypes.c" />
     <ClCompile Include="..\Src\main.c" />
     <ClCompile Include="..\Src\mainmenu.c" />
-    <ClCompile Include="..\Src\map.c" />
     <ClCompile Include="..\Src\mobs.c" />
     <ClCompile Include="..\Src\player.c" />
     <ClCompile Include="..\Src\projectiles.c" />
@@ -167,6 +166,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Inc\boss.h" />
+    <ClInclude Include="..\Inc\gamestates.h" />
     <ClInclude Include="..\Inc\gametypes.h" />
     <ClInclude Include="..\Inc\game.h" />
     <ClInclude Include="..\Inc\mainmenu.h" />
@@ -178,6 +178,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
   <ItemGroup>
     <Text Include="..\Assets\maps.txt" />
     <Text Include="..\Assets\NextRoom.txt" />
+    <Text Include="..\Assets\Room_Wall.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\Assets\EXIT.png" />

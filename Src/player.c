@@ -101,6 +101,14 @@ entity_struct init_player(void) {
 	player.pos = p;
 	player.parryrad = MAX_PARRYRADIUS;
 
+	//init static global variables here
+	stamina = 255.0f;
+	radius_reduction = 4.8f;
+	dashed_duration = .0f;
+	is_cooldown = 0;
+	cooldown = .0f;
+	melee_deflect_triggered = 0;
+
 	return (entity_struct) { .player = player };
 }
 void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
