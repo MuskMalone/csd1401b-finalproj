@@ -2,7 +2,7 @@
 static float Lifespan_count = 0.0f;
 static CP_Image Mobile_Proj_E = NULL;
 static CP_Image Mobile_Proj_P = NULL;
-static CP_Image Proj_Img[2w] = NULL;
+static CP_Image Proj_Img[2] = { NULL };
 
 
 entity_struct init_projectile(void) {
@@ -103,7 +103,7 @@ void deflectprojectiles(char source,int index, Entity entities[]) {
 		else {			
 			proj->Direction = CP_Vector_Negate(proj->Direction);
 			proj->source = source;
-			Proj_Img = 
+			//Proj_Img = 
 		}
 	}
 	if (proj->type == PROJ_TYPE_STATIC) {
@@ -198,7 +198,7 @@ void draw_projectile(Projectile* proj) {
 		//Draw the static proj explosion animation here
 		CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius * 2);
 		if (0.0f >= proj->LifeSpan) {
+			
 		}
 	}
 }
-

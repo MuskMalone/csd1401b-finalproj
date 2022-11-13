@@ -254,6 +254,15 @@ void damage_mob(Mob* mob) {
 	(mob->health)--;
 }
 void draw_mob(Mob* mob) {
+	CP_Image MeleeIdle1 = NULL;
+	CP_Image MeleeIdle2 = NULL;
+	static float animationMelee = 0;
+
+	MeleeIdle1 = CP_Image_Load("./Assets/Tiles/Slime_Idle1.png");
+	MeleeIdle2 = CP_Image_Load("./Assets/Tiles/Slime_Idle2.png");
+
+	CP_Image meleeMob[] = {MeleeIdle1,MeleeIdle2};
+	animationMelee += CP_System_GetDt() * 2;
 	switch (mob->type) {
 	case(range):
 		CP_Settings_StrokeWeight(0.0f);
@@ -261,9 +270,7 @@ void draw_mob(Mob* mob) {
 		CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob->diameter);
 		break;
 	case(melee):
-		CP_Settings_StrokeWeight(0.0f);
-		CP_Settings_Fill(CP_Color_Create(0, 0, 255, 255));
-		CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob->diameter);
+		CP_Image_Draw(meleeMob[(int)animationMelee % 2], mob->pos.x, mob->pos.y, mob->diameter, mob->diameter, 255);
 		break;
 	case(explode):
 		CP_Settings_StrokeWeight(0.0f);
