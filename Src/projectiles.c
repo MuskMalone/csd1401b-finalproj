@@ -1,5 +1,4 @@
 #include "projectiles.h"
-static float Lifespan_count = 0.0f;
 static CP_Image Mobile_Proj_E = NULL;
 static CP_Image Mobile_Proj_P = NULL;
 static CP_Image *Proj_Img = NULL;
@@ -12,7 +11,7 @@ entity_struct init_projectile(void) {
 }
 void set_projectile_values(Projectile* Proj, char Source, char type, int radius, Position Start_Pos, CP_Vector Direction_Vector) {
 	Proj->type = type;			// 2 Projectile types. Static (For melee or exploding enemy) and Mobile (Ranged mobs)
-	if (type = 'm') {
+	if (type == PROJ_TYPE_MOBILE) {
 		Mobile_Proj_E = CP_Image_Load("./Assets/Tiles/Projectiles/Mobile_Proj_E.png");
 		Mobile_Proj_P = CP_Image_Load("./Assets/Tiles/Projectiles/Mobile_Proj_P.png");
 		Proj_Img = &Mobile_Proj_E;

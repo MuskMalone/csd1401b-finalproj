@@ -331,13 +331,6 @@ void game_update(void)
 			}
 		}
 	}
-	
-	CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
-	CP_Settings_TextSize(20.0f);
-
-	char buffer[500] = { 0 };
-	sprintf_s(buffer, _countof(buffer), "room state: %d, cleared rooms: %d", state, rooms_cleared);
-	CP_Font_DrawText(buffer, 30, 50);	CP_Font_DrawText(buffer, 30, 50);
 
 }
 

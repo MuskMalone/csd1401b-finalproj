@@ -291,7 +291,7 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 
 int damage_player(Player *p) {
 	if (p->state != dashing) {
-		p->health -= 1;
+		//p->health -= 1;
 		return 1;
 	}
 	return 0;
@@ -301,14 +301,6 @@ void set_player_position(Player* player, Position pos) {
 	player->pos = pos;
 }
 void draw_player(Player* player) {
-	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
-
-	CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
-	CP_Settings_TextSize(20.0f);
-	char buffer[500] = { 0 };
-	sprintf_s(buffer, _countof(buffer), "player state: %d, cooldown: %f, health: %d, stamina: %f", player->state, cooldown, player->health, 3.5f * ((float)CP_System_GetDisplayHeight() / 100.0f));//stamina);
-	CP_Font_DrawText(buffer, 30, 30);
-
 	if (player->state == holding) {
 		float line_dist_x = WALL_DIM * (float)player->horizontal_dir, line_dist_y = WALL_DIM * (float)player->vertical_dir;
 		float start_x = player->pos.x + ((float)player->horizontal_dir * (MAX_PARRYRADIUS / 2.0f)),
