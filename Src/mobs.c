@@ -3,8 +3,12 @@
 #include "projectiles.h"
 #include "map.h"
 #include <stdlib.h>
+#include "camera.h"
 //what each mob had run
 //when each mob is running on the screen, each codes runs
+CP_Image melee_mob[MELEE_MOB_SPRITE_COUNT];
+CP_Image explode_mob[MELEE_MOB_SPRITE_COUNT];
+CP_Image range_mob[RANGE_MOB_SPRITE_COUNT];
 int collision_mob_wall(Position p, float diameter, int wall_pos[GRID_ROWS][GRID_COLS]) {
 	for (int i = 0; i < GRID_ROWS; ++i) {
 		for (int j = 0; j < GRID_COLS; ++j) {
@@ -254,11 +258,7 @@ void damage_mob(Mob* mob) {
 	(mob->health)--;
 }
 void draw_mob(Mob* mob) {
-	CP_Image MeleeIdle1 = NULL;
-	CP_Image MeleeIdle2 = NULL;
 	static float animationMelee = 0;
-	CP_Image meleeMob[] = {MeleeIdle1,MeleeIdle2};
-
 	animationMelee += CP_System_GetDt();
 	switch (mob->type) {
 	case(range):
@@ -267,15 +267,10 @@ void draw_mob(Mob* mob) {
 		CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob->diameter);
 		break;
 	case(melee):
-		meleeMob[0] = MeleeIdle1 = CP_Image_Load("./Assets/Tiles/Mobs/Melee/Slime_Idle1.png");
-		meleeMob[1] = MeleeIdle2 = CP_Image_Load("./Assets/Tiles/Mobs/Melee/Slime_Idle2.png");
-		CP_Image_Draw(meleeMob[(int)animationMelee % 2], mob->pos.x, mob->pos.y, mob->diameter, mob->diameter, 255);
+		CP_Image_Draw(melee_mob[(int)animationMelee % 2], mob->pos.x, mob->pos.y, mob->diameter, mob->diameter, 255);
 		break;
 	case(explode):
-		meleeMob[0] = MeleeIdle1 = CP_Image_Load("./Assets/Tiles/Mobs/Explode/ExplodeSlime_Idle1.png");
-		meleeMob[1] = MeleeIdle2 = CP_Image_Load("./Assets/Tiles/Mobs/Explode/ExplodeSlime_Idle2.png");
-		CP_Image_Draw(meleeMob[(int)animationMelee % 2], mob->pos.x, mob->pos.y, mob->diameter, mob->diameter, 255);
-
+		CP_Image_Draw(explode_mob[(int)animationMelee % 2], mob->pos.x, mob->pos.y, mob->diameter, mob->diameter, 255);
 		break;
 	}
 }

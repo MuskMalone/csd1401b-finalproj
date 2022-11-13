@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "player.h"
+#include "camera.h"
 #define COOLDOWN_DURATION 2.0f
 #define MAX_COOLDOWN 8.0f
 #define MAX_PARRYRADIUS WALL_DIM * 1.4f

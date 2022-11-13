@@ -15,6 +15,7 @@
 #define BOSS_PROJ_SOURCE 'b'
 #define MOB_PROJ_SOURCE 'e'
 
+
 entity_struct init_projectile(void);
 void set_projectile_values(Projectile* Proj, char Source, char type, int radius, Position Start_Pos, CP_Vector Direction_Vector);
 void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]);

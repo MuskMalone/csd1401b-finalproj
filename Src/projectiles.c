@@ -1,9 +1,10 @@
 #include "projectiles.h"
+#include "camera.h"
 #include <stdlib.h>
-static CP_Image Mobile_Proj_E = NULL;
-static CP_Image Mobile_Proj_P = NULL;
-static CP_Image *Proj_Img = NULL;
-
+CP_Image Mobile_Proj_E;
+CP_Image Mobile_Proj_P;
+CP_Image player_projectile_sprites[MELEE_PROJECTILE_SPRITE_COUNT];
+CP_Image enemy_projectile_sprites[MELEE_PROJECTILE_SPRITE_COUNT];
 
 entity_struct init_projectile(void) {
 	Projectile Proj;
@@ -13,12 +14,6 @@ entity_struct init_projectile(void) {
 }
 void set_projectile_values(Projectile* Proj, char Source, char type, int radius, Position Start_Pos, CP_Vector Direction_Vector) {
 	Proj->type = type;			// 2 Projectile types. Static (For melee or exploding enemy) and Mobile (Ranged mobs)
-	if (type == PROJ_TYPE_MOBILE) {
-		Mobile_Proj_E = CP_Image_Load("./Assets/Tiles/Projectiles/Mobile_Proj_E.png");
-		Mobile_Proj_P = CP_Image_Load("./Assets/Tiles/Projectiles/Mobile_Proj_P.png");
-		Proj_Img = &Mobile_Proj_E;
-	}
-	
 	Proj->pos.x = Start_Pos.x; 
 	Proj->pos.y = Start_Pos.y;
 	Proj->Direction = Direction_Vector;
@@ -175,7 +170,7 @@ int Entities_Collision_Check(Projectile* proj, int index, Entity entities[]){
 					damage_mob(&(entities[i].mob));
 					entities[index].type = entity_null;
 					Proj_Collided = 1;
-					break;
+					//break;
 				}
 			}
 			// Check if its Mob
@@ -187,32 +182,15 @@ int Entities_Collision_Check(Projectile* proj, int index, Entity entities[]){
 	return Proj_Collided;
 }
 void draw_projectile(Projectile* proj) {
-	static CP_Image player_projectile_sprites[6];
-	player_projectile_sprites[0] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P1.png");
-	player_projectile_sprites[1] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P2.png");
-	player_projectile_sprites[2] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P3.png");
-	player_projectile_sprites[3] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P4.png");
-	player_projectile_sprites[4] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P5.png");
-	player_projectile_sprites[5] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P6.png");
-
-	static CP_Image enemy_projectile_sprites[6]; 
-	enemy_projectile_sprites[0] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E1.png");
-	enemy_projectile_sprites[1] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E2.png");
-	enemy_projectile_sprites[2] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E3.png");
-	enemy_projectile_sprites[3] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E4.png");
-	enemy_projectile_sprites[4] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E5.png");
-	enemy_projectile_sprites[5] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E6.png");
-
-	//CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
-
 	if (proj->type == PROJ_TYPE_MOBILE) {
-		//CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius * 2);
-		Proj_Img = (proj->source == PLAYER_PROJ_SOURCE1 || proj->source == PLAYER_PROJ_SOURCE2) ? &Mobile_Proj_P : &Mobile_Proj_E;
-		CP_Image_Draw(*Proj_Img, proj->pos.x, proj->pos.y, proj->radius * 2, proj->radius * 2, 255);
+		if (proj->source == PLAYER_PROJ_SOURCE1 || proj->source == PLAYER_PROJ_SOURCE2)
+			CP_Image_Draw(Mobile_Proj_P, proj->pos.x, proj->pos.y, proj->radius * 2, proj->radius * 2, 255);
+		else
+			CP_Image_Draw(Mobile_Proj_E, proj->pos.x, proj->pos.y, proj->radius * 2, proj->radius * 2, 255);
+
 	}
 	else {
-
-		float diff = (float)(proj->frame_idx % 6);
+		float diff = (float)(proj->frame_idx % MELEE_PROJECTILE_SPRITE_COUNT);
 		if (proj->frame_idx > 5) return;
 		if (proj->LifeSpan >= (PROJ_MELEE_FRAME_DT * diff)) {
 			(proj->frame_idx)++;

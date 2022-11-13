@@ -1,5 +1,6 @@
 
-#include "mainmenu.h"
+#include "gamestates.h"
+#include "camera.h"
 #include "game.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,15 +25,7 @@ static room_state state = loading;
 
 // map of the tiles that the game will draw
 static int tilemap[GRID_ROWS][GRID_COLS];
-CP_Image TopWall = NULL;
-CP_Image BottomWall = NULL;
-CP_Image RightWall = NULL;
-CP_Image LeftWall = NULL;
-CP_Image Rock_Floor = NULL;
-CP_Image grave = NULL;
-CP_Image Anvil = NULL;
-CP_Image Barrel = NULL;
-CP_Image ImageList[10];
+CP_Image tile_list[ROOM_TILE_TYPES];
 
 static void pause_menu(void) {
 
@@ -145,7 +138,7 @@ static void draw_door(void) {
 	}
 }
 
-static void draw_room_wall(void) {
+void draw_room_wall(void) {
 
 	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
 	
@@ -163,19 +156,19 @@ static void draw_room_wall(void) {
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (tilemap[i][j]>1 && room_wall_pos[i][j] == WALL_TILE) {
-				CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
+				CP_Image_Draw(tile_list[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
 			}
 		}
 	}
 
 }
 
-static void draw_room_floor(void) {
+void draw_room_floor(void) {
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (tilemap[i][j]==1) { //Draw a flat floor bellow wall/object
 				CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
-				CP_Image_Draw(ImageList[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
+				CP_Image_Draw(tile_list[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
 			}
 		}
 	}
@@ -183,6 +176,7 @@ static void draw_room_floor(void) {
 
 void game_init(void)
 {
+	init_sprites();
 	rooms_cleared = 0;
 	map_idx = 0;
 	state = loading;
@@ -197,21 +191,6 @@ void game_init(void)
 
 	load_maps();
 	generate_door();
-	
-	TopWall = CP_Image_Load("./Assets/Tiles/TopWall.png");
-	BottomWall = CP_Image_Load("./Assets/Tiles/BottomWall.png");
-	RightWall = CP_Image_Load("./Assets/Tiles/RightWall.png");
-	LeftWall = CP_Image_Load("./Assets/Tiles/LeftWall.png");
-	Rock_Floor = CP_Image_Load("./Assets/Tiles/tile_0012.png");
-	grave = CP_Image_Load("./Assets/Tiles/tile_0065.png");
-	Anvil = CP_Image_Load("./Assets/Tiles/tile_0074.png");
-	Barrel = CP_Image_Load("./Assets/Tiles/tile_0082.png");
-	ImageList[1] = Rock_Floor;
-	ImageList[2] = grave;
-	ImageList[3] = Anvil;
-	ImageList[4] = Barrel;
-
-	
 }
 
 void game_update(void)
