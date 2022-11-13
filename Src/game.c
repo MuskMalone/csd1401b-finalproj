@@ -1,11 +1,12 @@
 
+#include "mainmenu.h"
 #include "game.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 #define BOSS_IDX 1
 
-#define SIZE 5
+#define SIZE 11
 // to disable vs warning for fopen function
 #pragma warning(disable : 4996)
 
@@ -32,6 +33,14 @@ CP_Image grave = NULL;
 CP_Image Anvil = NULL;
 CP_Image Barrel = NULL;
 CP_Image ImageList[10];
+
+static void pause_menu(void) {
+
+
+	CP_Settings_RectMode(CP_POSITION_CENTER);
+	CP_Graphics_DrawRect(480, 480, 480, 480);
+
+}
 
 static void load_maps(void) {
 
@@ -80,6 +89,7 @@ static void generate_door(void) {
 	fclose(door);
 
 }
+
 //clears all entities except player
 static void clear_all_entities(void) {
 	for (int i = 0; i < ENTITY_CAP; ++i) {
@@ -138,18 +148,18 @@ static void draw_door(void) {
 static void draw_room_wall(void) {
 
 	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
-	/*
-	for (int i = 1; i < GRID_COLS-1; i+=2) {
+	
+	/*for (int i = 1; i < GRID_COLS - 1; i += 2) {
 		CP_Image_Draw(TopWall, ((i+1) * WALL_DIM), (WALL_DIM), WALL_DIM *2, WALL_DIM *2, 255);
 		CP_Image_Draw(BottomWall,((i + 1) * WALL_DIM), CP_System_GetWindowHeight() - (WALL_DIM), WALL_DIM * 2, WALL_DIM * 2, 255);
 	}
-	*/
-	/*
+	
+	
 	for (int i = 1; i < GRID_ROWS-1; i += 2) {
 		CP_Image_Draw(LeftWall, (WALL_DIM), ((i + 1) * WALL_DIM), WALL_DIM * 2, WALL_DIM * 2, 255);
 		CP_Image_Draw(RightWall, CP_System_GetWindowWidth() - (WALL_DIM), ((i + 1) * WALL_DIM), WALL_DIM * 2, WALL_DIM * 2, 255);
-	}
-	*/
+	}*/
+	
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (tilemap[i][j]>1) {
@@ -218,10 +228,27 @@ void game_update(void)
 
 	if (state == room_pause) {
 
+		//draw the stuff here
+		pause_menu();
+
+		//resume game
+		if (CP_Input_KeyTriggered(KEY_ESCAPE)) {
+
+			state = !room_pause;
+		}
+		//exit to main menu
+		else if (IsAreaClicked(480, 480, 480, 480, CP_Input_GetMouseX(), CP_Input_GetMouseY())) {
+
+			if (CP_Input_MouseClicked(MOUSE_BUTTON_LEFT)) {
+
+				CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
+				state = loading;
+			}
+		}
 	}
 	else {
 		if (state == loading) {
-			map_idx = 1;//rand() % 5; //set map idx to a random range between 0 to 4
+			map_idx = 10; //set map idx to a random range between 0 to 4
 			generate_current_map();
 			
 			state = room_active;
@@ -247,16 +274,24 @@ void game_update(void)
 						break;
 					if (i == ENTITY_CAP - 1)
 						state = room_clear;
+					if (CP_Input_KeyTriggered(KEY_ESCAPE)) {
+
+						state = room_pause;
+					}
 				}
 			}
 			else if (state == room_clear) {
 				clear_all_entities();
-				//draw_door();
+				draw_door();
 				for (int i = 0; i < GRID_ROWS; ++i) {
 					for (int j = 0; j < GRID_COLS; ++j) {
 						if (door_pos[i][j]) {
 							if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) { //when touch door
 								state = loading;
+							}
+							if (CP_Input_KeyTriggered(KEY_ESCAPE)) {
+
+								state = room_pause;
 							}
 						}
 					}

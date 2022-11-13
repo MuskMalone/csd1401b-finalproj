@@ -39,9 +39,6 @@
     <ClCompile Include="..\Src\boss.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\map.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Src\gametypes.c">
       <Filter>Source Files</Filter>
     </ClCompile>
