@@ -1,6 +1,7 @@
 #include "cprocessing.h"
 #include "game.h"
 #include "gametypes.h"
+#include "gamestates.h"
 #include "utils.h"
 
 float M_width;

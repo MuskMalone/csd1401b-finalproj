@@ -106,6 +106,14 @@ entity_struct init_player(void) {
 	player.pos = p;
 	player.parryrad = MAX_PARRYRADIUS;
 
+	//init static global variables here
+	stamina = 255.0f;
+	radius_reduction = 4.8f;
+	dashed_duration = .0f;
+	is_cooldown = 0;
+	cooldown = .0f;
+	melee_deflect_triggered = 0;
+
 	return (entity_struct) { .player = player };
 }
 void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
@@ -300,6 +308,15 @@ void draw_player(Player* player) {
 	char buffer[500] = { 0 };
 	sprintf_s(buffer, _countof(buffer), "player state: %d, cooldown: %f, health: %d, stamina: %f", player->state, cooldown, player->health, 3.5f * ((float)CP_System_GetDisplayHeight() / 100.0f));//stamina);
 	CP_Font_DrawText(buffer, 30, 30);
+
+	if (player->state == holding) {
+		float line_dist_x = WALL_DIM * (float)player->horizontal_dir, line_dist_y = WALL_DIM * (float)player->vertical_dir;
+		float start_x = player->pos.x + ((float)player->horizontal_dir * (MAX_PARRYRADIUS / 2.0f)),
+			start_y = player->pos.y + ((float)player->vertical_dir * (MAX_PARRYRADIUS / 2.0f));
+		CP_Settings_Stroke(CP_Color_Create(255, 160, 20, 255));
+		CP_Settings_StrokeWeight(10.0f);
+		CP_Graphics_DrawLine(start_x, start_y, start_x + line_dist_x, start_y + line_dist_y);
+	}
 	for (int i = 0, sw = 2, radius_size = (int)radius_reduction, parry_color = 255, parry_weight = (int)stamina; i < 8; ++i) {	//Creates the Barrier Effect
 		if (i == 8 - 1) {	//Sets the white color ring
 			radius_size = radius_reduction;
