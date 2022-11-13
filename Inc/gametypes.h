@@ -40,6 +40,7 @@ typedef struct Projectile {
 	Position pos;
 	Position Future_Pos;
 	CP_Vector Direction;
+	CP_Image *Proj_Img;
 	float radius;
 	int speed;
 	char source;
