@@ -4,6 +4,20 @@
 #define MELEE_MOB_SPRITE_COUNT 2
 #define RANGE_MOB_SPRITE_COUNT 8
 #define ROOM_TILE_TYPES 10
+#define BOSS_SPRITE_COUNT 7
+
+//HUD
+extern CP_Image player_heart;
+
+//player 
+extern CP_Image Player_Barrier_Img;
+
+//boss
+extern CP_Image Cannon_Img;
+extern CP_Image boss_def;
+extern CP_Image Boss_Barrier_Img;
+extern CP_Image Boss_Atk_Right[BOSS_SPRITE_COUNT];
+extern CP_Image Boss_Atk_Left[BOSS_SPRITE_COUNT];
 
 //projectiles
 extern CP_Image player_projectile_sprites[MELEE_PROJECTILE_SPRITE_COUNT];
@@ -19,4 +33,5 @@ extern CP_Image range_mob[RANGE_MOB_SPRITE_COUNT];
 extern CP_Image tile_list[ROOM_TILE_TYPES];
 
 void init_sprites(void);
-void draw_all(Entity entities, int tile_map[GRID_ROWS][GRID_COLS]);
+void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], room_state state);
+void draw_hud(Player* player);

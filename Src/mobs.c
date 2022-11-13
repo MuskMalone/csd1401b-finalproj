@@ -251,7 +251,6 @@ void update_mob(int mob_idx, int player_idx, Entity entities[], int wall_pos[GRI
 		mob_explosion(player_idx, entities, mob_idx, wall_pos);
 		break;
 	}
-	draw_mob(mob);
 }
 
 void damage_mob(Mob* mob) {

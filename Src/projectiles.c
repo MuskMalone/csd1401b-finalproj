@@ -80,7 +80,6 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 			entities[index].type = entity_null;
 		}
 	}
-	draw_projectile(proj);
 }
 
 void deflectprojectiles(char source,int index, Entity entities[]) {
