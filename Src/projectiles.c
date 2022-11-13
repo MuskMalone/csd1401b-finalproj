@@ -1,7 +1,7 @@
 #include "projectiles.h"
-static float Lifespan_count = 0.0f;
 static CP_Image Mobile_Proj_E = NULL;
- CP_Image Mobile_Proj_P = NULL;
+static CP_Image Mobile_Proj_P = NULL;
+static CP_Image *Proj_Img = NULL;
 
 
 entity_struct init_projectile(void) {
@@ -11,10 +11,10 @@ entity_struct init_projectile(void) {
 }
 void set_projectile_values(Projectile* Proj, char Source, char type, int radius, Position Start_Pos, CP_Vector Direction_Vector) {
 	Proj->type = type;			// 2 Projectile types. Static (For melee or exploding enemy) and Mobile (Ranged mobs)
-	if (type == 'm') {
+	if (type == PROJ_TYPE_MOBILE) {
 		Mobile_Proj_E = CP_Image_Load("./Assets/Tiles/Projectiles/Mobile_Proj_E.png");
 		Mobile_Proj_P = CP_Image_Load("./Assets/Tiles/Projectiles/Mobile_Proj_P.png");
-		Proj->Proj_Img = &Mobile_Proj_E;
+		Proj_Img = &Mobile_Proj_E;
 	}
 	
 	Proj->pos.x = Start_Pos.x; 
@@ -90,7 +90,7 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 
 void deflectprojectiles(char source,int index, Entity entities[]) {
 	Projectile* proj = &(entities[index].projectile);
-
+	Proj_Img = &Mobile_Proj_P;//(source == PLAYER_PROJ_SOURCE1 || source == PLAYER_PROJ_SOURCE2) ? &Mobile_Proj_P : &Mobile_Proj_E;
 	if (proj->type == PROJ_TYPE_MOBILE) {
 		if (source == PROJ_VERTICAL_WALL) {
 			proj->Direction.x *= -1;
@@ -190,8 +190,7 @@ void draw_projectile(Projectile* proj) {
 
 	if (proj->type == PROJ_TYPE_MOBILE) {
 		//CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius * 2);
-		proj->Proj_Img = (proj->source == PLAYER_PROJ_SOURCE1 || proj->source == PLAYER_PROJ_SOURCE2) ? &Mobile_Proj_P : &Mobile_Proj_E;
-		CP_Image_Draw(*(proj->Proj_Img), proj->pos.x, proj->pos.y, proj->radius * 2, proj->radius * 2, 255);
+		CP_Image_Draw(*Proj_Img, proj->pos.x, proj->pos.y, proj->radius * 2, proj->radius * 2, 255);
 	}
 	else {
 		//Draw the static proj explosion animation here
