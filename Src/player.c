@@ -15,6 +15,7 @@ static float dashed_duration = .0f;
 static int is_cooldown = 0;
 static float cooldown = .0f;
 
+CP_Image playerHeart = NULL;
 static void init_cooldown(void) {
 	stamina = 0.0f;
 	cooldown = COOLDOWN_DURATION;
@@ -56,6 +57,7 @@ entity_struct init_player(void) {
 	float Window_Height = CP_System_GetWindowHeight();
 	Position p;
 
+	playerHeart = CP_Image_Load("./Assets/PlayerLife.png");
 	player.health = 5;
 	player.speed = NORMAL_SPEED;
 	player.horizontal_dir = 0, player.vertical_dir = 0;
@@ -188,6 +190,10 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 	CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
 	CP_Settings_TextSize(20.0f);
 
+	for (int i = 1; i <= player->health; i++)
+	{
+		CP_Image_Draw(playerHeart, 32 * i, 64, 32, 32, 255);
+	}
 	char buffer[500] = { 0 };
 	sprintf_s(buffer, _countof(buffer), "player state: %d, cooldown: %f, health: %d", player->state, cooldown, player->health);
 	CP_Font_DrawText(buffer, 30, 30);

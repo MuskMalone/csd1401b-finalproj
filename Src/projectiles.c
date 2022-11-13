@@ -3,7 +3,7 @@ static float Lifespan_count = 0;
 
 entity_struct init_projectile(void) {
 	Projectile Proj;
-	Proj.speed = 1000;
+	Proj.speed = 500;
 	return (entity_struct) {.projectile = Proj};
 }
 void set_projectile_values(Projectile* Proj, char Source, char type, int radius, Position Start_Pos, CP_Vector Direction_Vector) {

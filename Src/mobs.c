@@ -7,6 +7,10 @@
 BOOL mob_isNear = 0;
 float timer = 2.0f;
 int bullet_count = 0;
+CP_Image MeleeIdle1 = NULL;
+CP_Image MeleeIdle2 = NULL;
+static float animationcount = 0;
+
 
 int collision_mob_wall(Position p, float diameter, int wall_pos[GRID_ROWS][GRID_COLS]) {
 	for (int i = 0; i < GRID_ROWS; ++i) {
@@ -46,7 +50,10 @@ void mob_explosion(int player_idx, Entity entities[], int mob_idx, int wall_pos[
 	
 	Player* player = &(entities[player_idx].player);
 	Mob* mob = &(entities[mob_idx].mob);
+	MeleeIdle1 = CP_Image_Load("./Assets/Tiles/Slime_Idle1.png");
+	MeleeIdle2 = CP_Image_Load("./Assets/Tiles/Slime_Idle2.png");
 
+	CP_Image Melee_Image[] = { MeleeIdle1,MeleeIdle2 };
 	//getting the diameter of the player and the mob for collision
 	float player_dia = player->diameter;
 	float mob_dia = mob->diameter;
@@ -56,8 +63,7 @@ void mob_explosion(int player_idx, Entity entities[], int mob_idx, int wall_pos[
 	CP_Settings_StrokeWeight(0.0f);
 	CP_Settings_Fill(CP_Color_Create(51, 255, 173, 255));
 	CP_Vector direction = getVectorBetweenPositions(&(mob->pos), &(player->pos));
-	CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
-	CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob_dia);
+	CP_Image_Draw(Melee_Image[(int)animationcount % 2], mob->pos.x, mob->pos.y, mob->diameter * 2, mob->diameter * 2, 255);
 
 	if (collisionCircle(mob->pos, mob_dia * 5.0f, player->pos, player_dia * 5.0f)) //give a certain distance
 	{
@@ -185,9 +191,10 @@ entity_struct init_mob() {
 void update_mob(int mob_idx, int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS])
 {
 	timer -= CP_System_GetDt();
-	//mob_explosion(player_idx, entities, mob_idx, wall_pos);
-	//mob_ranged(player_idx, entities, mob_idx);
-	mob_melee(player_idx, entities, mob_idx, wall_pos);
-	mob_explosion(player_idx, entities, mob_idx);
+	mob_explosion(player_idx, entities, mob_idx, wall_pos);
+	mob_ranged(player_idx, entities, mob_idx);
+	animationcount += CP_System_GetDt() * 2;
+	//mob_melee(player_idx, entities, mob_idx, wall_pos);
+	//mob_explosion(player_idx, entities, mob_idx);
 }
 

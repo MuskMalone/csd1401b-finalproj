@@ -144,5 +144,8 @@
     <Image Include="..\Assets\Tiles\Player\Player_walking2.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\Assets\PlayerLife.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
