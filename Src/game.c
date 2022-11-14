@@ -9,6 +9,7 @@
 #define BOSS_IDX 1
 #define BOSS_ROOM_INTERVAL 6
 #define SIZE 11
+#define DOOR_WIDTH WALL_DIM * 4.0f
 // to disable vs warning for fopen function
 #pragma warning(disable : 4996)
 
@@ -31,6 +32,7 @@ CP_Image tile_list[ROOM_TILE_TYPES];
 //for the window width and height
 //float W_width = WALL_DIM * GRID_COLS;
 //float W_height = WALL_DIM * GRID_ROWS;
+Position doors[4];
 
 static void pause_menu(void) {
 
@@ -133,14 +135,24 @@ static void generate_current_map(void) {
 }
 
 void draw_door(void) {
-	for (int i = 0; i < GRID_ROWS; i++) {
-		for (int j = 0; j < GRID_COLS; ++j) {
-			if (door_pos[i][j]) {
-				CP_Settings_StrokeWeight(0.0);
-				CP_Graphics_DrawRect(get_camera_x_pos(j * WALL_DIM), get_camera_y_pos(i * WALL_DIM), WALL_DIM, WALL_DIM);
-			}
-		}
-	}
+	//for (int i = 0; i < GRID_ROWS; i++) {
+	//	for (int j = 0; j < GRID_COLS; ++j) {
+	//		if (door_pos[i][j]) {
+	//			CP_Settings_StrokeWeight(0.0);
+	//			CP_Graphics_DrawRect(get_camera_x_pos(j * WALL_DIM), get_camera_y_pos(i * WALL_DIM), WALL_DIM, WALL_DIM);
+	//		}
+	//	}
+	//}
+	CP_Settings_StrokeWeight(0.0);
+
+	// top door
+	CP_Graphics_DrawRect(get_camera_x_pos(doors[0].x), get_camera_y_pos(doors[0].y), WALL_DIM * 4.0f, WALL_DIM);
+	// bottom door
+	CP_Graphics_DrawRect(get_camera_x_pos(doors[1].x), get_camera_y_pos(doors[1].y), WALL_DIM * 4.0f, WALL_DIM);
+	// left door
+	CP_Graphics_DrawRect(get_camera_x_pos(doors[2].x), get_camera_y_pos(doors[2].y), WALL_DIM, WALL_DIM * 4.0f);
+	// right door
+	CP_Graphics_DrawRect(get_camera_x_pos(doors[3].x), get_camera_y_pos(doors[3].y), WALL_DIM, WALL_DIM * 4.0f);
 }
 
 void draw_room_wall(void) {
@@ -181,6 +193,15 @@ void draw_room_floor(void) {
 
 void game_init(void)
 {
+	// top door
+	doors[0] = (Position){ ((float)CP_System_GetWindowWidth() / 2.0f) - (WALL_DIM * 2.0f), 0.0f};
+	// bottom door
+	doors[1] = (Position){ ((float)CP_System_GetWindowWidth() / 2.0f) - (WALL_DIM * 2.0f), (float)CP_System_GetWindowHeight() - WALL_DIM };
+
+	//left door
+	doors[2] = (Position){ 0.0f, ((float)CP_System_GetWindowHeight() / 2.0f) - (WALL_DIM * 2.0f) };
+	//right door
+	doors[3] = (Position){(float)CP_System_GetWindowWidth() - WALL_DIM, ((float)CP_System_GetWindowHeight() / 2.0f) - (WALL_DIM * 2.0f) };
 	srand(time(0));
 	init_sprites();
 	rooms_cleared = 0;
@@ -287,42 +308,22 @@ void game_update(void)
 				for (int i = 0; i < GRID_ROWS; ++i) {
 					for (int j = 0; j < GRID_COLS; ++j) {
 						Player* player = &(entities[PLAYER_IDX].player);
-
-						switch (door_pos[i][j]) {
-						case 1:
-							if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) { //when touch door
-								
-								entities[PLAYER_IDX].player.pos.y = 945.0f - 50.0f;
-
-								state = loading;
-							}
-							break;
-						case 2:
-							if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) { //when touch door
-
-								entities[PLAYER_IDX].player.pos.x = 50.0f;
-								state = loading;
-								
-							}
-							break;
-						case 3:
-							if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) { //when touch door
-
-								entities[PLAYER_IDX].player.pos.y = 50.0f;
-								state = loading;
-								
-
-							}
-							break;
-						case 4:
-							if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) { //when touch door
-
-								entities[PLAYER_IDX].player.pos.x = 1134.0f - 50.0f;
-								state = loading;
-
-								
-							}
-							break;
+						if (state == loading) return;
+						if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[0], DOOR_WIDTH, WALL_DIM)) {
+							player->pos.y = (float)CP_System_GetWindowHeight() - (player->diameter / 2.0f);
+							state = loading;
+						}
+						else if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[1], DOOR_WIDTH, WALL_DIM)) {
+							player->pos.y = 0.0f + (player->diameter / 2.0f);
+							state = loading;
+						}
+						else if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[2], WALL_DIM, DOOR_WIDTH)) {
+							player->pos.x = (float)CP_System_GetWindowWidth() - (player->diameter / 2.0f);
+							state = loading;
+						}
+						else if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[3], WALL_DIM, DOOR_WIDTH)) {
+							player->pos.x = 0.0f + (player->diameter / 2.0f);
+							state = loading;
 						}
 					}
 				}
