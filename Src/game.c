@@ -4,6 +4,7 @@
 #include "game.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define BOSS_IDX 1
 #define BOSS_ROOM_INTERVAL 6
@@ -176,6 +177,7 @@ void draw_room_floor(void) {
 
 void game_init(void)
 {
+	srand(time(0));
 	init_sprites();
 	rooms_cleared = 0;
 	map_idx = 0;
