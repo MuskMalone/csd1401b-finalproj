@@ -25,6 +25,7 @@ typedef struct Player
 typedef enum attack_type { range, melee, explode } attack_type;
 typedef enum melee_attack_state { mob_resting, mob_moving, mob_attacking, mob_attacked } melee_attack_state;
 typedef struct Mob {
+	CP_Vector direction;
 	attack_type type;
 	Position pos;
 	float diameter;

@@ -85,6 +85,15 @@ void init_sprites(void) {
 	explode_mob[0] = CP_Image_Load("./Assets/Tiles/Mobs/Explode/ExplodeSlime_Idle1.png");
 	explode_mob[1] = CP_Image_Load("./Assets/Tiles/Mobs/Explode/ExplodeSlime_Idle2.png");
 
+	range_mob[7] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_right.png");
+	range_mob[6] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_rightup.png");
+	range_mob[5] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_up.png");
+	range_mob[4] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_leftup.png");
+	range_mob[3] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_left.png");
+	range_mob[2] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_leftdown.png");
+	range_mob[1] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_down.png");
+	range_mob[0] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_rightdown.png");
+
 	//room tiles
 	tile_list[1] = CP_Image_Load("./Assets/Tiles/tile_0012.png"); // rock floor
 	tile_list[2] = CP_Image_Load("./Assets/Tiles/tile_0065.png"); // grave
@@ -160,7 +169,8 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], room_state 
 		}
 	}
 
-	draw_hud(&(entities[PLAYER_IDX].player));
+	if (state != room_pause && state != room_failed)
+		draw_hud(&(entities[PLAYER_IDX].player));
 }
 
 void draw_hud(Player* player) {

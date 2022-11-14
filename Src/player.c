@@ -12,7 +12,7 @@
 #define DASH_SPEED NORMAL_SPEED*5
 #define HOLDING_PROJ_SPEED 50.0f
 #define ACCESS_ALL_ENTITIES for (int i = 0; i < ENTITY_CAP; ++i) 
-#define MELEE_DEFLECT_SHAKE 100.0f
+#define MELEE_DEFLECT_SHAKE 150.0f
 #define PROJ_DEFLECT_SHAKE 50.0f
 #define PROJ_HOLDING_SHAKE 2.0f
 
@@ -180,6 +180,7 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 	if (CP_Input_KeyReleased(KEY_K)) {
 		if (!is_cooldown)
 			if (release_held_projectiles(player, entities)) shake_camera(PROJ_DEFLECT_SHAKE, 1);
+		set_state(player, resting);
 	}
 	if (CP_Input_KeyTriggered(KEY_L)) {
 		// make sure player is moving
