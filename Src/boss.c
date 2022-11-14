@@ -8,7 +8,7 @@
 #define  BOSS_HEALTH 10
 #define  BOSS_ATK_CD 2
 #define  BOSS_SPEED 10
-#define  BOSS_DIAMETER 70.0f
+#define  BOSS_DIAMETER 216.0f * WALL_DIM
 #define  BOSS_PARRY_RAD 70.0f
 #define  BOSS_PARRY_AMMO  10
 #define  BOSS_PARRY_CD  5
