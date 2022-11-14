@@ -3,8 +3,12 @@
 #include "projectiles.h"
 #include "map.h"
 #include <stdlib.h>
+#include "camera.h"
 //what each mob had run
 //when each mob is running on the screen, each codes runs
+CP_Image melee_mob[MELEE_MOB_SPRITE_COUNT];
+CP_Image explode_mob[MELEE_MOB_SPRITE_COUNT];
+CP_Image range_mob[RANGE_MOB_SPRITE_COUNT];
 int collision_mob_wall(Position p, float diameter, int wall_pos[GRID_ROWS][GRID_COLS]) {
 	for (int i = 0; i < GRID_ROWS; ++i) {
 		for (int j = 0; j < GRID_COLS; ++j) {
@@ -35,7 +39,7 @@ void expansion_mob_size(Entity entities[], int mob_idx)
 		{
 			Projectile* p = &(entities[p_idx].projectile);
 			Mob* m = &(entities[mob_idx].mob);
-			set_projectile_values(p, 'e', PROJ_TYPE_STATIC, mob->diameter / 2.0f, m->pos, getVectorBetweenPositions(&(m->pos), &(entities[PLAYER_IDX].player.pos)));
+			set_projectile_values(p, MOB_PROJ_SOURCE, PROJ_TYPE_STATIC, mob->diameter / 2.0f, m->pos, getVectorBetweenPositions(&(m->pos), &(entities[PLAYER_IDX].player.pos)));
 		}
 		entities[mob_idx].type = entity_null;
 	}
@@ -107,7 +111,7 @@ void mob_ranged(int player_idx, Entity entities[], int mob_idx)
 	if (mob->timer < 0.0f) {
 		int p_idx = insert_to_entity_array(entity_projectile, entities, init_projectile);
 		if (p_idx > 0) {
-			set_projectile_values(&(entities[p_idx].projectile), 'e', 'm', proj_radius, mob_pos, getVectorBetweenPositions(&(mob_pos), &(position_player)));
+			set_projectile_values(&(entities[p_idx].projectile), MOB_PROJ_SOURCE, 'm', proj_radius, mob_pos, getVectorBetweenPositions(&(mob_pos), &(position_player)));
 			// timer between 1 and 5 seconds
 			mob->timer = MOB_RANGED_TIMER;
 		}
@@ -169,7 +173,7 @@ void mob_melee(int player_idx, Entity entities[], int mob_idx, int wall_pos[GRID
 				CP_Vector v = getVectorBetweenPositions(&(mob_pos), &(position_player));
 				set_projectile_values(
 						&(entities[p_idx].projectile),
-						'e', 's',
+						MOB_PROJ_SOURCE, 's',
 						proj_radius,
 						(Position) {
 							mob->pos.x + (mob->diameter * v.x), 
@@ -247,28 +251,25 @@ void update_mob(int mob_idx, int player_idx, Entity entities[], int wall_pos[GRI
 		mob_explosion(player_idx, entities, mob_idx, wall_pos);
 		break;
 	}
-	draw_mob(mob);
 }
 
 void damage_mob(Mob* mob) {
 	(mob->health)--;
 }
 void draw_mob(Mob* mob) {
+	static float animationMelee = 0;
+	animationMelee += CP_System_GetDt();
 	switch (mob->type) {
 	case(range):
 		CP_Settings_StrokeWeight(0.0f);
 		CP_Settings_Fill(CP_Color_Create(0, 255, 0, 255));
-		CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob->diameter);
+		CP_Graphics_DrawCircle(get_camera_x_pos(mob->pos.x), get_camera_y_pos(mob->pos.y), mob->diameter);
 		break;
 	case(melee):
-		CP_Settings_StrokeWeight(0.0f);
-		CP_Settings_Fill(CP_Color_Create(0, 0, 255, 255));
-		CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob->diameter);
+		CP_Image_Draw(melee_mob[(int)animationMelee % 2], get_camera_x_pos(mob->pos.x), get_camera_y_pos(mob->pos.y), mob->diameter, mob->diameter, 255);
 		break;
 	case(explode):
-		CP_Settings_StrokeWeight(0.0f);
-		CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
-		CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob->diameter);
+		CP_Image_Draw(explode_mob[(int)animationMelee % 2], get_camera_x_pos(mob->pos.x), get_camera_y_pos(mob->pos.y), mob->diameter, mob->diameter, 255);
 		break;
 	}
 }

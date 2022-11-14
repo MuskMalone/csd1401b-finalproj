@@ -42,11 +42,11 @@
     <ClCompile Include="..\Src\gametypes.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\camera.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Inc\mainmenu.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Inc\game.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -66,6 +66,15 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Inc\gametypes.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Inc\gamestates.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Inc\camera.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Inc\easing.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -96,9 +105,6 @@
     <Image Include="..\Assets\Title.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Assets\TUTS.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="..\Assets\xBut.png">
       <Filter>Resource Files</Filter>
     </Image>
@@ -127,6 +133,24 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Assets\Tiles\Boss\BossRest.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Player\player_idle1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Player\Player_walking1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Player\Player_walking2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\PlayerLife.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\TUTS.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\PauseMenu.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

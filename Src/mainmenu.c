@@ -1,6 +1,7 @@
 #include "cprocessing.h"
 #include "game.h"
 #include "gametypes.h"
+#include "gamestates.h"
 #include "utils.h"
 
 float M_width;
@@ -98,7 +99,7 @@ void Main_Menu_Update()
 
 	if (tutbool == 1)
 	{
-		CP_Image_Draw(Tuts, M_width, M_height, 900, 1000, 255);
+		CP_Image_Draw(Tuts, M_width, M_height, 900, CP_System_GetWindowHeight(), 255);
 		CP_Image_Draw(xbut, M_width *3.15/2, M_height /10, 75, 75, 255);
 		if (CP_Input_MouseTriggered(MOUSE_BUTTON_1)) 
 		{
