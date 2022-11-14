@@ -28,6 +28,10 @@ static room_state state = loading;
 static int tilemap[GRID_ROWS][GRID_COLS];
 CP_Image tile_list[ROOM_TILE_TYPES];
 
+//for the window width and height
+//float W_width = WALL_DIM * GRID_COLS;
+//float W_height = WALL_DIM * GRID_ROWS;
+
 static void pause_menu(void) {
 
 
@@ -191,6 +195,7 @@ void game_init(void)
 		init_player()
 	};
 
+
 	load_maps();
 	generate_door();
 }
@@ -281,19 +286,69 @@ void game_update(void)
 				clear_all_entities();
 				for (int i = 0; i < GRID_ROWS; ++i) {
 					for (int j = 0; j < GRID_COLS; ++j) {
-						if (door_pos[i][j]) {
-							if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) { //when touch door
-								if (state != loading) rooms_cleared++;
-								state = loading;
-							}
-							if (CP_Input_KeyTriggered(KEY_ESCAPE)) {
+						//if (door_pos[i][j]) {
+						//	if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) { //when touch door
+						//		if (state != loading) rooms_cleared++;
+						//		state = loading;
+						//	}
+						//	if (CP_Input_KeyTriggered(KEY_ESCAPE)) {
 
-								state = room_pause;
+						//		state = room_pause;
+						//	}
+						//}
+						switch (door_pos[i][j]) {
+						case 1:
+							if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) { //when touch door
+
+								int x = CP_System_GetWindowWidth();
+								int y = CP_System_GetWindowHeight();
+
+								entities[PLAYER_IDX].player.pos.x = 1134.0 / 2.0;
+								entities[PLAYER_IDX].player.pos.y = 945.0 - 50.0;
+
+
+								state = loading;
+								break;
+
+							
+						case 2:
+							if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) { //when touch door
+
+								entities[PLAYER_IDX].player.pos.x = 0.0;
+								entities[PLAYER_IDX].player.pos.y = CP_System_GetWindowHeight() / 2.;
+
+								state = loading;
+								break;
+
+							}
+						case 3:
+							if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) { //when touch door
+
+								entities[PLAYER_IDX].player.pos.x = CP_System_GetWindowWidth() / 2.0;
+								entities[PLAYER_IDX].player.pos.y = 0.0;
+
+								state = loading;
+								break;
+
+							}
+						case 4:
+							if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) { //when touch door
+
+								entities[PLAYER_IDX].player.pos.x = CP_System_GetWindowWidth();
+								entities[PLAYER_IDX].player.pos.y = CP_System_GetWindowHeight() / 2.0;
+
+								state = loading;
+
+								break;
+
 							}
 						}
 					}
 				}
+				if (CP_Input_KeyTriggered(KEY_ESCAPE)) {
 
+					state = room_pause;
+				}
 			}
 		}
 	}
