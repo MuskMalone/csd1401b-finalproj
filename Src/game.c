@@ -311,18 +311,22 @@ void game_update(void)
 						if (state == loading) return;
 						if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[0], DOOR_WIDTH, WALL_DIM)) {
 							player->pos.y = (float)CP_System_GetWindowHeight() - (player->diameter / 2.0f);
+							rooms_cleared++;
 							state = loading;
 						}
 						else if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[1], DOOR_WIDTH, WALL_DIM)) {
 							player->pos.y = 0.0f + (player->diameter / 2.0f);
+							rooms_cleared++;
 							state = loading;
 						}
 						else if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[2], WALL_DIM, DOOR_WIDTH)) {
 							player->pos.x = (float)CP_System_GetWindowWidth() - (player->diameter / 2.0f);
+							rooms_cleared++;
 							state = loading;
 						}
 						else if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[3], WALL_DIM, DOOR_WIDTH)) {
 							player->pos.x = 0.0f + (player->diameter / 2.0f);
+							rooms_cleared++;
 							state = loading;
 						}
 					}
