@@ -294,18 +294,18 @@ int damage_player(Player *p) {
 void set_player_position(Player* player, Position pos) {
 	player->pos = pos;
 }
-void draw_player(Player* player, Position offset) {
+void draw_player(Player* player) {
 	if (player->state == holding) {
 		float line_dist_x = WALL_DIM * (float)player->horizontal_dir, line_dist_y = WALL_DIM * (float)player->vertical_dir;
 		float start_x = player->pos.x + ((float)player->horizontal_dir * (MAX_PARRYRADIUS / 2.0f)),
 			start_y = player->pos.y + ((float)player->vertical_dir * (MAX_PARRYRADIUS / 2.0f));
 		CP_Settings_Stroke(CP_Color_Create(255, 160, 20, 255));
 		CP_Settings_StrokeWeight(10.0f);
-		CP_Graphics_DrawLine(start_x, start_y, start_x + line_dist_x, start_y + line_dist_y);
+		CP_Graphics_DrawLine(get_camera_x_pos(start_x), get_camera_y_pos(start_y), get_camera_x_pos(start_x + line_dist_x), get_camera_y_pos(start_y + line_dist_y));
 	}
 
 	CP_Settings_StrokeWeight(0.0f);
-	CP_Image_Draw(Player_Barrier_Img, player->pos.x, player->pos.y, player->parryrad*2, player->parryrad * 2, stamina);
+	CP_Image_Draw(Player_Barrier_Img, get_camera_x_pos(player->pos.x), get_camera_y_pos(player->pos.y), player->parryrad*2, player->parryrad * 2, stamina);
 	CP_Settings_Fill(CP_Color_Create(51, 255, 173, 255));
-	CP_Graphics_DrawCircle(player->pos.x, player->pos.y, player->diameter);
+	CP_Graphics_DrawCircle(get_camera_x_pos(player->pos.x), get_camera_y_pos(player->pos.y), player->diameter);
 }

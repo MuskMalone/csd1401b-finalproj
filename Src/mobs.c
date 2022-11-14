@@ -263,13 +263,13 @@ void draw_mob(Mob* mob) {
 	case(range):
 		CP_Settings_StrokeWeight(0.0f);
 		CP_Settings_Fill(CP_Color_Create(0, 255, 0, 255));
-		CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob->diameter);
+		CP_Graphics_DrawCircle(get_camera_x_pos(mob->pos.x), get_camera_y_pos(mob->pos.y), mob->diameter);
 		break;
 	case(melee):
-		CP_Image_Draw(melee_mob[(int)animationMelee % 2], mob->pos.x, mob->pos.y, mob->diameter, mob->diameter, 255);
+		CP_Image_Draw(melee_mob[(int)animationMelee % 2], get_camera_x_pos(mob->pos.x), get_camera_y_pos(mob->pos.y), mob->diameter, mob->diameter, 255);
 		break;
 	case(explode):
-		CP_Image_Draw(explode_mob[(int)animationMelee % 2], mob->pos.x, mob->pos.y, mob->diameter, mob->diameter, 255);
+		CP_Image_Draw(explode_mob[(int)animationMelee % 2], get_camera_x_pos(mob->pos.x), get_camera_y_pos(mob->pos.y), mob->diameter, mob->diameter, 255);
 		break;
 	}
 }

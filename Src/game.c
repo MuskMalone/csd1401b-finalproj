@@ -128,18 +128,18 @@ static void generate_current_map(void) {
 	}
 }
 
-void draw_door(Position offset) {
+void draw_door(void) {
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (door_pos[i][j]) {
 				CP_Settings_StrokeWeight(0.0);
-				CP_Graphics_DrawRect(j * WALL_DIM, i * WALL_DIM, WALL_DIM, WALL_DIM);
+				CP_Graphics_DrawRect(get_camera_x_pos(j * WALL_DIM), get_camera_y_pos(i * WALL_DIM), WALL_DIM, WALL_DIM);
 			}
 		}
 	}
 }
 
-void draw_room_wall(Position offset) {
+void draw_room_wall(void) {
 
 	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
 	
@@ -157,19 +157,19 @@ void draw_room_wall(Position offset) {
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (tilemap[i][j]>1 && room_wall_pos[i][j] == WALL_TILE) {
-				CP_Image_Draw(tile_list[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
+				CP_Image_Draw(tile_list[tilemap[i][j]], get_camera_x_pos((j * WALL_DIM) + WALL_DIM / 2), get_camera_y_pos((i * WALL_DIM) + WALL_DIM / 2), WALL_DIM, WALL_DIM, 255);
 			}
 		}
 	}
 
 }
 
-void draw_room_floor(Position offset) {
+void draw_room_floor(void) {
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (tilemap[i][j]==1) { //Draw a flat floor bellow wall/object
 				CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
-				CP_Image_Draw(tile_list[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
+				CP_Image_Draw(tile_list[tilemap[i][j]], get_camera_x_pos((j * WALL_DIM) + WALL_DIM / 2), get_camera_y_pos((i * WALL_DIM) + WALL_DIM / 2), WALL_DIM, WALL_DIM, 255);
 			}
 		}
 	}

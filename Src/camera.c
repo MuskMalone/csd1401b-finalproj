@@ -89,6 +89,11 @@ void init_sprites(void) {
 }
 
 void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], room_state state) {
+	if (CP_Input_KeyDown(KEY_UP)) world_offset.y += 10.0f;
+	else if (CP_Input_KeyDown(KEY_DOWN)) world_offset.y -= 10.0f;
+	if (CP_Input_KeyDown(KEY_RIGHT)) world_offset.x -= 10.0f;
+	else if (CP_Input_KeyDown(KEY_LEFT)) world_offset.x += 10.0f;
+
 
 	CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
 
@@ -146,4 +151,11 @@ void draw_hud(Player* player) {
 	{
 		CP_Image_Draw(player_heart, 32 * i, 64, 32, 32, 255);
 	}
+}
+
+float get_camera_x_pos(float x) {
+	return x + world_offset.x;
+}
+float get_camera_y_pos(float y) {
+	return y + world_offset.y;
 }
