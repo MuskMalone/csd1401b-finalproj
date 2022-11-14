@@ -36,7 +36,7 @@ CP_Image ImageList[10];
 
 static void pause_menu(void) {
 
-
+	//replace this with the main menu image
 	CP_Settings_RectMode(CP_POSITION_CENTER);
 	CP_Graphics_DrawRect(480, 480, 480, 480);
 
@@ -129,7 +129,6 @@ static void generate_current_map(void) {
 					entities[idx].boss.pos = (Position){ ((float)j * WALL_DIM) + (WALL_DIM / 2.0f), ((float)i * WALL_DIM) + (WALL_DIM / 2.0f) };
 				break;
 			}
-			//
 		}
 	}
 }
@@ -285,18 +284,50 @@ void game_update(void)
 				draw_door();
 				for (int i = 0; i < GRID_ROWS; ++i) {
 					for (int j = 0; j < GRID_COLS; ++j) {
-						if (door_pos[i][j]) {
+						switch (door_pos[i][j]) {
+						case 1:
 							if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) { //when touch door
-								state = loading;
-							}
-							if (CP_Input_KeyTriggered(KEY_ESCAPE)) {
 
-								state = room_pause;
+								player.pos.x = CP_System_GetWindowWidth() / 2.0;
+								player->pos.y = 0.0;
+
+								state = loading;
+
+							}
+						case 2:
+							if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) { //when touch door
+
+								player->pos.x = 0;
+								player->pos.y = CP_System_GetWindowHeight() / 2;
+
+								state = loading;
+
+							}
+						case 3:
+							if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) { //when touch door
+
+								player->pos.x = CP_System_GetWindowWidth() / 2.0;
+								player->pos.y = CP_System_GetWindowHeight();
+
+								state = loading;
+
+							}
+						case 4:
+							if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) { //when touch door
+
+								player->pos.x = CP_System_GetWindowWidth;
+								player->pos.y = CP_System_GetWindowHeight() / 2;
+
+								state = loading;
+
 							}
 						}
 					}
 				}
+				if (CP_Input_KeyTriggered(KEY_ESCAPE)) {
 
+					state = room_pause;
+				}
 			}
 		}
 	}
