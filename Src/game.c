@@ -127,7 +127,7 @@ static void generate_current_map(void) {
 	}
 }
 
-void draw_door(void) {
+void draw_door(Position offset) {
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (door_pos[i][j]) {
@@ -138,7 +138,7 @@ void draw_door(void) {
 	}
 }
 
-void draw_room_wall(void) {
+void draw_room_wall(Position offset) {
 
 	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
 	
@@ -163,7 +163,7 @@ void draw_room_wall(void) {
 
 }
 
-void draw_room_floor(void) {
+void draw_room_floor(Position offset) {
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (tilemap[i][j]==1) { //Draw a flat floor bellow wall/object

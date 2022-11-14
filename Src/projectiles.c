@@ -180,7 +180,7 @@ int Entities_Collision_Check(Projectile* proj, int index, Entity entities[]){
 	}
 	return Proj_Collided;
 }
-void draw_projectile(Projectile* proj) {
+void draw_projectile(Projectile* proj, Position offset) {
 	if (proj->type == PROJ_TYPE_MOBILE) {
 		if (proj->source == PLAYER_PROJ_SOURCE1 || proj->source == PLAYER_PROJ_SOURCE2)
 			CP_Image_Draw(Mobile_Proj_P, proj->pos.x, proj->pos.y, proj->radius * 2, proj->radius * 2, 255);

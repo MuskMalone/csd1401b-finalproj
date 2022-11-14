@@ -11,4 +11,4 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 int damage_player(Player *p);
 int set_player_pos(Player *player, Position pos);
 void set_state(Player* p, player_state state);
-void draw_player(Player* player);
+void draw_player(Player* player, Position offset);

@@ -4,6 +4,7 @@
 #include "projectiles.h"
 #include "camera.h"
 #include "game.h"
+#include "utils.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -26,9 +27,11 @@ CP_Image melee_mob[MELEE_MOB_SPRITE_COUNT];
 CP_Image explode_mob[MELEE_MOB_SPRITE_COUNT];
 CP_Image range_mob[RANGE_MOB_SPRITE_COUNT];
 
+Position world_offset;
 
 
 void init_sprites(void) {
+	world_offset = (Position){ 0.0f, 0.0f };
 	player_heart = CP_Image_Load("./Assets/PlayerLife.png");
 	Player_Barrier_Img = CP_Image_Load("./Assets/Tiles/Player/Player_Barrier4.png");
 
@@ -113,15 +116,15 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], room_state 
 		}
 		else {
 			//CP_Graphics_ClearBackground(CP_Color_Create(255, 255, 255, 255));
-			draw_room_floor();
-			draw_room_wall();
+			draw_room_floor(world_offset);
+			draw_room_wall(world_offset);
 			for (int i = 0; i < ENTITY_CAP; ++i) {
 				if (entities[i].type == entity_null) continue;
 				switch (entities[i].type) {
-				case entity_player: draw_player(&(entities[i].player)); break;
-				case entity_mob: draw_mob(&(entities[i].mob)); break;
-				case entity_boss: draw_boss(&(entities[i].boss)); break;
-				case entity_projectile: draw_projectile(&(entities[i].projectile)); break;
+				case entity_player: draw_player(&(entities[i].player), world_offset); break;
+				case entity_mob: draw_mob(&(entities[i].mob), world_offset); break;
+				case entity_boss: draw_boss(&(entities[i].boss), world_offset); break;
+				case entity_projectile: draw_projectile(&(entities[i].projectile), world_offset); break;
 				}
 			}
 
@@ -129,7 +132,7 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], room_state 
 			if (state == room_active) {
 			}
 			else if (state == room_clear) {
-				draw_door();
+				draw_door(world_offset);
 
 			}
 		}

@@ -294,7 +294,7 @@ int damage_player(Player *p) {
 void set_player_position(Player* player, Position pos) {
 	player->pos = pos;
 }
-void draw_player(Player* player) {
+void draw_player(Player* player, Position offset) {
 	if (player->state == holding) {
 		float line_dist_x = WALL_DIM * (float)player->horizontal_dir, line_dist_y = WALL_DIM * (float)player->vertical_dir;
 		float start_x = player->pos.x + ((float)player->horizontal_dir * (MAX_PARRYRADIUS / 2.0f)),
