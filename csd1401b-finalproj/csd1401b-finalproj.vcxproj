@@ -168,6 +168,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
   <ItemGroup>
     <ClInclude Include="..\Inc\boss.h" />
     <ClInclude Include="..\Inc\camera.h" />
+    <ClInclude Include="..\Inc\easing.h" />
     <ClInclude Include="..\Inc\gamestates.h" />
     <ClInclude Include="..\Inc\gametypes.h" />
     <ClInclude Include="..\Inc\game.h" />

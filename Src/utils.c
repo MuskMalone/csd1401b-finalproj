@@ -94,6 +94,10 @@ int IsCircleClicked(float circle_center_x, float circle_center_y, float diameter
 	}
 
 }
+CP_Vector angleToVector(float angle) {
+	return CP_Vector_Normalize(CP_Vector_Set(cos(angle), sin(angle)));
+
+}
 /*
 void DeflectProjectiles(char source, int projectile_index, Entity entities[]) {
 	entities[projectile_index].projectile.source = source;

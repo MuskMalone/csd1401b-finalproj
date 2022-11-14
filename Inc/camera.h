@@ -37,3 +37,4 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], room_state 
 void draw_hud(Player* player);
 float get_camera_x_pos(float x);
 float get_camera_y_pos(float y);
+void shake_camera(float scale, int override);

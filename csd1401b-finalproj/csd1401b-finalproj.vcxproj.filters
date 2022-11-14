@@ -74,6 +74,9 @@
     <ClInclude Include="..\Inc\camera.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\Inc\easing.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Assets\maps.txt">

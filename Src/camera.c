@@ -5,6 +5,7 @@
 #include "camera.h"
 #include "game.h"
 #include "utils.h"
+#include "easing.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -28,6 +29,12 @@ CP_Image explode_mob[MELEE_MOB_SPRITE_COUNT];
 CP_Image range_mob[RANGE_MOB_SPRITE_COUNT];
 
 Position world_offset;
+
+CP_Vector *shake_vector_ptr = NULL;
+CP_Vector shake_vector;
+int shaking = 0;
+float shaking_scale = 1.0f;
+int shake_count;
 
 
 void init_sprites(void) {
@@ -89,15 +96,25 @@ void init_sprites(void) {
 }
 
 void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], room_state state) {
-	if (CP_Input_KeyDown(KEY_UP)) world_offset.y += 10.0f;
-	else if (CP_Input_KeyDown(KEY_DOWN)) world_offset.y -= 10.0f;
-	if (CP_Input_KeyDown(KEY_RIGHT)) world_offset.x -= 10.0f;
-	else if (CP_Input_KeyDown(KEY_LEFT)) world_offset.x += 10.0f;
-
+	if (CP_Input_KeyDown(KEY_UP)) shake_camera(100.0f, 0);//world_offset.y += 10.0f;
+	//else if (CP_Input_KeyDown(KEY_DOWN)) world_offset.y -= 10.0f;
+	//if (CP_Input_KeyDown(KEY_RIGHT)) world_offset.x -= 10.0f;
+	//else if (CP_Input_KeyDown(KEY_LEFT)) world_offset.x += 10.0f;
 
 	CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
 
 	CP_Graphics_ClearBackground(CP_Color_Create(88, 88, 88, 255));
+	if (shaking) {
+		world_offset.x = CP_Random_RangeFloat(-shaking_scale, shaking_scale);
+		world_offset.y = CP_Random_RangeFloat(-shaking_scale, shaking_scale);
+		shaking_scale *= .9f;
+		if (shaking_scale < 1.0f) {
+			shaking = 0;
+			shaking_scale = 0.0f;
+			world_offset.x = 0.0f;
+			world_offset.y = 0.0f;
+		}
+	}
 
 	if (state == room_failed) {
 
@@ -159,3 +176,18 @@ float get_camera_x_pos(float x) {
 float get_camera_y_pos(float y) {
 	return y + world_offset.y;
 }
+void shake_camera(float scale, int override) {
+	if (override) {
+		shaking = 1;
+		shaking_scale = scale;
+	}else{
+		if (shaking) {
+			return;
+		}
+		else {
+			shaking = 1;
+			shaking_scale = scale;
+		}
+	}
+}
+
