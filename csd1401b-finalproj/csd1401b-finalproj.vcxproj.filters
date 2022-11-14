@@ -105,9 +105,6 @@
     <Image Include="..\Assets\Title.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Assets\TUTS.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="..\Assets\xBut.png">
       <Filter>Resource Files</Filter>
     </Image>
@@ -148,6 +145,12 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Assets\PlayerLife.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\TUTS.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\PauseMenu.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
