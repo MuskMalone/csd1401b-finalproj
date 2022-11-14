@@ -185,6 +185,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <Image Include="..\Assets\EXIT.png" />
     <Image Include="..\Assets\HOWTOPLAY.png" />
     <Image Include="..\Assets\main.png" />
+    <Image Include="..\Assets\PauseMenu.png" />
     <Image Include="..\Assets\PlayerLife.png" />
     <Image Include="..\Assets\startbutton.png" />
     <Image Include="..\Assets\Tiles\Boss\BossAtk1.png" />

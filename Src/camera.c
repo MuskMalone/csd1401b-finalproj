@@ -8,6 +8,7 @@
 #include <stdlib.h>
 
 CP_Image player_heart;
+CP_Image Pause_Menu;
 
 CP_Image Player_Barrier_Img;
 
@@ -35,7 +36,7 @@ void init_sprites(void) {
 	Boss_Barrier_Img = CP_Image_Load("./Assets/Tiles/Boss/Boss_Barrier.png");
 	Cannon_Img = CP_Image_Load("./Assets/Tiles/Boss/Cannon.png");
 	boss_def = CP_Image_Load("./Assets/Tiles/Boss/Boss_Base3.png");
-
+	Pause_Menu = CP_Image_Load("./Assets/PauseMenu.png");
 	Boss_Atk_Right[0] = CP_Image_Load("./Assets/Tiles/Boss/BossAtk1.png");
 	Boss_Atk_Right[1] = CP_Image_Load("./Assets/Tiles/Boss/BossAtk2.png");
 	Boss_Atk_Right[2] = CP_Image_Load("./Assets/Tiles/Boss/BossAtk3.png");
@@ -104,8 +105,7 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], room_state 
 	else if (state == room_pause) {
 
 		//draw the stuff here
-		CP_Settings_RectMode(CP_POSITION_CENTER);
-		CP_Graphics_DrawRect(480, 480, 480, 480);
+		CP_Image_Draw(Pause_Menu, CP_System_GetWindowWidth() / 2, CP_System_GetWindowHeight() / 2, 550,590,255);
 	}
 	else {
 		if (state == loading) {
