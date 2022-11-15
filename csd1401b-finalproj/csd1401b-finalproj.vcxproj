@@ -168,6 +168,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
   <ItemGroup>
     <ClInclude Include="..\Inc\boss.h" />
     <ClInclude Include="..\Inc\camera.h" />
+    <ClInclude Include="..\Inc\easing.h" />
     <ClInclude Include="..\Inc\gamestates.h" />
     <ClInclude Include="..\Inc\gametypes.h" />
     <ClInclude Include="..\Inc\game.h" />
@@ -185,6 +186,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <Image Include="..\Assets\EXIT.png" />
     <Image Include="..\Assets\HOWTOPLAY.png" />
     <Image Include="..\Assets\main.png" />
+    <Image Include="..\Assets\PauseMenu.png" />
     <Image Include="..\Assets\PlayerLife.png" />
     <Image Include="..\Assets\startbutton.png" />
     <Image Include="..\Assets\Tiles\Boss\BossAtk1.png" />

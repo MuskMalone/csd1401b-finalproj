@@ -3,6 +3,7 @@
 #include "cprocessing.h"
 #define TRUE 1
 #define FALSE 0
+# define M_PI           3.14159265358979323846  /* pi */
 // put all structs and enums under ifndef
 #ifndef UTILS
 typedef struct Position {
@@ -35,3 +36,7 @@ float positionDistance(Position a, Position b);
 int IsAreaClicked(float area_center_x, float area_center_y, float area_width, float area_height, float click_x, float click_y);
 
 int IsCircleClicked(float circle_center_x, float circle_center_y, float diameter, float click_x, float click_y);
+CP_Vector angleToVector(float angle);
+
+//angle from the x axis
+float vectorToAngle(CP_Vector a);

@@ -12,6 +12,9 @@
 #define DASH_SPEED NORMAL_SPEED*5
 #define HOLDING_PROJ_SPEED 50.0f
 #define ACCESS_ALL_ENTITIES for (int i = 0; i < ENTITY_CAP; ++i) 
+#define MELEE_DEFLECT_SHAKE 150.0f
+#define PROJ_DEFLECT_SHAKE 50.0f
+#define PROJ_HOLDING_SHAKE 2.0f
 
 static float stamina = 255.0f;
 static float radius_reduction = 4.8f;
@@ -23,7 +26,8 @@ static int melee_deflect_triggered = 0;
 CP_Image Player_Barrier_Img;
 
 
-void release_held_projectiles(Player * player, Entity entities[]) {
+int release_held_projectiles(Player * player, Entity entities[]) {
+	int out = 0;
 	set_state(player, resting);
 	melee_deflect_triggered = 0;
 	ACCESS_ALL_ENTITIES{
@@ -43,15 +47,19 @@ void release_held_projectiles(Player * player, Entity entities[]) {
 				}
 				set_projectile_values(&(entities[i].projectile), PLAYER_PROJ_SOURCE1, 'm', 10, proj->pos, CP_Vector_Normalize(CP_Vector_Set((float)dir_x, (float)dir_y)));
 				proj->speed = 1000;
+				out = 1;
 			}
 		}
 	}
+	return out;
 }
 
 static void init_cooldown(void) {
-	stamina = 0.0f;
-	cooldown = COOLDOWN_DURATION;
-	is_cooldown = 1;
+	if (!is_cooldown) {
+		stamina = 0.0f;
+		cooldown = COOLDOWN_DURATION;
+		is_cooldown = 1;
+	}
 }
 static int check_collision(Position p, float diameter, int wall_pos[GRID_ROWS][GRID_COLS]) {
 	for (int i = 0; i < GRID_ROWS; ++i) {
@@ -66,16 +74,19 @@ static int check_collision(Position p, float diameter, int wall_pos[GRID_ROWS][G
 	}
 	return 0;
 }
-static void player_deflect_projectile(Player *p, Entity entities[]) {
+static int player_deflect_projectile(Player *p, Entity entities[]) {
+	int out = 0;
 	ACCESS_ALL_ENTITIES {
 		if (entities[i].type == entity_projectile) {
 			Projectile* projectile = &(entities[i].projectile);
 			int collided = collisionCircle(p->pos, p->parryrad, projectile->pos, projectile->radius);
 			if (collided && projectile->source != (char) PLAYER_PROJ_SOURCE1 && projectile->type == PROJ_TYPE_STATIC) {
 				deflectprojectiles((char)PLAYER_PROJ_SOURCE1, i, entities);
+				out = 1;
 			}
 		}
 	}
+	return out;
 }
 void set_state(Player* p, player_state state) {
 	// only allow state from dashing to resting;
@@ -133,11 +144,12 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 		if (!melee_deflect_triggered) {
 			if (is_cooldown) {
 				if (cooldown <= MAX_COOLDOWN)
-					cooldown += .5f;
+					cooldown += 1.0f;
+				shake_camera(PROJ_HOLDING_SHAKE, 0);
 			}
 			else {
 				if (stamina >= STAMINA_COST) {
-					player_deflect_projectile(player, entities);
+					if (player_deflect_projectile(player, entities)) shake_camera(PROJ_DEFLECT_SHAKE, 1);
 					stamina -= STAMINA_COST; // if stamina 
 				}
 				else {
@@ -147,12 +159,14 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 			melee_deflect_triggered = 1;
 		}
 		else {
-			if (is_cooldown && cooldown <= MAX_COOLDOWN) {
+			if (is_cooldown) {
+				if (cooldown <= MAX_COOLDOWN)
 				cooldown += 3.0 * CP_System_GetDt();
 			}
 			else {
 				if (stamina >= STAMINA_COST_HOLD) {
 					stamina -= STAMINA_COST_HOLD;
+					shake_camera(PROJ_HOLDING_SHAKE, 1);
 				}
 				else {
 					release_held_projectiles(player, entities);
@@ -164,7 +178,9 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 	}
 
 	if (CP_Input_KeyReleased(KEY_K)) {
-		release_held_projectiles(player, entities);
+		if (!is_cooldown)
+			if (release_held_projectiles(player, entities)) shake_camera(PROJ_DEFLECT_SHAKE, 1);
+		set_state(player, resting);
 	}
 	if (CP_Input_KeyTriggered(KEY_L)) {
 		// make sure player is moving
@@ -173,7 +189,8 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 			// if cooldown, penalize the player by adding cooldown
 			if (is_cooldown) {
 				if (cooldown <= MAX_COOLDOWN)
-					cooldown += .5f;
+					cooldown += 1.0f;
+				shake_camera(PROJ_HOLDING_SHAKE, 0);
 			}
 			else {
 				// reduce stamina
@@ -285,7 +302,7 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 
 int damage_player(Player *p) {
 	if (p->state != dashing) {
-		//p->health -= 1;
+		p->health -= 1;
 		return 1;
 	}
 	return 0;
@@ -295,17 +312,23 @@ void set_player_position(Player* player, Position pos) {
 	player->pos = pos;
 }
 void draw_player(Player* player) {
+	CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
+	CP_Settings_TextSize(20.0f);
+
+	char buffer[500] = { 0 };
+	sprintf_s(buffer, _countof(buffer), "stamina: %f, cooldown: %f", stamina, cooldown);
+	CP_Font_DrawText(buffer, 30, 30);
 	if (player->state == holding) {
 		float line_dist_x = WALL_DIM * (float)player->horizontal_dir, line_dist_y = WALL_DIM * (float)player->vertical_dir;
 		float start_x = player->pos.x + ((float)player->horizontal_dir * (MAX_PARRYRADIUS / 2.0f)),
 			start_y = player->pos.y + ((float)player->vertical_dir * (MAX_PARRYRADIUS / 2.0f));
 		CP_Settings_Stroke(CP_Color_Create(255, 160, 20, 255));
 		CP_Settings_StrokeWeight(10.0f);
-		CP_Graphics_DrawLine(start_x, start_y, start_x + line_dist_x, start_y + line_dist_y);
+		CP_Graphics_DrawLine(get_camera_x_pos(start_x), get_camera_y_pos(start_y), get_camera_x_pos(start_x + line_dist_x), get_camera_y_pos(start_y + line_dist_y));
 	}
 
 	CP_Settings_StrokeWeight(0.0f);
-	CP_Image_Draw(Player_Barrier_Img, player->pos.x, player->pos.y, player->parryrad*2, player->parryrad * 2, stamina);
+	CP_Image_Draw(Player_Barrier_Img, get_camera_x_pos(player->pos.x), get_camera_y_pos(player->pos.y), player->parryrad*2, player->parryrad * 2, stamina);
 	CP_Settings_Fill(CP_Color_Create(51, 255, 173, 255));
-	CP_Graphics_DrawCircle(player->pos.x, player->pos.y, player->diameter);
+	CP_Graphics_DrawCircle(get_camera_x_pos(player->pos.x), get_camera_y_pos(player->pos.y), player->diameter);
 }

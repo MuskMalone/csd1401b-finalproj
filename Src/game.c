@@ -4,14 +4,17 @@
 #include "game.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define BOSS_IDX 1
 #define BOSS_ROOM_INTERVAL 6
 #define SIZE 11
+#define DOOR_WIDTH WALL_DIM * 4.0f
 // to disable vs warning for fopen function
 #pragma warning(disable : 4996)
 
 // @todo auto resize the array
+int transition_side;
 Entity entities[ENTITY_CAP];
 static int map_pos[SIZE][GRID_ROWS][GRID_COLS];
 static int door_pos[GRID_ROWS][GRID_COLS];
@@ -20,12 +23,17 @@ static unsigned int random_tile_number;
 static int rooms_cleared = 0;
 static int map_idx = 0;
 
-enum tile_type { FLOOR_TILE, WALL_TILE, MOB_TILE, BOSS_TILE };
+
 static room_state state = loading;
 
 // map of the tiles that the game will draw
 static int tilemap[GRID_ROWS][GRID_COLS];
 CP_Image tile_list[ROOM_TILE_TYPES];
+
+//for the window width and height
+//float W_width = WALL_DIM * GRID_COLS;
+//float W_height = WALL_DIM * GRID_ROWS;
+Position doors[4];
 
 static void pause_menu(void) {
 
@@ -93,7 +101,7 @@ static void clear_all_entities(void) {
 }
 
 // generate the map that the player will use for the room
-static void generate_current_map(void) {
+void generate_current_map(void) {
 	int idx = 0;
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
@@ -128,14 +136,24 @@ static void generate_current_map(void) {
 }
 
 void draw_door(void) {
-	for (int i = 0; i < GRID_ROWS; i++) {
-		for (int j = 0; j < GRID_COLS; ++j) {
-			if (door_pos[i][j]) {
-				CP_Settings_StrokeWeight(0.0);
-				CP_Graphics_DrawRect(j * WALL_DIM, i * WALL_DIM, WALL_DIM, WALL_DIM);
-			}
-		}
-	}
+	//for (int i = 0; i < GRID_ROWS; i++) {
+	//	for (int j = 0; j < GRID_COLS; ++j) {
+	//		if (door_pos[i][j]) {
+	//			CP_Settings_StrokeWeight(0.0);
+	//			CP_Graphics_DrawRect(get_camera_x_pos(j * WALL_DIM), get_camera_y_pos(i * WALL_DIM), WALL_DIM, WALL_DIM);
+	//		}
+	//	}
+	//}
+	CP_Settings_StrokeWeight(0.0);
+
+	// top door
+	CP_Graphics_DrawRect(get_camera_x_pos(doors[0].x), get_camera_y_pos(doors[0].y), WALL_DIM * 4.0f, WALL_DIM);
+	// bottom door
+	CP_Graphics_DrawRect(get_camera_x_pos(doors[1].x), get_camera_y_pos(doors[1].y), WALL_DIM * 4.0f, WALL_DIM);
+	// left door
+	CP_Graphics_DrawRect(get_camera_x_pos(doors[2].x), get_camera_y_pos(doors[2].y), WALL_DIM, WALL_DIM * 4.0f);
+	// right door
+	CP_Graphics_DrawRect(get_camera_x_pos(doors[3].x), get_camera_y_pos(doors[3].y), WALL_DIM, WALL_DIM * 4.0f);
 }
 
 void draw_room_wall(void) {
@@ -156,7 +174,7 @@ void draw_room_wall(void) {
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (tilemap[i][j]>1 && room_wall_pos[i][j] == WALL_TILE) {
-				CP_Image_Draw(tile_list[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
+				CP_Image_Draw(tile_list[tilemap[i][j]], get_camera_x_pos((j * WALL_DIM) + WALL_DIM / 2), get_camera_y_pos((i * WALL_DIM) + WALL_DIM / 2), WALL_DIM, WALL_DIM, 255);
 			}
 		}
 	}
@@ -168,7 +186,7 @@ void draw_room_floor(void) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (tilemap[i][j]==1) { //Draw a flat floor bellow wall/object
 				CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
-				CP_Image_Draw(tile_list[tilemap[i][j]], (j * WALL_DIM) + WALL_DIM / 2, (i * WALL_DIM) + WALL_DIM / 2, WALL_DIM, WALL_DIM, 255);
+				CP_Image_Draw(tile_list[tilemap[i][j]], get_camera_x_pos((j * WALL_DIM) + WALL_DIM / 2), get_camera_y_pos((i * WALL_DIM) + WALL_DIM / 2), WALL_DIM, WALL_DIM, 255);
 			}
 		}
 	}
@@ -176,6 +194,16 @@ void draw_room_floor(void) {
 
 void game_init(void)
 {
+	// top door
+	doors[0] = (Position){ ((float)CP_System_GetWindowWidth() / 2.0f) - (WALL_DIM * 2.0f), 0.0f};
+	// bottom door
+	doors[1] = (Position){ ((float)CP_System_GetWindowWidth() / 2.0f) - (WALL_DIM * 2.0f), (float)CP_System_GetWindowHeight() - WALL_DIM };
+
+	//left door
+	doors[2] = (Position){ 0.0f, ((float)CP_System_GetWindowHeight() / 2.0f) - (WALL_DIM * 2.0f) };
+	//right door
+	doors[3] = (Position){(float)CP_System_GetWindowWidth() - WALL_DIM, ((float)CP_System_GetWindowHeight() / 2.0f) - (WALL_DIM * 2.0f) };
+	srand(time(0));
 	init_sprites();
 	rooms_cleared = 0;
 	map_idx = 0;
@@ -188,6 +216,7 @@ void game_init(void)
 		entity_player,
 		init_player()
 	};
+
 
 	load_maps();
 	generate_door();
@@ -245,7 +274,6 @@ void game_update(void)
 
 			}
 			generate_current_map();
-			
 			state = room_active;
 		}
 		else {
@@ -277,30 +305,50 @@ void game_update(void)
 			}
 			else if (state == room_clear) {
 				clear_all_entities();
-				for (int i = 0; i < GRID_ROWS; ++i) {
-					for (int j = 0; j < GRID_COLS; ++j) {
-						if (door_pos[i][j]) {
-							if (collisionCircleRect(entities[PLAYER_IDX].player.pos, entities[PLAYER_IDX].player.diameter / 2.0f, (Position) { WALL_DIM* (float)j, WALL_DIM* (float)i }, WALL_DIM, WALL_DIM)) { //when touch door
-								if (state != loading) rooms_cleared++;
-								state = loading;
-							}
-							if (CP_Input_KeyTriggered(KEY_ESCAPE)) {
 
-								state = room_pause;
-							}
-						}
-					}
+				Player* player = &(entities[PLAYER_IDX].player);
+				if (state == loading) return;
+				if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[0], DOOR_WIDTH, WALL_DIM)) {
+					player->pos.y = (float)CP_System_GetWindowHeight() - (player->diameter / 2.0f);
+					rooms_cleared++;
+					transition_side = 0;
+					state = loading;
 				}
+				else if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[1], DOOR_WIDTH, WALL_DIM)) {
+					player->pos.y = 0.0f + (player->diameter / 2.0f);
+					rooms_cleared++;
+					transition_side = 1;
+					state = loading;
+				}
+				else if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[2], WALL_DIM, DOOR_WIDTH)) {
+					player->pos.x = (float)CP_System_GetWindowWidth() - (player->diameter / 2.0f);
+					rooms_cleared++;
+					transition_side = 2;
+					state = loading;
+				}
+				else if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[3], WALL_DIM, DOOR_WIDTH)) {
+					player->pos.x = 0.0f + (player->diameter / 2.0f);
+					rooms_cleared++;
+					transition_side = 3;
+					state = loading;
+				}
+				if (CP_Input_KeyTriggered(KEY_ESCAPE)) {
 
+					state = room_pause;
+				}
 			}
 		}
 	}
 
-	draw_all(entities, tilemap, state);
+	draw_all(entities, tilemap,room_wall_pos, state);
 }
 
 void game_exit(void)
 {
 
+}
+
+void load_room_done(void) {
+	
 }
 

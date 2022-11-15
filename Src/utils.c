@@ -94,6 +94,18 @@ int IsCircleClicked(float circle_center_x, float circle_center_y, float diameter
 	}
 
 }
+CP_Vector angleToVector(float angle) {
+	return CP_Vector_Normalize(CP_Vector_Set(cos(angle), sin(angle)));
+
+}
+float vectorToAngle(CP_Vector a, Position from) {
+	float angle = atanf(fabs(a.y) / fabs(a.x)) * (180.0f/M_PI);
+	if (a.y > 0 && a.x < 0) return 180.0f - angle;
+	else if (a.y < 0 && a.x < 0) return angle + 180.0f;
+	else if (a.y < 0 && a.x > 0) return 360.0-angle;
+	return angle;
+}
+
 /*
 void DeflectProjectiles(char source, int projectile_index, Entity entities[]) {
 	entities[projectile_index].projectile.source = source;

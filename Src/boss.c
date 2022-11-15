@@ -182,13 +182,14 @@ void damage_boss(Boss* b) {
 }
 
 void draw_boss(Boss* b) {
-	CP_Image_Draw(Boss_Barrier_Img, b->pos.x, b->pos.y, b->parryrad * 2, b->parryrad * 2, b->Parry_BaseWeight);
+	CP_Image_Draw(Boss_Barrier_Img, get_camera_x_pos(b->pos.x), get_camera_y_pos(b->pos.y), b->parryrad * 2, b->parryrad * 2, b->Parry_BaseWeight);
 	int animationnum = (int)animationcount % 2;
 	float img_size_mod = (*(boss_img) == boss_def) ? ((float)CP_Image_GetWidth(boss_def)/ (float)CP_Image_GetHeight(boss_def)) : 1;
 	int size = (*(boss_img) == boss_def) ? 70 : 175;
-	CP_Image_Draw(*boss_img, b->pos.x, b->pos.y, size*img_size_mod, size, 255);
-	CP_Image_DrawAdvanced(Cannon_Img, 0.5 * CP_System_GetWindowWidth(), 0 + WALL_DIM, WALL_DIM * 2, WALL_DIM * 2, 255,180);
-	CP_Image_Draw(Cannon_Img, 0.5 * CP_System_GetWindowWidth(), CP_System_GetWindowHeight() - WALL_DIM, WALL_DIM*2, WALL_DIM*2,255);
+	CP_Image_Draw(*boss_img, get_camera_x_pos(b->pos.x), get_camera_y_pos(b->pos.y), size*img_size_mod, size, 255);
+	CP_Image_DrawAdvanced(Cannon_Img, get_camera_x_pos(0.5 * (float)CP_System_GetWindowWidth()), get_camera_y_pos(0 + WALL_DIM), WALL_DIM * 2, WALL_DIM * 2, 255,180);
+	CP_Image_Draw(Cannon_Img, get_camera_x_pos(0.5 * CP_System_GetWindowWidth()), get_camera_y_pos((float)CP_System_GetWindowHeight() - WALL_DIM), WALL_DIM*2, WALL_DIM*2,255);
+
 }
 
 void Cannon_Fire_Proj(Entity entities[],Player *player) {

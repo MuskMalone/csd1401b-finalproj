@@ -211,6 +211,7 @@ entity_struct init_mob() {
 	switch (mob.type) { //attack type
 	case(range):
 		mob.timer = MOB_RANGED_TIMER;
+		mob.diameter = WALL_DIM * 2;
 		break;
 	case(melee):
 		mob.timer = MOB_MELEE_TIMER;
@@ -229,7 +230,8 @@ entity_struct init_mob() {
 void update_mob(int mob_idx, int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS])
 {
 	Mob* mob = &(entities[mob_idx].mob);
-	if (mob->health <= 0) { 
+	mob->direction = getVectorBetweenPositions(&(mob->pos), &(entities[player_idx].player.pos));
+	if (mob->health <= 0) {
 		entities[mob_idx].type = entity_null;
 		return;
 	}
@@ -252,18 +254,18 @@ void damage_mob(Mob* mob) {
 }
 void draw_mob(Mob* mob) {
 	static float animationMelee = 0;
+	float angle = vectorToAngle(mob->direction);
+
 	animationMelee += CP_System_GetDt();
 	switch (mob->type) {
 	case(range):
-		CP_Settings_StrokeWeight(0.0f);
-		CP_Settings_Fill(CP_Color_Create(0, 255, 0, 255));
-		CP_Graphics_DrawCircle(mob->pos.x, mob->pos.y, mob->diameter);
+		CP_Image_Draw(range_mob[(int)(angle / 45.0f)], get_camera_x_pos(mob->pos.x), get_camera_y_pos(mob->pos.y), mob->diameter * .667f, mob->diameter, 255);
 		break;
 	case(melee):
-		CP_Image_Draw(melee_mob[(int)animationMelee % 2], mob->pos.x, mob->pos.y, mob->diameter, mob->diameter, 255);
+		CP_Image_Draw(melee_mob[(int)animationMelee % 2], get_camera_x_pos(mob->pos.x), get_camera_y_pos(mob->pos.y), mob->diameter, mob->diameter, 255);
 		break;
 	case(explode):
-		CP_Image_Draw(explode_mob[(int)animationMelee % 2], mob->pos.x, mob->pos.y, mob->diameter, mob->diameter, 255);
+		CP_Image_Draw(explode_mob[(int)animationMelee % 2], get_camera_x_pos(mob->pos.x), get_camera_y_pos(mob->pos.y), mob->diameter, mob->diameter, 255);
 		break;
 	}
 }

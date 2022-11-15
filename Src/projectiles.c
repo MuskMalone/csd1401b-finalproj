@@ -183,9 +183,9 @@ int Entities_Collision_Check(Projectile* proj, int index, Entity entities[]){
 void draw_projectile(Projectile* proj) {
 	if (proj->type == PROJ_TYPE_MOBILE) {
 		if (proj->source == PLAYER_PROJ_SOURCE1 || proj->source == PLAYER_PROJ_SOURCE2)
-			CP_Image_Draw(Mobile_Proj_P, proj->pos.x, proj->pos.y, proj->radius * 2, proj->radius * 2, 255);
+			CP_Image_Draw(Mobile_Proj_P, get_camera_x_pos(proj->pos.x), get_camera_y_pos(proj->pos.y), proj->radius * 2, proj->radius * 2, 255);
 		else
-			CP_Image_Draw(Mobile_Proj_E, proj->pos.x, proj->pos.y, proj->radius * 2, proj->radius * 2, 255);
+			CP_Image_Draw(Mobile_Proj_E, get_camera_x_pos(proj->pos.x), get_camera_y_pos(proj->pos.y), proj->radius * 2, proj->radius * 2, 255);
 
 	}
 	else {
@@ -195,9 +195,9 @@ void draw_projectile(Projectile* proj) {
 			(proj->frame_idx)++;
 		}
 		if (proj->source == PLAYER_PROJ_SOURCE1)
-			CP_Image_Draw(player_projectile_sprites[proj->frame_idx % 6], proj->pos.x, proj->pos.y, proj->radius * 2, proj->radius * 2, 255);
+			CP_Image_Draw(player_projectile_sprites[proj->frame_idx % 6], get_camera_x_pos(proj->pos.x), get_camera_y_pos(proj->pos.y), proj->radius * 2, proj->radius * 2, 255);
 		else if (proj->source == MOB_PROJ_SOURCE)
-			CP_Image_Draw(enemy_projectile_sprites[proj->frame_idx % 6], proj->pos.x, proj->pos.y, proj->radius * 2, proj->radius * 2, 255);
+			CP_Image_Draw(enemy_projectile_sprites[proj->frame_idx % 6], get_camera_x_pos(proj->pos.x), get_camera_y_pos(proj->pos.y), proj->radius * 2, proj->radius * 2, 255);
 	}
 }
 
