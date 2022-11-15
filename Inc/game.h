@@ -15,11 +15,13 @@ static void generate_door(void);
 
 static void clear_all_entities(void);
 
-static void generate_current_map(void);
+void generate_current_map(void);
 
 void draw_door(void);
 
 void draw_room_wall(void);
 
 void draw_room_floor(void);
+
+void load_room_done(void);
 

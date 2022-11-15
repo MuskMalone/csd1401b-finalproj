@@ -14,6 +14,7 @@
 #pragma warning(disable : 4996)
 
 // @todo auto resize the array
+int transition_side;
 Entity entities[ENTITY_CAP];
 static int map_pos[SIZE][GRID_ROWS][GRID_COLS];
 static int door_pos[GRID_ROWS][GRID_COLS];
@@ -22,7 +23,7 @@ static unsigned int random_tile_number;
 static int rooms_cleared = 0;
 static int map_idx = 0;
 
-enum tile_type { FLOOR_TILE, WALL_TILE, MOB_TILE, BOSS_TILE };
+
 static room_state state = loading;
 
 // map of the tiles that the game will draw
@@ -100,7 +101,7 @@ static void clear_all_entities(void) {
 }
 
 // generate the map that the player will use for the room
-static void generate_current_map(void) {
+void generate_current_map(void) {
 	int idx = 0;
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
@@ -273,7 +274,6 @@ void game_update(void)
 
 			}
 			generate_current_map();
-			
 			state = room_active;
 		}
 		else {
@@ -305,31 +305,32 @@ void game_update(void)
 			}
 			else if (state == room_clear) {
 				clear_all_entities();
-				for (int i = 0; i < GRID_ROWS; ++i) {
-					for (int j = 0; j < GRID_COLS; ++j) {
-						Player* player = &(entities[PLAYER_IDX].player);
-						if (state == loading) return;
-						if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[0], DOOR_WIDTH, WALL_DIM)) {
-							player->pos.y = (float)CP_System_GetWindowHeight() - (player->diameter / 2.0f);
-							rooms_cleared++;
-							state = loading;
-						}
-						else if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[1], DOOR_WIDTH, WALL_DIM)) {
-							player->pos.y = 0.0f + (player->diameter / 2.0f);
-							rooms_cleared++;
-							state = loading;
-						}
-						else if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[2], WALL_DIM, DOOR_WIDTH)) {
-							player->pos.x = (float)CP_System_GetWindowWidth() - (player->diameter / 2.0f);
-							rooms_cleared++;
-							state = loading;
-						}
-						else if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[3], WALL_DIM, DOOR_WIDTH)) {
-							player->pos.x = 0.0f + (player->diameter / 2.0f);
-							rooms_cleared++;
-							state = loading;
-						}
-					}
+
+				Player* player = &(entities[PLAYER_IDX].player);
+				if (state == loading) return;
+				if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[0], DOOR_WIDTH, WALL_DIM)) {
+					player->pos.y = (float)CP_System_GetWindowHeight() - (player->diameter / 2.0f);
+					rooms_cleared++;
+					transition_side = 0;
+					state = loading;
+				}
+				else if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[1], DOOR_WIDTH, WALL_DIM)) {
+					player->pos.y = 0.0f + (player->diameter / 2.0f);
+					rooms_cleared++;
+					transition_side = 1;
+					state = loading;
+				}
+				else if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[2], WALL_DIM, DOOR_WIDTH)) {
+					player->pos.x = (float)CP_System_GetWindowWidth() - (player->diameter / 2.0f);
+					rooms_cleared++;
+					transition_side = 2;
+					state = loading;
+				}
+				else if (collisionCircleRect(player->pos, player->diameter / 2.0f, doors[3], WALL_DIM, DOOR_WIDTH)) {
+					player->pos.x = 0.0f + (player->diameter / 2.0f);
+					rooms_cleared++;
+					transition_side = 3;
+					state = loading;
 				}
 				if (CP_Input_KeyTriggered(KEY_ESCAPE)) {
 
@@ -339,11 +340,15 @@ void game_update(void)
 		}
 	}
 
-	draw_all(entities, tilemap, state);
+	draw_all(entities, tilemap,room_wall_pos, state);
 }
 
 void game_exit(void)
 {
 
+}
+
+void load_room_done(void) {
+	
 }
 

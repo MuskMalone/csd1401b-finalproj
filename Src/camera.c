@@ -6,8 +6,10 @@
 #include "game.h"
 #include "utils.h"
 #include "easing.h"
+#include "gametypes.h"
 #include <stdio.h>
 #include <stdlib.h>
+#define TRANSITION_TIMER .5f
 
 CP_Image player_heart;
 CP_Image Pause_Menu;
@@ -31,12 +33,14 @@ CP_Image range_mob[RANGE_MOB_SPRITE_COUNT];
 
 Position world_offset;
 
-CP_Vector *shake_vector_ptr = NULL;
-CP_Vector shake_vector;
 int shaking = 0;
 float shaking_scale = 1.0f;
-int shake_count;
 
+int tilemap_copied = 0;
+int transitioning = 0;
+int transition_side = -1;
+float transition_timer = 0.0f;
+int prev_room_tilemap[GRID_ROWS][GRID_COLS];
 
 void init_sprites(void) {
 	world_offset = (Position){ 0.0f, 0.0f };
@@ -105,14 +109,13 @@ void init_sprites(void) {
 	tile_list[8] = CP_Image_Load("./Assets/Tiles/LeftWall.png");
 }
 
-void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], room_state state) {
+void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wall_pos[GRID_ROWS][GRID_COLS], room_state state) {
 	if (CP_Input_KeyDown(KEY_UP)) shake_camera(100.0f, 0);//world_offset.y += 10.0f;
 	//else if (CP_Input_KeyDown(KEY_DOWN)) world_offset.y -= 10.0f;
 	//if (CP_Input_KeyDown(KEY_RIGHT)) world_offset.x -= 10.0f;
 	//else if (CP_Input_KeyDown(KEY_LEFT)) world_offset.x += 10.0f;
 
 	CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
-
 	CP_Graphics_ClearBackground(CP_Color_Create(88, 88, 88, 255));
 	if (shaking) {
 		world_offset.x = CP_Random_RangeFloat(-shaking_scale, shaking_scale);
@@ -124,6 +127,93 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], room_state 
 			world_offset.x = 0.0f;
 			world_offset.y = 0.0f;
 		}
+	}
+	if (transitioning) {
+		transition_timer += CP_System_GetDt();
+		int multiplierx, multipliery;
+		if (transition_timer >= TRANSITION_TIMER){
+			transitioning = 0;
+			world_offset.y = 0.0f; world_offset.x = 0.0f;
+			transition_timer = 0.0f;
+		}
+		else {
+			switch (transition_side) {
+			case 0:
+				world_offset.y = EaseOutExpo(-CP_System_GetWindowHeight(), 0.0f, transition_timer / TRANSITION_TIMER);
+				for (int i = 0; i < GRID_ROWS; i++) {
+					for (int j = 0; j < GRID_COLS; ++j) {
+						if (prev_room_tilemap[i][j] == 1) { //Draw a flat floor bellow wall/object
+							CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
+							CP_Image_Draw(tile_list[prev_room_tilemap[i][j]], get_camera_x_pos((j * WALL_DIM) + WALL_DIM / 2), get_camera_y_pos((i * WALL_DIM) + WALL_DIM / 2) + CP_System_GetWindowHeight(), WALL_DIM, WALL_DIM, 255);
+						}
+					}
+				}
+				for (int i = 0; i < GRID_ROWS; i++) {
+					for (int j = 0; j < GRID_COLS; ++j) {
+						if (prev_room_tilemap[i][j] > 1 && room_wall_pos[i][j] == WALL_TILE) {
+							CP_Image_Draw(tile_list[prev_room_tilemap[i][j]], get_camera_x_pos((j * WALL_DIM) + WALL_DIM / 2), get_camera_y_pos((i * WALL_DIM) + WALL_DIM / 2) + CP_System_GetWindowHeight(), WALL_DIM, WALL_DIM, 255);
+						}
+					}
+				}
+				break;
+			case 1:
+				world_offset.y = EaseOutExpo(CP_System_GetWindowHeight(), 0.0f, transition_timer / TRANSITION_TIMER);
+				for (int i = 0; i < GRID_ROWS; i++) {
+					for (int j = 0; j < GRID_COLS; ++j) {
+						if (prev_room_tilemap[i][j] == 1) { //Draw a flat floor bellow wall/object
+							CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
+							CP_Image_Draw(tile_list[prev_room_tilemap[i][j]], get_camera_x_pos((j * WALL_DIM) + WALL_DIM / 2), get_camera_y_pos((i * WALL_DIM) + WALL_DIM / 2) - CP_System_GetWindowHeight(), WALL_DIM, WALL_DIM, 255);
+						}
+					}
+				}
+				for (int i = 0; i < GRID_ROWS; i++) {
+					for (int j = 0; j < GRID_COLS; ++j) {
+						if (prev_room_tilemap[i][j] > 1 && room_wall_pos[i][j] == WALL_TILE) {
+							CP_Image_Draw(tile_list[prev_room_tilemap[i][j]], get_camera_x_pos((j * WALL_DIM) + WALL_DIM / 2), get_camera_y_pos((i * WALL_DIM) + WALL_DIM / 2) - CP_System_GetWindowHeight(), WALL_DIM, WALL_DIM, 255);
+						}
+					}
+				}
+				break;
+			case 2:
+				world_offset.x = EaseOutExpo(-CP_System_GetWindowWidth(), 0.0f, transition_timer / TRANSITION_TIMER);
+				for (int i = 0; i < GRID_ROWS; i++) {
+					for (int j = 0; j < GRID_COLS; ++j) {
+						if (prev_room_tilemap[i][j] == 1) { //Draw a flat floor bellow wall/object
+							CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
+							CP_Image_Draw(tile_list[prev_room_tilemap[i][j]], get_camera_x_pos((j * WALL_DIM) + WALL_DIM / 2) + CP_System_GetWindowWidth(), get_camera_y_pos((i * WALL_DIM) + WALL_DIM / 2), WALL_DIM, WALL_DIM, 255);
+						}
+					}
+				}
+				for (int i = 0; i < GRID_ROWS; i++) {
+					for (int j = 0; j < GRID_COLS; ++j) {
+						if (prev_room_tilemap[i][j] > 1 && room_wall_pos[i][j] == WALL_TILE) {
+							CP_Image_Draw(tile_list[prev_room_tilemap[i][j]], get_camera_x_pos((j * WALL_DIM) + WALL_DIM / 2) + CP_System_GetWindowWidth(), get_camera_y_pos((i * WALL_DIM) + WALL_DIM / 2), WALL_DIM, WALL_DIM, 255);
+						}
+					}
+				}
+				break;
+			case 3:
+				world_offset.x = EaseOutExpo(CP_System_GetWindowWidth(), 0.0f, transition_timer / TRANSITION_TIMER);
+				for (int i = 0; i < GRID_ROWS; i++) {
+					for (int j = 0; j < GRID_COLS; ++j) {
+						if (prev_room_tilemap[i][j] == 1) { //Draw a flat floor bellow wall/object
+							CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
+							CP_Image_Draw(tile_list[prev_room_tilemap[i][j]], get_camera_x_pos((j * WALL_DIM) + WALL_DIM / 2) - CP_System_GetWindowWidth(), get_camera_y_pos((i * WALL_DIM) + WALL_DIM / 2), WALL_DIM, WALL_DIM, 255);
+						}
+					}
+				}
+				for (int i = 0; i < GRID_ROWS; i++) {
+					for (int j = 0; j < GRID_COLS; ++j) {
+						if (prev_room_tilemap[i][j] > 1 && room_wall_pos[i][j] == WALL_TILE) {
+							CP_Image_Draw(tile_list[prev_room_tilemap[i][j]], get_camera_x_pos((j * WALL_DIM) + WALL_DIM / 2) - CP_System_GetWindowWidth(), get_camera_y_pos((i * WALL_DIM) + WALL_DIM / 2), WALL_DIM, WALL_DIM, 255);
+						}
+					}
+				}
+				break;
+			}
+
+		}
+
 	}
 
 	if (state == room_failed) {
@@ -143,6 +233,24 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], room_state 
 	}
 	else {
 		if (state == loading) {
+			switch(transition_side){
+			case 0: 
+				world_offset.y = -CP_System_GetWindowHeight();
+				transitioning = 1;
+				break;
+			case 1:
+				world_offset.y = CP_System_GetWindowHeight();
+				transitioning = 1;
+				break;
+			case 2:
+				world_offset.x = -CP_System_GetWindowWidth();
+				transitioning = 1;
+				break;
+			case 3:
+				world_offset.x = CP_System_GetWindowWidth();
+				transitioning = 1;
+				break;
+			}
 
 		}
 		else {
@@ -163,6 +271,14 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], room_state 
 			if (state == room_active) {
 			}
 			else if (state == room_clear) {
+				if (!tilemap_copied) {
+					for (int i = 0; i < GRID_ROWS; ++i) {
+						for (int j = 0; j < GRID_COLS; ++j) {
+							prev_room_tilemap[i][j] = tile_map[i][j];
+						}
+					}
+					tilemap_copied = 1;
+				}
 				draw_door(world_offset);
 
 			}
