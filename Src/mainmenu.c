@@ -12,7 +12,7 @@ CP_Image background = NULL;
 CP_Image Title = NULL;
 CP_Image Tuts = NULL;
 CP_Image xbut = NULL;
-
+CP_Sound bgm;
 typedef struct Button
 {
 	float Posx;
@@ -33,6 +33,7 @@ void loadfile()
 	button[2].image = CP_Image_Load("./Assets/EXIT.png");
 	button[1].image = CP_Image_Load("./Assets/HOWTOPLAY.png");
 	Tuts = CP_Image_Load("./Assets/TUTS.png");
+	bgm = CP_Sound_Load("./Assets/SFX/MainMenu.wav");
 	button->Height = 104;
 	button->Width = 512;
 	button->Posx = M_width;
@@ -60,7 +61,7 @@ void Main_Menu_Init()
 	M_width = CP_System_GetWindowWidth() / 2;
 	M_height = CP_System_GetWindowHeight() / 2;
 	loadfile();
-
+	CP_Sound_PlayMusic(bgm);
 
 }
 
@@ -70,7 +71,7 @@ void Main_Menu_Update()
 	float mousePosY = CP_Input_GetMouseY();
 
 	
-
+	
 	CP_Graphics_ClearBackground(CP_Color_Create(0, 0, 0, 255));
 	//CP_Font_DrawText("Main Menu Click SpaceBar to continue", CP_System_GetDisplayWidth() / 2, CP_System_GetDisplayHeight() / 2);
 	/*if(CP_Input_KeyTriggered(KEY_SPACE)){
@@ -113,5 +114,5 @@ void Main_Menu_Update()
 
 void Main_Menu_Exit()
 {
-
+	//CP_Sound_PauseAll();
 }

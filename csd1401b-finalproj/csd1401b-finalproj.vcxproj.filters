@@ -153,5 +153,25 @@
     <Image Include="..\Assets\PauseMenu.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\Assets\gameover.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\BACKTOMENU.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\Assets\SFX\BGM1.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="..\Assets\SFX\Boss.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="..\Assets\SFX\Defeat.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="..\Assets\SFX\MainMenu.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
   </ItemGroup>
 </Project>
