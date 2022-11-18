@@ -210,6 +210,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
   <ItemGroup>
     <Media Include="..\Assets\SFX\BGM1.wav" />
     <Media Include="..\Assets\SFX\Boss.wav" />
+    <Media Include="..\Assets\SFX\Comedy.wav" />
     <Media Include="..\Assets\SFX\Defeat.wav" />
     <Media Include="..\Assets\SFX\MainMenu.wav" />
   </ItemGroup>

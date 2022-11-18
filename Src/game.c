@@ -189,6 +189,7 @@ void draw_room_floor(void) {
 
 void game_init(void)
 {
+	isplaying = 0;
 	// top door
 	doors[0] = (Position){ ((float)CP_System_GetWindowWidth() / 2.0f) - (WALL_DIM * 2.0f), 0.0f};
 	// bottom door
@@ -205,7 +206,9 @@ void game_init(void)
 	state = loading;
 	bossbgm = CP_Sound_Load("./Assets/SFX/Boss.wav");
 	bgm = CP_Sound_Load("./Assets/SFX/BGM1.wav");
-	defeat = CP_Sound_Load("./Assets/SFX/Defeat.wav");
+	//defeat = CP_Sound_Load("./Assets/SFX/Defeat.wav");
+	defeat = CP_Sound_Load("./Assets/SFX/Comedy.wav");
+
 	//initialized the player as idx 0
 	for (int i = 0; i < ENTITY_CAP; ++i) {
 		entities[i].type = entity_null;
