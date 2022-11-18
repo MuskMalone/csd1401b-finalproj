@@ -3,7 +3,7 @@
 #include "player.h"
 #include "camera.h"
 #define COOLDOWN_DURATION 2.0f
-#define MAX_COOLDOWN 8.0f
+#define MAX_COOLDOWN 3.0f
 #define MAX_PARRYRADIUS WALL_DIM * 1.4f
 #define DASH_DURATION .15f
 #define STAMINA_COST 70.0f
@@ -101,6 +101,7 @@ static int player_deflect_projectile(Player *p, Entity entities[]) {
 }
 void set_state(Player* p, player_state state) {
 	// only allow state from dashing to resting;
+	if (p->state == dead) { p->state = state; return; }
 	if (p->state == dashing) {
 		if (state == resting) p->state = state;
 		return;
@@ -325,7 +326,6 @@ void set_player_position(Player* player, Position pos) {
 	player->pos = pos;
 }
 void draw_player(Player* player) {
-	CP_Graphics_DrawCircle(get_camera_x_pos(player->pos.x), get_camera_y_pos(player->pos.y), player->diameter);
 
 	if (player->horizontal_dir == 1 && player->vertical_dir == 0) {
 		player_sprite_ptr = player_right;
