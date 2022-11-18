@@ -13,9 +13,9 @@
 
 CP_Image player_heart;
 CP_Image Pause_Menu;
-
+CP_Image GameOverMenu; 
 CP_Image Player_Barrier_Img;
-
+CP_Image BackToMenuBut;
 CP_Image Cannon_Img;
 CP_Image boss_def;
 CP_Image Boss_Stun[2];
@@ -47,14 +47,18 @@ void init_sprites(void) {
 	world_offset = (Position){ 0.0f, 0.0f };
 	player_heart = CP_Image_Load("./Assets/PlayerLife.png");
 	Player_Barrier_Img = CP_Image_Load("./Assets/Tiles/Player/Player_Barrier4.png");
-
+	GameOverMenu = CP_Image_Load("./Assets/gameover.png");
 	Boss_Barrier_Img = CP_Image_Load("./Assets/Tiles/Boss/Boss_Barrier.png");
 	Cannon_Img = CP_Image_Load("./Assets/Tiles/Boss/Cannon.png");
 	boss_def = CP_Image_Load("./Assets/Tiles/Boss/Boss_Base3.png");
 	Pause_Menu = CP_Image_Load("./Assets/PauseMenu.png");
 
+
 	Boss_Stun[0] = CP_Image_Load("./Assets/Tiles/Boss/BossStunLeft.png");
 	Boss_Stun[1] = CP_Image_Load("./Assets/Tiles/Boss/BossStunRight.png");
+
+
+	BackToMenuBut = CP_Image_Load("./Assets/BACKTOMENU.png");
 
 	Boss_Atk_Right[0] = CP_Image_Load("./Assets/Tiles/Boss/BossAtk1.png");
 	Boss_Atk_Right[1] = CP_Image_Load("./Assets/Tiles/Boss/BossAtk2.png");
@@ -226,17 +230,19 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 	if (state == room_failed) {
 
 		// draw ur room failed stuff here
-		CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
+		CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
 		CP_Settings_TextSize(50.0f);
 
 		char buffer[500] = { 0 };
-		sprintf_s(buffer, _countof(buffer), "YOU DIED\nR to main menu, ESC to quit");
-		CP_Font_DrawText(buffer, 200, 200);
+		CP_Image_Draw(GameOverMenu, CP_System_GetWindowWidth() / 2, CP_System_GetWindowHeight() / 2, CP_System_GetWindowWidth(), CP_System_GetWindowHeight(), 255);
+		sprintf_s(buffer, _countof(buffer), "R to main menu, ESC to quit");
+		CP_Font_DrawText(buffer, 300, 800);
 	}
 	else if (state == room_pause) {
 
 		//draw the stuff here
 		CP_Image_Draw(Pause_Menu, CP_System_GetWindowWidth() / 2, CP_System_GetWindowHeight() / 2, 550,590,255);
+		CP_Image_Draw(BackToMenuBut, CP_System_GetWindowWidth() / 2, CP_System_GetWindowHeight() *3/5, 440, 90, 255);
 	}
 	else {
 		if (state == loading) {
