@@ -1,9 +1,10 @@
 #pragma once
 #include "gametypes.h"
-#define MELEE_PROJECTILE_SPRITE_COUNT 6
+#define MELEE_PROJECTILE_SPRITE_COUNT 7
 #define MELEE_MOB_SPRITE_COUNT 2
 #define RANGE_MOB_SPRITE_COUNT 8
 #define ROOM_TILE_TYPES 10
+#define PLAYER_SPRITE_COUNT 5
 #define BOSS_SPRITE_COUNT 7
 
 extern int transition_side;
@@ -13,6 +14,14 @@ extern CP_Image player_heart;
 
 //player 
 extern CP_Image Player_Barrier_Img;
+extern CP_Image player_front[PLAYER_SPRITE_COUNT];
+extern CP_Image player_frontdiagleft[PLAYER_SPRITE_COUNT];
+extern CP_Image player_frontdiagright[PLAYER_SPRITE_COUNT];
+extern CP_Image player_back[PLAYER_SPRITE_COUNT];
+extern CP_Image player_backdiagleft[PLAYER_SPRITE_COUNT];
+extern CP_Image player_backdiagright[PLAYER_SPRITE_COUNT];
+extern CP_Image player_left[PLAYER_SPRITE_COUNT];
+extern CP_Image player_right[PLAYER_SPRITE_COUNT];
 
 //boss
 extern CP_Image Cannon_Img;

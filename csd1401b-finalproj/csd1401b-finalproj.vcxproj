@@ -161,6 +161,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <ClCompile Include="..\Src\main.c" />
     <ClCompile Include="..\Src\mainmenu.c" />
     <ClCompile Include="..\Src\mobs.c" />
+    <ClCompile Include="..\Src\particle.c" />
     <ClCompile Include="..\Src\player.c" />
     <ClCompile Include="..\Src\projectiles.c" />
     <ClCompile Include="..\Src\utils.c" />
@@ -173,6 +174,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <ClInclude Include="..\Inc\gametypes.h" />
     <ClInclude Include="..\Inc\game.h" />
     <ClInclude Include="..\Inc\mobs.h" />
+    <ClInclude Include="..\Inc\particle.h" />
     <ClInclude Include="..\Inc\player.h" />
     <ClInclude Include="..\Inc\projectiles.h" />
     <ClInclude Include="..\Inc\utils.h" />
@@ -183,7 +185,9 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <Text Include="..\Assets\Room_Wall.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\Assets\BACKTOMENU.png" />
     <Image Include="..\Assets\EXIT.png" />
+    <Image Include="..\Assets\gameover.png" />
     <Image Include="..\Assets\HOWTOPLAY.png" />
     <Image Include="..\Assets\main.png" />
     <Image Include="..\Assets\PauseMenu.png" />
@@ -204,6 +208,12 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <Image Include="..\Assets\Title.png" />
     <Image Include="..\Assets\TUTS.png" />
     <Image Include="..\Assets\xBut.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\Assets\SFX\BGM1.wav" />
+    <Media Include="..\Assets\SFX\Boss.wav" />
+    <Media Include="..\Assets\SFX\Defeat.wav" />
+    <Media Include="..\Assets\SFX\MainMenu.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

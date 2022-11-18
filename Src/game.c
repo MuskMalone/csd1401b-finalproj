@@ -22,8 +22,10 @@ static int room_wall_pos[GRID_ROWS][GRID_COLS];
 static unsigned int random_tile_number;
 static int rooms_cleared = 0;
 static int map_idx = 0;
-
-
+int isplaying = 0;
+CP_Sound bgm;
+CP_Sound bossbgm;
+CP_Sound defeat;
 static room_state state = loading;
 
 // map of the tiles that the game will draw
@@ -35,13 +37,6 @@ CP_Image tile_list[ROOM_TILE_TYPES];
 //float W_height = WALL_DIM * GRID_ROWS;
 Position doors[4];
 
-static void pause_menu(void) {
-
-
-	CP_Settings_RectMode(CP_POSITION_CENTER);
-	CP_Graphics_DrawRect(480, 480, 480, 480);
-
-}
 
 static void load_maps(void) {
 
@@ -208,6 +203,9 @@ void game_init(void)
 	rooms_cleared = 0;
 	map_idx = 0;
 	state = loading;
+	bossbgm = CP_Sound_Load("./Assets/SFX/Boss.wav");
+	bgm = CP_Sound_Load("./Assets/SFX/BGM1.wav");
+	defeat = CP_Sound_Load("./Assets/SFX/Defeat.wav");
 	//initialized the player as idx 0
 	for (int i = 0; i < ENTITY_CAP; ++i) {
 		entities[i].type = entity_null;
@@ -240,6 +238,13 @@ void game_update(void)
 	if (state == room_failed) {
 
 		// draw ur room failed stuff here
+		if (isplaying == 1 || isplaying == 0)
+		{
+			CP_Sound_StopAll();
+			CP_Sound_PlayMusic(defeat);
+			//play defeat music
+			isplaying = 2;
+		}
 		clear_all_entities();
 		if (CP_Input_KeyTriggered(KEY_ESCAPE)) exit(EXIT_SUCCESS);
 		else if (CP_Input_KeyTriggered(KEY_R)) CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
@@ -254,9 +259,9 @@ void game_update(void)
 			state = room_active;//!room_pause;
 		}
 		//exit to main menu
-		else if (IsAreaClicked(480, 480, 480, 480, CP_Input_GetMouseX(), CP_Input_GetMouseY())) {
+		else if (CP_Input_MouseClicked(MOUSE_BUTTON_LEFT)) {
 
-			if (CP_Input_MouseClicked(MOUSE_BUTTON_LEFT)) {
+			if (IsAreaClicked(CP_System_GetWindowWidth() / 2, CP_System_GetWindowHeight() * 3 / 5, 440, 90, CP_Input_GetMouseX(), CP_Input_GetMouseY())) {
 
 				CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
 				state = loading;
@@ -268,10 +273,23 @@ void game_update(void)
 			//if it is boss room
 			if ((rooms_cleared % BOSS_ROOM_INTERVAL) == (BOSS_ROOM_INTERVAL - 1)) {
 				map_idx = 0;
+				if (isplaying == 1)
+				{
+					CP_Sound_StopAll();
+					CP_Sound_PlayMusic(bossbgm);
+					//play boss scene music
+					isplaying = 0;
+				}
 			}
 			else {
 				map_idx = rand() % 10 + 1; //set map idx to a random range between 0 to 4
-
+				if (isplaying == 0) 
+				{
+					//play bgm
+					CP_Sound_StopAll();
+					CP_Sound_PlayMusic(bgm);
+					isplaying = 1;
+				}
 			}
 			generate_current_map();
 			state = room_active;
@@ -345,6 +363,10 @@ void game_update(void)
 
 void game_exit(void)
 {
+	CP_Sound_StopAll();
+	CP_Sound_Free(defeat);
+	CP_Sound_Free(bgm);
+	CP_Sound_Free(bossbgm);
 
 }
 
