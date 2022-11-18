@@ -1,6 +1,6 @@
 #pragma once
 #include "gametypes.h"
-#define MELEE_PROJECTILE_SPRITE_COUNT 6
+#define MELEE_PROJECTILE_SPRITE_COUNT 7
 #define MELEE_MOB_SPRITE_COUNT 2
 #define RANGE_MOB_SPRITE_COUNT 8
 #define ROOM_TILE_TYPES 10

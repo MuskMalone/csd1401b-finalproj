@@ -359,7 +359,7 @@ void draw_player(Player* player) {
 		CP_Settings_Stroke(CP_Color_Create(255, 160, 20, 255));
 		CP_Settings_StrokeWeight(10.0f);
 		CP_Graphics_DrawLine(get_camera_x_pos(start_x), get_camera_y_pos(start_y), get_camera_x_pos(start_x + line_dist_x), get_camera_y_pos(start_y + line_dist_y));
-		CP_Image_Draw(player_sprite_ptr[PLAYER_SPRITE_COUNT - 1], get_camera_x_pos(player->pos.x), get_camera_y_pos(player->pos.y), player->diameter * 1.5f, player->diameter, 255);
+		CP_Image_Draw(player_sprite_ptr[PLAYER_SPRITE_COUNT - 1], get_camera_x_pos(player->pos.x), get_camera_y_pos(player->pos.y), player->diameter, player->diameter, 255);
 	}
 	else if (player->state == resting) {
 		CP_Image_Draw(player_sprite_ptr[1], get_camera_x_pos(player->pos.x), get_camera_y_pos(player->pos.y), player->diameter, player->diameter, 255);
