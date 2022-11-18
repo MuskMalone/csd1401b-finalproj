@@ -9,12 +9,20 @@
 #include "gametypes.h"
 #include <stdio.h>
 #include <stdlib.h>
-#define TRANSITION_TIMER .5f
+#define TRANSITION_TIMER 1.25f
 
 CP_Image player_heart;
 CP_Image Pause_Menu;
 CP_Image GameOverMenu; 
 CP_Image Player_Barrier_Img;
+CP_Image player_front[PLAYER_SPRITE_COUNT];
+CP_Image player_frontdiagleft[PLAYER_SPRITE_COUNT];
+CP_Image player_frontdiagright[PLAYER_SPRITE_COUNT];
+CP_Image player_back[PLAYER_SPRITE_COUNT];
+CP_Image player_backdiagleft[PLAYER_SPRITE_COUNT];
+CP_Image player_backdiagright[PLAYER_SPRITE_COUNT];
+CP_Image player_left[PLAYER_SPRITE_COUNT];
+CP_Image player_right[PLAYER_SPRITE_COUNT];
 CP_Image BackToMenuBut;
 CP_Image Cannon_Img;
 CP_Image boss_def;
@@ -44,14 +52,56 @@ int prev_room_tilemap[GRID_ROWS][GRID_COLS];
 
 void init_sprites(void) {
 	world_offset = (Position){ 0.0f, 0.0f };
-	player_heart = CP_Image_Load("./Assets/PlayerLife.png");
-	Player_Barrier_Img = CP_Image_Load("./Assets/Tiles/Player/Player_Barrier4.png");
 	GameOverMenu = CP_Image_Load("./Assets/gameover.png");
 	Boss_Barrier_Img = CP_Image_Load("./Assets/Tiles/Boss/Boss_Barrier.png");
 	Cannon_Img = CP_Image_Load("./Assets/Tiles/Boss/Cannon.png");
 	boss_def = CP_Image_Load("./Assets/Tiles/Boss/Boss_Base3.png");
 	Pause_Menu = CP_Image_Load("./Assets/PauseMenu.png");
 	BackToMenuBut = CP_Image_Load("./Assets/BACKTOMENU.png");
+
+	player_heart = CP_Image_Load("./Assets/PlayerLife.png");
+	Player_Barrier_Img = CP_Image_Load("./Assets/Tiles/Player/Player_Barrier4.png");
+	player_front[0] = CP_Image_Load("./Assets/Tiles/Player/front1.png");
+	player_front[1] = CP_Image_Load("./Assets/Tiles/Player/front0.png");
+	player_front[2] = CP_Image_Load("./Assets/Tiles/Player/front2.png");
+	player_front[3] = CP_Image_Load("./Assets/Tiles/Player/front0.png");
+	player_front[4] = CP_Image_Load("./Assets/Tiles/Player/front3.png");
+	player_frontdiagright[0] = CP_Image_Load("./Assets/Tiles/Player/45front1.png");
+	player_frontdiagright[1] = CP_Image_Load("./Assets/Tiles/Player/45front0.png");
+	player_frontdiagright[2] = CP_Image_Load("./Assets/Tiles/Player/45front2.png");
+	player_frontdiagright[3] = CP_Image_Load("./Assets/Tiles/Player/45front0.png");
+	player_frontdiagright[4] = CP_Image_Load("./Assets/Tiles/Player/45front3.png");
+	player_frontdiagleft[0] = CP_Image_Load("./Assets/Tiles/Player/45front21.png");
+	player_frontdiagleft[1] = CP_Image_Load("./Assets/Tiles/Player/45front20.png");
+	player_frontdiagleft[2] = CP_Image_Load("./Assets/Tiles/Player/45front22.png");
+	player_frontdiagleft[3] = CP_Image_Load("./Assets/Tiles/Player/45front20.png");
+	player_frontdiagleft[4] = CP_Image_Load("./Assets/Tiles/Player/45front23.png");
+	player_back[0] = CP_Image_Load("./Assets/Tiles/Player/back1.png");
+	player_back[1] = CP_Image_Load("./Assets/Tiles/Player/back0.png");
+	player_back[2] = CP_Image_Load("./Assets/Tiles/Player/back2.png");
+	player_back[3] = CP_Image_Load("./Assets/Tiles/Player/back0.png");
+	player_back[4] = CP_Image_Load("./Assets/Tiles/Player/back3.png");
+	player_backdiagright[0] = CP_Image_Load("./Assets/Tiles/Player/45back21.png");
+	player_backdiagright[1] = CP_Image_Load("./Assets/Tiles/Player/45back20.png");
+	player_backdiagright[2] = CP_Image_Load("./Assets/Tiles/Player/45back22.png");
+	player_backdiagright[3] = CP_Image_Load("./Assets/Tiles/Player/45back20.png");
+	player_backdiagright[4] = CP_Image_Load("./Assets/Tiles/Player/45back23.png");
+	player_backdiagleft[0] = CP_Image_Load("./Assets/Tiles/Player/45back1.png");
+	player_backdiagleft[1] = CP_Image_Load("./Assets/Tiles/Player/45back0.png");
+	player_backdiagleft[2] = CP_Image_Load("./Assets/Tiles/Player/45back2.png");
+	player_backdiagleft[3] = CP_Image_Load("./Assets/Tiles/Player/45back0.png");
+	player_backdiagleft[4] = CP_Image_Load("./Assets/Tiles/Player/45back3.png");
+	player_left[0] = CP_Image_Load("./Assets/Tiles/Player/side1.png");
+	player_left[1] = CP_Image_Load("./Assets/Tiles/Player/side0.png");
+	player_left[2] = CP_Image_Load("./Assets/Tiles/Player/side2.png");
+	player_left[3] = CP_Image_Load("./Assets/Tiles/Player/side0.png");
+	player_left[4] = CP_Image_Load("./Assets/Tiles/Player/side3.png");
+	player_right[0] = CP_Image_Load("./Assets/Tiles/Player/side21.png");
+	player_right[1] = CP_Image_Load("./Assets/Tiles/Player/side20.png");
+	player_right[2] = CP_Image_Load("./Assets/Tiles/Player/side22.png");
+	player_right[3] = CP_Image_Load("./Assets/Tiles/Player/side20.png");
+	player_right[4] = CP_Image_Load("./Assets/Tiles/Player/side23.png");
+
 	Boss_Atk_Right[0] = CP_Image_Load("./Assets/Tiles/Boss/BossAtk1.png");
 	Boss_Atk_Right[1] = CP_Image_Load("./Assets/Tiles/Boss/BossAtk2.png");
 	Boss_Atk_Right[2] = CP_Image_Load("./Assets/Tiles/Boss/BossAtk3.png");
