@@ -18,7 +18,6 @@ CP_Image Player_Barrier_Img;
 
 CP_Image Cannon_Img;
 CP_Image boss_def;
-CP_Image Boss_Stun[2];
 CP_Image Boss_Barrier_Img;
 CP_Image Boss_Atk_Right[BOSS_SPRITE_COUNT];
 CP_Image Boss_Atk_Left[BOSS_SPRITE_COUNT];
@@ -52,10 +51,6 @@ void init_sprites(void) {
 	Cannon_Img = CP_Image_Load("./Assets/Tiles/Boss/Cannon.png");
 	boss_def = CP_Image_Load("./Assets/Tiles/Boss/Boss_Base3.png");
 	Pause_Menu = CP_Image_Load("./Assets/PauseMenu.png");
-
-	Boss_Stun[0] = CP_Image_Load("./Assets/Tiles/Boss/BossStunLeft.png");
-	Boss_Stun[1] = CP_Image_Load("./Assets/Tiles/Boss/BossStunRight.png");
-
 	Boss_Atk_Right[0] = CP_Image_Load("./Assets/Tiles/Boss/BossAtk1.png");
 	Boss_Atk_Right[1] = CP_Image_Load("./Assets/Tiles/Boss/BossAtk2.png");
 	Boss_Atk_Right[2] = CP_Image_Load("./Assets/Tiles/Boss/BossAtk3.png");
@@ -80,7 +75,6 @@ void init_sprites(void) {
 	player_projectile_sprites[3] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P4.png");
 	player_projectile_sprites[4] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P5.png");
 	player_projectile_sprites[5] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P6.png");
-	player_projectile_sprites[6] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P7.png");
 
 	enemy_projectile_sprites[0] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E1.png");
 	enemy_projectile_sprites[1] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E2.png");
@@ -88,7 +82,6 @@ void init_sprites(void) {
 	enemy_projectile_sprites[3] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E4.png");
 	enemy_projectile_sprites[4] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E5.png");
 	enemy_projectile_sprites[5] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E6.png");
-	enemy_projectile_sprites[6] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E7.png");
 
 	melee_mob[0] = CP_Image_Load("./Assets/Tiles/Mobs/Melee/Slime_Idle1.png");
 	melee_mob[1] = CP_Image_Load("./Assets/Tiles/Mobs/Melee/Slime_Idle2.png");
