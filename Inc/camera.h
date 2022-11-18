@@ -6,6 +6,8 @@
 #define ROOM_TILE_TYPES 10
 #define BOSS_SPRITE_COUNT 7
 
+extern int transition_side;
+
 //HUD
 extern CP_Image player_heart;
 
@@ -33,7 +35,7 @@ extern CP_Image range_mob[RANGE_MOB_SPRITE_COUNT];
 extern CP_Image tile_list[ROOM_TILE_TYPES];
 
 void init_sprites(void);
-void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], room_state state);
+void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wall_pos[GRID_ROWS][GRID_COLS], room_state state);
 void draw_hud(Player* player);
 float get_camera_x_pos(float x);
 float get_camera_y_pos(float y);

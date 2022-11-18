@@ -6,6 +6,7 @@
 #define GRID_ROWS 25
 #define GRID_COLS 30
 
+enum tile_type { FLOOR_TILE, WALL_TILE, MOB_TILE, BOSS_TILE };
 typedef enum room_state { room_pause, room_active, room_clear, loading, room_failed } room_state;
 // for player
 

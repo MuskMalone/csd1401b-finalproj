@@ -8,7 +8,7 @@
 #define  BOSS_HEALTH 10
 #define  BOSS_ATK_CD 2
 #define  BOSS_SPEED 10
-#define  BOSS_DIAMETER 216.0f * WALL_DIM
+#define  BOSS_DIAMETER 70.0f
 #define  BOSS_PARRY_RAD 70.0f
 #define  BOSS_PARRY_AMMO  10
 #define  BOSS_PARRY_CD  5
@@ -189,6 +189,7 @@ void draw_boss(Boss* b) {
 	CP_Image_Draw(*boss_img, get_camera_x_pos(b->pos.x), get_camera_y_pos(b->pos.y), size*img_size_mod, size, 255);
 	CP_Image_DrawAdvanced(Cannon_Img, get_camera_x_pos(0.5 * (float)CP_System_GetWindowWidth()), get_camera_y_pos(0 + WALL_DIM), WALL_DIM * 2, WALL_DIM * 2, 255,180);
 	CP_Image_Draw(Cannon_Img, get_camera_x_pos(0.5 * CP_System_GetWindowWidth()), get_camera_y_pos((float)CP_System_GetWindowHeight() - WALL_DIM), WALL_DIM*2, WALL_DIM*2,255);
+
 }
 
 void Cannon_Fire_Proj(Entity entities[],Player *player) {
