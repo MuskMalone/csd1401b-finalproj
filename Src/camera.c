@@ -7,6 +7,7 @@
 #include "utils.h"
 #include "easing.h"
 #include "gametypes.h"
+#include "particle.h"
 #include <stdio.h>
 #include <stdlib.h>
 #define TRANSITION_TIMER 1.25f
@@ -42,6 +43,15 @@ CP_Image range_mob[RANGE_MOB_SPRITE_COUNT];
 
 Position world_offset;
 
+Particle particle_array[PARTICLE_CAP];
+unsigned int particle_count = 0;
+
+int hue_flashing = 0;
+float hue_max_flashing_timer = 0.0f;
+int hue_min_alpha, hue_max_alpha;
+float hue_flashing_timer = 0.0f;
+CP_Color hue_color;
+
 int shaking = 0;
 float shaking_scale = 1.0f;
 
@@ -50,6 +60,7 @@ int transitioning = 0;
 int transition_side = -1;
 float transition_timer = 0.0f;
 int prev_room_tilemap[GRID_ROWS][GRID_COLS];
+
 
 void init_sprites(void) {
 	world_offset = (Position){ 0.0f, 0.0f };
@@ -347,15 +358,67 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 
 	if (state != room_pause && state != room_failed)
 		draw_hud(&(entities[PLAYER_IDX].player));
-}
+	for (int i = 0; i < PARTICLE_CAP; ++i) {
+		if (particle_array[i].running) {
+			update_particle(&(particle_array[i]));
+			draw_particle(&(particle_array[i]));
+			//CP_Graphics_DrawCircle(100, 100, 20.0f);
+		}
+	}
+	if (hue_flashing) {
+		hue_flashing_timer += CP_System_GetDt();
+		if (hue_flashing_timer >= hue_max_flashing_timer) {
+			hue_flashing = 0;
+		}
+		float alpha = QuickSpikeEaseOut(
+			hue_min_alpha, 
+			hue_max_alpha, 
+			hue_flashing_timer / hue_max_flashing_timer
+		);
+		if (alpha >= 0.0f) {
+			hue_color.a = (int)alpha;
+			CP_Settings_Fill(hue_color);
+			CP_Graphics_DrawRect(0.0f, 0.0f, CP_System_GetWindowWidth(), CP_System_GetWindowHeight());
+		}
+	}
 
+}
+float insert_to_particle_array(
+	float diameter,
+	Position start_pos,
+	CP_Vector dir,
+	float distance,
+	float max_timer,
+	CP_Color color,
+	float (*pos_lerp_func)(float start, float end, float value)
+) {
+	init_particle(
+		&(particle_array[particle_count % PARTICLE_CAP]),
+		diameter,
+		start_pos,
+		dir,
+		distance,
+		max_timer,
+		color,
+		pos_lerp_func
+	);
+	particle_count++;
+}
 void draw_hud(Player* player) {
 	for (int i = 1; i <= player->health; i++)
 	{
 		CP_Image_Draw(player_heart, 32 * i, 64, 32, 32, 255);
 	}
 }
-
+void flash_hue(CP_Color color, float time, int min_alpha, int max_alpha) {
+	hue_color = color;
+	hue_min_alpha = min_alpha;
+	hue_max_alpha = max_alpha;
+	hue_color.a = min_alpha;
+	hue_flashing = 1;
+	hue_max_flashing_timer = time;
+	hue_flashing_timer = 0.0f;
+}
 float get_camera_x_pos(float x) {
 	return x + world_offset.x;
 }

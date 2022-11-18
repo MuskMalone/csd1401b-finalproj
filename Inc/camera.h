@@ -46,6 +46,16 @@ extern CP_Image tile_list[ROOM_TILE_TYPES];
 void init_sprites(void);
 void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wall_pos[GRID_ROWS][GRID_COLS], room_state state);
 void draw_hud(Player* player);
+void flash_hue(CP_Color color, float time, int min_alpha, int max_alpha);
 float get_camera_x_pos(float x);
 float get_camera_y_pos(float y);
+float insert_to_particle_array(
+	float diameter,
+	Position start_pos,
+	CP_Vector dir,
+	float distance,
+	float max_timer,
+	CP_Color color,
+	float (*pos_lerp_func)(float start, float end, float value)
+);
 void shake_camera(float scale, int override);

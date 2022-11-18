@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "player.h"
 #include "camera.h"
+#include "easing.h"
 #define COOLDOWN_DURATION 2.0f
 #define MAX_COOLDOWN 3.0f
 #define MAX_PARRYRADIUS WALL_DIM * 1.4f
@@ -15,6 +16,8 @@
 #define MELEE_DEFLECT_SHAKE 150.0f
 #define PROJ_DEFLECT_SHAKE 50.0f
 #define PROJ_HOLDING_SHAKE 2.0f
+#define DAMAGE_SHAKE 15.0f
+#define DAMAGE_TINT_TIMER .5f
 
 CP_Image player_front[PLAYER_SPRITE_COUNT];
 CP_Image player_frontdiagleft[PLAYER_SPRITE_COUNT];
@@ -123,7 +126,7 @@ entity_struct init_player(void) {
 	player.speed = NORMAL_SPEED;
 	player.horizontal_dir = 0, player.vertical_dir = 0;
 	player.state = resting;
-	player.diameter = WALL_DIM;//50.0f;
+	player.diameter = 1.25f * WALL_DIM;//50.0f;
 	p.x = (Window_Width / 2) - (player.diameter / 2);
 	p.y = (Window_Height / 2) - (player.diameter / 2);
 	player.pos = p;
@@ -313,10 +316,25 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 		}
 	}
 }
-
+void player_injured_particles(Player *player) {
+	for (int i = 0; i < 10; ++i) {
+		insert_to_particle_array(
+			CP_Random_RangeFloat(10.0f, 20.0f),
+			player->pos,
+			angleToVector(CP_Random_RangeFloat(0.0f, 360.f)),
+			player->diameter * 2.0f,
+			2.0f,
+			CP_Color_Create(0, 0, 0, 255),
+			EaseOutExpo
+		);
+	}
+}
 int damage_player(Player *p) {
 	if (p->state != dashing) {
-		p->health -= 1;
+		flash_hue(CP_Color_Create(255, 0, 0, 0), DAMAGE_TINT_TIMER, 10, 80);
+		shake_camera(DAMAGE_SHAKE, 1);
+		player_injured_particles(p);
+		//p->health -= 1;
 		return 1;
 	}
 	return 0;

@@ -312,4 +312,10 @@ static float EaseInOutElastic(float start, float end, float value)
     return a * powf(2, -10 * (value -= 1)) * sinf((value * d - s) * (2 * PI) / p) * 0.5f + end + start;
 }
 
+static float QuickSpikeEaseOut(float start, float end, float value)
+{
+    if (value <= .2f)
+        return Linear(start, end, value / .2f);
 
+    return EaseInQuint(end, start, value / .8f);
+}
