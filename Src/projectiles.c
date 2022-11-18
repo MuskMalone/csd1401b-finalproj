@@ -73,12 +73,33 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 		}
 	}
 	else {
-		proj->LifeSpan += CP_System_GetDt();
-		if (PROJ_MELEE_LIFESPAN <= proj->LifeSpan) {	
-			//only checks for the collision at the end of the lifespan
-			Entities_Collision_Check(proj, index, entities);
-			entities[index].type = entity_null;
+		
+		if (proj->type == PROJ_TYPE_MOBILE) {
+			if (PROJ_MELEE_LIFESPAN <= proj->LifeSpan) {
+				//only checks for the collision at the end of the lifespan
+				Entities_Collision_Check(proj, index, entities);
+				entities[index].type = entity_null;
+			}
 		}
+		else {
+			if (proj->source == BOSS_PROJ_SOURCE || proj->source == MOB_PROJ_SOURCE) {
+				if (PROJ_MELEE_LIFESPAN <= proj->LifeSpan) {
+					//only checks for the collision at the end of the lifespan
+					Entities_Collision_Check(proj, index, entities);
+					entities[index].type = entity_null;
+				}
+			}
+
+			else {
+				if (proj->LifeSpan == 0) {
+					Entities_Collision_Check(proj, index, entities);
+				}
+				if (PROJ_MELEE_LIFESPAN <= proj->LifeSpan) {
+					entities[index].type = entity_null;
+				}
+			}
+		}
+		proj->LifeSpan += CP_System_GetDt();
 	}
 }
 
@@ -148,7 +169,9 @@ int Entities_Collision_Check(Projectile* proj, int index, Entity entities[]){
 			if (entities[i].type == entity_player) {
 				if (collisionCircle(entities[i].player.pos, entities[i].player.diameter / 2, proj->pos, proj->radius)) {
 					damage_player(&(entities[i].player));
-					entities[index].type = entity_null;
+					if (proj->type == PROJ_TYPE_MOBILE) {
+						entities[index].type = entity_null;
+					}
 					Proj_Collided = 1;
 					break;
 				}
@@ -158,8 +181,10 @@ int Entities_Collision_Check(Projectile* proj, int index, Entity entities[]){
 		else if (proj->source == PLAYER_PROJ_SOURCE1) {
 			if (entities[i].type == entity_boss) {
 				if (collisionCircle(entities[i].boss.pos, entities[i].boss.diameter / 2, proj->pos, proj->radius)) {
-					damage_boss(&(entities[i].boss));
-					entities[index].type = entity_null;
+					damage_boss(&(entities[i].boss), &(entities[PLAYER_IDX].player));
+					if (proj->type == PROJ_TYPE_MOBILE) {
+						entities[index].type = entity_null;
+					}
 					Proj_Collided = 1;
 					break;
 				}
@@ -167,7 +192,9 @@ int Entities_Collision_Check(Projectile* proj, int index, Entity entities[]){
 			if (entities[i].type == entity_mob) {
 				if (collisionCircle(entities[i].mob.pos, entities[i].mob.diameter / 2, proj->pos, proj->radius)) {
 					damage_mob(&(entities[i].mob));
-					entities[index].type = entity_null;
+					if (proj->type == PROJ_TYPE_MOBILE) {
+						entities[index].type = entity_null;
+					}
 					Proj_Collided = 1;
 					//break;
 				}
@@ -190,14 +217,17 @@ void draw_projectile(Projectile* proj) {
 	}
 	else {
 		float diff = (float)(proj->frame_idx % MELEE_PROJECTILE_SPRITE_COUNT);
-		if (proj->frame_idx > 5) return;
+		if (proj->frame_idx > 7) return;
+
+		if (proj->source == PLAYER_PROJ_SOURCE1)
+			CP_Image_Draw(player_projectile_sprites[proj->frame_idx % 7], get_camera_x_pos(proj->pos.x), get_camera_y_pos(proj->pos.y), proj->radius * 2, proj->radius * 2, 255);
+			//CP_Image_Draw(player_projectile_sprites[0 % 7], get_camera_x_pos(proj->pos.x), get_camera_y_pos(proj->pos.y), proj->radius * 2, proj->radius * 2, 255);
+		else if (proj->source == MOB_PROJ_SOURCE)
+			CP_Image_Draw(enemy_projectile_sprites[proj->frame_idx % 7], get_camera_x_pos(proj->pos.x), get_camera_y_pos(proj->pos.y), proj->radius * 2, proj->radius * 2, 255);
+
 		if (proj->LifeSpan >= (PROJ_MELEE_FRAME_DT * diff)) {
 			(proj->frame_idx)++;
 		}
-		if (proj->source == PLAYER_PROJ_SOURCE1)
-			CP_Image_Draw(player_projectile_sprites[proj->frame_idx % 6], get_camera_x_pos(proj->pos.x), get_camera_y_pos(proj->pos.y), proj->radius * 2, proj->radius * 2, 255);
-		else if (proj->source == MOB_PROJ_SOURCE)
-			CP_Image_Draw(enemy_projectile_sprites[proj->frame_idx % 6], get_camera_x_pos(proj->pos.x), get_camera_y_pos(proj->pos.y), proj->radius * 2, proj->radius * 2, 255);
 	}
 }
 
