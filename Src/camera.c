@@ -34,11 +34,15 @@ CP_Image Boss_Atk_Left[BOSS_SPRITE_COUNT];
 
 CP_Image Mobile_Proj_E;
 CP_Image Mobile_Proj_P;
-CP_Image player_projectile_sprites[MELEE_PROJECTILE_SPRITE_COUNT];
-CP_Image enemy_projectile_sprites[MELEE_PROJECTILE_SPRITE_COUNT];
+CP_Image player_projectile_sprites[EXPLOSION_PROJECTILE_SPRITE_COUNT];
+CP_Image enemy_projectile_sprites[EXPLOSION_PROJECTILE_SPRITE_COUNT];
+CP_Image sword_right[WEAPON_PROJECTILE_SPRITE_COUNT];
+CP_Image sword_left[WEAPON_PROJECTILE_SPRITE_COUNT];
 
-CP_Image melee_mob[MELEE_MOB_SPRITE_COUNT];
-CP_Image explode_mob[MELEE_MOB_SPRITE_COUNT];
+CP_Image melee_mob_left[MELEE_MOB_SPRITE_COUNT];
+CP_Image explode_mob_left[MELEE_MOB_SPRITE_COUNT];
+CP_Image melee_mob_right[MELEE_MOB_SPRITE_COUNT];
+CP_Image explode_mob_right[MELEE_MOB_SPRITE_COUNT];
 CP_Image range_mob[RANGE_MOB_SPRITE_COUNT];
 
 Position world_offset;
@@ -152,11 +156,20 @@ void init_sprites(void) {
 	enemy_projectile_sprites[5] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E6.png");
 	enemy_projectile_sprites[6] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E7.png");
 
-	melee_mob[0] = CP_Image_Load("./Assets/Tiles/Mobs/Melee/Slime_Idle1.png");
-	melee_mob[1] = CP_Image_Load("./Assets/Tiles/Mobs/Melee/Slime_Idle2.png");
+	sword_left[0] = CP_Image_Load("./Assets/Tiles/Projectiles/swordleft0.png");
+	sword_left[1] = CP_Image_Load("./Assets/Tiles/Projectiles/swordleft1.png");
+	sword_left[2] = CP_Image_Load("./Assets/Tiles/Projectiles/swordleft2.png");
+	sword_left[3] = CP_Image_Load("./Assets/Tiles/Projectiles/swordleft3.png");
 
-	explode_mob[0] = CP_Image_Load("./Assets/Tiles/Mobs/Explode/ExplodeSlime_Idle1.png");
-	explode_mob[1] = CP_Image_Load("./Assets/Tiles/Mobs/Explode/ExplodeSlime_Idle2.png");
+	melee_mob_left[0] = CP_Image_Load("./Assets/Tiles/Mobs/Melee/skeletonleft0.png");
+	melee_mob_left[1] = CP_Image_Load("./Assets/Tiles/Mobs/Melee/skeletonleft1.png");
+	melee_mob_right[0] = CP_Image_Load("./Assets/Tiles/Mobs/Melee/skeletonright0.png");
+	melee_mob_right[1] = CP_Image_Load("./Assets/Tiles/Mobs/Melee/skeletonright1.png");
+
+	explode_mob_left[0] = CP_Image_Load("./Assets/Tiles/Mobs/Explode/boomberleft0.png");
+	explode_mob_left[1] = CP_Image_Load("./Assets/Tiles/Mobs/Explode/boomberleft1.png");
+	explode_mob_right[0] = CP_Image_Load("./Assets/Tiles/Mobs/Explode/boomberright0.png");
+	explode_mob_right[1] = CP_Image_Load("./Assets/Tiles/Mobs/Explode/boomberright1.png");
 
 	range_mob[7] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_right.png");
 	range_mob[6] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_rightup.png");

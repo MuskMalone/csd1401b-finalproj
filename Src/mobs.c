@@ -6,8 +6,10 @@
 #include "camera.h"
 //what each mob had run
 //when each mob is running on the screen, each codes runs
-CP_Image melee_mob[MELEE_MOB_SPRITE_COUNT];
-CP_Image explode_mob[MELEE_MOB_SPRITE_COUNT];
+CP_Image melee_mob_left[MELEE_MOB_SPRITE_COUNT];
+CP_Image explode_mob_left[MELEE_MOB_SPRITE_COUNT];
+CP_Image melee_mob_right[MELEE_MOB_SPRITE_COUNT];
+CP_Image explode_mob_right[MELEE_MOB_SPRITE_COUNT];
 CP_Image range_mob[RANGE_MOB_SPRITE_COUNT];
 int collision_mob_wall(Position p, float diameter, int wall_pos[GRID_ROWS][GRID_COLS]) {
 	for (int i = 0; i < GRID_ROWS; ++i) {
@@ -111,7 +113,7 @@ void mob_ranged(int player_idx, Entity entities[], int mob_idx)
 	if (mob->timer < 0.0f) {
 		int p_idx = insert_to_entity_array(entity_projectile, entities, init_projectile);
 		if (p_idx > 0) {
-			set_projectile_values(&(entities[p_idx].projectile), MOB_PROJ_SOURCE, 'm', proj_radius, mob_pos, getVectorBetweenPositions(&(mob_pos), &(position_player)));
+			set_projectile_values(&(entities[p_idx].projectile), MOB_PROJ_SOURCE, PROJ_TYPE_MOBILE, proj_radius, mob_pos, getVectorBetweenPositions(&(mob_pos), &(position_player)));
 			// timer between 1 and 5 seconds
 			mob->timer = MOB_RANGED_TIMER;
 		}
@@ -173,7 +175,7 @@ void mob_melee(int player_idx, Entity entities[], int mob_idx, int wall_pos[GRID
 				CP_Vector v = getVectorBetweenPositions(&(mob_pos), &(position_player));
 				set_projectile_values(
 						&(entities[p_idx].projectile),
-						MOB_PROJ_SOURCE, 's',
+						MOB_PROJ_SOURCE, PROJ_TYPE_WEAPON,
 						proj_radius,
 						(Position) {
 							mob->pos.x + (mob->diameter * v.x), 
@@ -268,10 +270,16 @@ void draw_mob(Mob* mob) {
 		CP_Image_Draw(range_mob[(int)(angle / 45.0f)], get_camera_x_pos(mob->pos.x), get_camera_y_pos(mob->pos.y), mob->diameter * .667f, mob->diameter, 255);
 		break;
 	case(melee):
-		CP_Image_Draw(melee_mob[(int)animationMelee % 2], get_camera_x_pos(mob->pos.x), get_camera_y_pos(mob->pos.y), mob->diameter, mob->diameter, 255);
+		if (angle >= 90.0f && angle <= 270.0f)
+			CP_Image_Draw(melee_mob_left[(int)animationMelee % 2], get_camera_x_pos(mob->pos.x), get_camera_y_pos(mob->pos.y), mob->diameter, mob->diameter, 255);
+		else
+			CP_Image_Draw(melee_mob_right[(int)animationMelee % 2], get_camera_x_pos(mob->pos.x), get_camera_y_pos(mob->pos.y), mob->diameter, mob->diameter, 255);
 		break;
 	case(explode):
-		CP_Image_Draw(explode_mob[(int)animationMelee % 2], get_camera_x_pos(mob->pos.x), get_camera_y_pos(mob->pos.y), mob->diameter, mob->diameter, 255);
+		if (angle >= 90.0f && angle <= 270.0f)
+			CP_Image_Draw(explode_mob_left[(int)animationMelee % 2], get_camera_x_pos(mob->pos.x), get_camera_y_pos(mob->pos.y), mob->diameter, mob->diameter, 255);
+		else 
+			CP_Image_Draw(explode_mob_right[(int)animationMelee % 2], get_camera_x_pos(mob->pos.x), get_camera_y_pos(mob->pos.y), mob->diameter, mob->diameter, 255);
 		break;
 	}
 }

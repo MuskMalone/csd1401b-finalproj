@@ -94,7 +94,8 @@ static int player_deflect_projectile(Player *p, Entity entities[]) {
 		if (entities[i].type == entity_projectile) {
 			Projectile* projectile = &(entities[i].projectile);
 			int collided = collisionCircle(p->pos, p->parryrad, projectile->pos, projectile->radius);
-			if (collided && projectile->source != (char) PLAYER_PROJ_SOURCE1 && projectile->type == PROJ_TYPE_STATIC) {
+			if (collided && projectile->source != (char) PLAYER_PROJ_SOURCE1 && 
+				projectile->type != PROJ_TYPE_MOBILE ){
 				deflectprojectiles((char)PLAYER_PROJ_SOURCE1, i, entities);
 				out = 1;
 			}

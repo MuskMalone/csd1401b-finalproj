@@ -1,10 +1,12 @@
 #include "projectiles.h"
 #include "camera.h"
 #include <stdlib.h>
+#include <stdio.h>
 CP_Image Mobile_Proj_E;
 CP_Image Mobile_Proj_P;
-CP_Image player_projectile_sprites[MELEE_PROJECTILE_SPRITE_COUNT];
-CP_Image enemy_projectile_sprites[MELEE_PROJECTILE_SPRITE_COUNT];
+CP_Image player_projectile_sprites[EXPLOSION_PROJECTILE_SPRITE_COUNT];
+CP_Image enemy_projectile_sprites[EXPLOSION_PROJECTILE_SPRITE_COUNT];
+CP_Image sword_left[WEAPON_PROJECTILE_SPRITE_COUNT];
 
 entity_struct init_projectile(void) {
 	Projectile Proj;
@@ -22,7 +24,7 @@ void set_projectile_values(Projectile* Proj, char Source, char type, int radius,
 	Proj->source = Source;	  // The owner of the projectile. Prevents the projectile from attacking its owner
 	Proj->Future_Pos = Proj->pos;
 	Proj->toRebound_NextFrame = PROJ_NOT_REBOUNDING;
-	if (type == PROJ_TYPE_STATIC)
+	if (type == PROJ_TYPE_STATIC || type == PROJ_TYPE_WEAPON)
 		Proj->LifeSpan = 0.0f;//PROJ_MELEE_LIFESPAN;
 	else if (type == PROJ_TYPE_MOBILE)
 		Proj->rebound_count = 0;
@@ -119,7 +121,8 @@ void deflectprojectiles(char source,int index, Entity entities[]) {
 			
 		}
 	}
-	if (proj->type == PROJ_TYPE_STATIC) {
+	else{
+		proj->type = PROJ_TYPE_STATIC;
 		proj->source = source;
 		proj->LifeSpan = 0.0f;
 		proj->frame_idx = 0;
@@ -215,9 +218,9 @@ void draw_projectile(Projectile* proj) {
 			CP_Image_Draw(Mobile_Proj_E, get_camera_x_pos(proj->pos.x), get_camera_y_pos(proj->pos.y), proj->radius * 2, proj->radius * 2, 255);
 
 	}
-	else {
-		float diff = (float)(proj->frame_idx % MELEE_PROJECTILE_SPRITE_COUNT);
-		if (proj->frame_idx > 7) return;
+	else if (proj->type == PROJ_TYPE_STATIC) {
+		float diff = (float)(proj->frame_idx % EXPLOSION_PROJECTILE_SPRITE_COUNT);
+		if (proj->frame_idx > EXPLOSION_PROJECTILE_SPRITE_COUNT) return;
 
 		if (proj->source == PLAYER_PROJ_SOURCE1)
 			CP_Image_Draw(player_projectile_sprites[proj->frame_idx % 7], get_camera_x_pos(proj->pos.x), get_camera_y_pos(proj->pos.y), proj->radius * 2, proj->radius * 2, 255);
@@ -225,9 +228,40 @@ void draw_projectile(Projectile* proj) {
 		else if (proj->source == MOB_PROJ_SOURCE)
 			CP_Image_Draw(enemy_projectile_sprites[proj->frame_idx % 7], get_camera_x_pos(proj->pos.x), get_camera_y_pos(proj->pos.y), proj->radius * 2, proj->radius * 2, 255);
 
-		if (proj->LifeSpan >= (PROJ_MELEE_FRAME_DT * diff)) {
+		if (proj->LifeSpan >= (PROJ_EXPLOSION_FRAME_DT * diff)) {
 			(proj->frame_idx)++;
 		}
+	}
+	else if (proj->type == PROJ_TYPE_WEAPON) {
+		//CP_Settings_Fill(CP_Color_Create(0, 0, 0, 100));
+		//CP_Graphics_DrawRect(proj->pos.x - proj->radius * 3.0f, proj->pos.y - proj->radius * 3.0f, proj->radius * 6.0f, proj->radius * 6.0f);
+
+		//CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
+		//CP_Graphics_DrawCircle(proj->pos.x, proj->pos.y, proj->radius * 2.0f);
+
+
+		float diff = (float)(proj->frame_idx % WEAPON_PROJECTILE_SPRITE_COUNT);
+		if (proj->frame_idx > WEAPON_PROJECTILE_SPRITE_COUNT) return;
+		
+		float angle = vectorToAngle(proj->Direction);
+			CP_Image_DrawAdvanced(
+				sword_left[proj->frame_idx % WEAPON_PROJECTILE_SPRITE_COUNT], 
+				get_camera_x_pos(proj->pos.x), 
+				get_camera_y_pos(proj->pos.y), 
+				proj->radius * 3.0f, proj->radius * 3.0f, 
+				255,
+				angle
+			);
+		if (proj->LifeSpan >= (PROJ_WEAPON_FRAME_DT * diff)) {
+			(proj->frame_idx)++;
+		}
+
+		//CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
+		//CP_Settings_TextSize(50.0f);
+
+		//char buffer[500] = { 0 };
+		//sprintf_s(buffer, _countof(buffer), "%d %f", proj->frame_idx, proj->LifeSpan);
+		//CP_Font_DrawText(buffer, proj->pos.x, proj->pos.y - proj->radius * 2.0f);
 	}
 }
 

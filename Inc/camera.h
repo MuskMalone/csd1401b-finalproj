@@ -1,6 +1,7 @@
 #pragma once
 #include "gametypes.h"
-#define MELEE_PROJECTILE_SPRITE_COUNT 7
+#define EXPLOSION_PROJECTILE_SPRITE_COUNT 7
+#define WEAPON_PROJECTILE_SPRITE_COUNT 4
 #define MELEE_MOB_SPRITE_COUNT 2
 #define RANGE_MOB_SPRITE_COUNT 8
 #define ROOM_TILE_TYPES 10
@@ -31,14 +32,17 @@ extern CP_Image Boss_Atk_Right[BOSS_SPRITE_COUNT];
 extern CP_Image Boss_Atk_Left[BOSS_SPRITE_COUNT];
 
 //projectiles
-extern CP_Image player_projectile_sprites[MELEE_PROJECTILE_SPRITE_COUNT];
-extern CP_Image enemy_projectile_sprites[MELEE_PROJECTILE_SPRITE_COUNT];
+extern CP_Image player_projectile_sprites[EXPLOSION_PROJECTILE_SPRITE_COUNT];
+extern CP_Image enemy_projectile_sprites[EXPLOSION_PROJECTILE_SPRITE_COUNT];
+extern CP_Image sword_right[WEAPON_PROJECTILE_SPRITE_COUNT];
 extern CP_Image Mobile_Proj_E;
 extern CP_Image Mobile_Proj_P;
 
 //mob
-extern CP_Image melee_mob[MELEE_MOB_SPRITE_COUNT];
-extern CP_Image explode_mob[MELEE_MOB_SPRITE_COUNT];
+extern CP_Image melee_mob_left[MELEE_MOB_SPRITE_COUNT];
+extern CP_Image explode_mob_left[MELEE_MOB_SPRITE_COUNT];
+extern CP_Image melee_mob_right[MELEE_MOB_SPRITE_COUNT];
+extern CP_Image explode_mob_right[MELEE_MOB_SPRITE_COUNT];
 extern CP_Image range_mob[RANGE_MOB_SPRITE_COUNT];
 
 extern CP_Image tile_list[ROOM_TILE_TYPES];
