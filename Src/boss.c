@@ -159,7 +159,7 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 					boss_img = &boss_def;
 				}
 				if (Atk_Time_Tracker >= 2.5/4.0 * (float)boss->atk_cd) {
-					boss_direction = ((getVectorBetweenPositions(&(boss->pos), &(player->pos)).x > 0));
+					boss_direction = ((getVectorBetweenPositions(boss->pos, player->pos).x > 0));
 					boss_img = *(Boss_Atk_Img + boss_direction);
 				}
 			}
@@ -193,7 +193,7 @@ void damage_boss(Boss* b, Player* p) {
 	b->health -= 1;
 	Boss_is_stun = 1;
 	animationcount = 0;
-	D_vector = CP_Vector_Scale(getVectorBetweenPositions(&(p->pos), &(b->pos)), 500);
+	D_vector = CP_Vector_Scale(getVectorBetweenPositions(p->pos, b->pos), 500);
 	boss_img = &(Boss_Stun[(D_vector.x>0)]);
 	
 }
@@ -213,11 +213,11 @@ void Cannon_Fire_Proj(Entity entities[],Player *player) {
 	if(Cannon_Timer >= 2){
 		int p_idx1 = insert_to_entity_array(entity_projectile, entities, init_projectile);
 		if (p_idx1 > 0) {
-			set_projectile_values(&(entities[p_idx1].projectile), 'e', 'm', 10, CanonProj1, getVectorBetweenPositions(&(CanonProj1), &(player->pos)));
+			set_projectile_values(&(entities[p_idx1].projectile), 'e', 'm', 10, CanonProj1, getVectorBetweenPositions(CanonProj1, player->pos));
 		}
 		int p_idx2 = insert_to_entity_array(entity_projectile, entities, init_projectile);
 		if (p_idx1 > 0) {
-			set_projectile_values(&(entities[p_idx2].projectile), 'e', 'm', 10, CanonProj2, getVectorBetweenPositions(&(CanonProj2), &(player->pos)));
+			set_projectile_values(&(entities[p_idx2].projectile), 'e', 'm', 10, CanonProj2, getVectorBetweenPositions(CanonProj2, player->pos));
 		}
 		Cannon_Timer = 0;
 	}

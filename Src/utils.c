@@ -9,9 +9,9 @@ void moveEntity(Position* p, float xspeed, float yspeed) {
 }
 
 // get normalized direction vector between two positions
-CP_Vector getVectorBetweenPositions(Position *from, Position *to) {
-	float x = (to->x) - (from->x);
-	float y = (to->y) - (from->y);
+CP_Vector getVectorBetweenPositions(Position from, Position to) {
+	float x = (to.x) - (from.x);
+	float y = (to.y) - (from.y);
 	return CP_Vector_Normalize(CP_Vector_Set(x, y));
 }
 
