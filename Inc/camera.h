@@ -63,3 +63,14 @@ float insert_to_particle_array(
 	float (*pos_lerp_func)(float start, float end, float value)
 );
 void shake_camera(float scale, int override);
+void create_particle_burst(
+	float timer, 
+	float (*pos_lerp_func)(float start, float end, float value),
+	CP_Color color, 
+	Position pos,
+	float distance, 
+	float start_size, 
+	float end_size, 
+	float start_deg, 
+	float end_deg, 
+	unsigned int density);

@@ -94,8 +94,7 @@ static int player_deflect_projectile(Player *p, Entity entities[]) {
 		if (entities[i].type == entity_projectile) {
 			Projectile* projectile = &(entities[i].projectile);
 			int collided = collisionCircle(p->pos, p->parryrad, projectile->pos, projectile->radius);
-			if (collided && projectile->source != (char) PLAYER_PROJ_SOURCE1 && 
-				projectile->type != PROJ_TYPE_MOBILE ){
+			if (collided && projectile->source != (char) PLAYER_PROJ_SOURCE1 && projectile->type != PROJ_TYPE_MOBILE) {
 				deflectprojectiles((char)PLAYER_PROJ_SOURCE1, i, entities);
 				out = 1;
 			}
@@ -318,17 +317,18 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 	}
 }
 void player_injured_particles(Player *player) {
-	for (int i = 0; i < 10; ++i) {
-		insert_to_particle_array(
-			CP_Random_RangeFloat(10.0f, 20.0f),
-			player->pos,
-			angleToVector(CP_Random_RangeFloat(0.0f, 360.f)),
-			player->diameter * 2.0f,
-			2.0f,
-			CP_Color_Create(0, 0, 0, 255),
-			EaseOutExpo
-		);
-	}
+	create_particle_burst(
+		2.0f,
+		EaseOutExpo,
+		CP_Color_Create(0, 0, 0, 255),
+		player->pos,
+		player->diameter * 2.0f,
+		10.0f,
+		20.0f,
+		0.0f,
+		360.f,
+		10
+	);
 }
 int damage_player(Player *p) {
 	if (p->state != dashing) {

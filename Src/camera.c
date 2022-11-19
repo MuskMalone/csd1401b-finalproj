@@ -417,6 +417,29 @@ float insert_to_particle_array(
 	);
 	particle_count++;
 }
+void create_particle_burst(
+	float timer,
+	float (*pos_lerp_func)(float start, float end, float value),
+	CP_Color color,
+	Position pos,
+	float distance,
+	float start_size,
+	float end_size,
+	float start_deg,
+	float end_deg,
+	unsigned int density) {
+	for (unsigned int i = 0; i < density; ++i) {
+		insert_to_particle_array(
+			CP_Random_RangeFloat(start_size, end_size),
+			pos,
+			angleToVector(CP_Random_RangeFloat(start_deg, end_deg)),
+			distance,
+			timer,
+			color,
+			pos_lerp_func
+		);
+	}
+}
 void draw_hud(Player* player) {
 	for (int i = 1; i <= player->health; i++)
 	{
@@ -452,4 +475,5 @@ void shake_camera(float scale, int override) {
 		}
 	}
 }
+
 

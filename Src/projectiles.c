@@ -1,5 +1,6 @@
 #include "projectiles.h"
 #include "camera.h"
+#include "easing.h"
 #include <stdlib.h>
 #include <stdio.h>
 CP_Image Mobile_Proj_E;
@@ -28,6 +29,39 @@ void set_projectile_values(Projectile* Proj, char Source, char type, int radius,
 		Proj->LifeSpan = 0.0f;//PROJ_MELEE_LIFESPAN;
 	else if (type == PROJ_TYPE_MOBILE)
 		Proj->rebound_count = 0;
+}
+void projectile_wall_bounce_particles(Projectile* proj, char source) {
+	float start_angle, end_angle;
+	if (source == PROJ_VERTICAL_WALL) {
+		if (proj->Direction.x > 0.0f) {
+			start_angle = 270.0f, end_angle = 410.0f;
+		}
+		else {
+			start_angle = 90.0f, end_angle = 270.0f;
+		}
+	}
+	else if (source == PROJ_HORIZONTAL_WALL) {
+		if (proj->Direction.y > 0.0f) {
+			start_angle = 0.0f, end_angle = 180.0f;
+		}
+		else {
+			start_angle = 180.0f, end_angle = 360.0f;
+		}
+		
+
+	}
+	create_particle_burst(
+		1.0f,
+		EaseOutExpo,
+		CP_Color_Create(0, 0, 0, 255),
+		proj->pos,
+		WALL_DIM,
+		2.0f,
+		8.0f,
+		start_angle,
+		end_angle,
+		10
+	);
 }
 void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Projectile* proj = &(entities[index].projectile);
@@ -120,6 +154,8 @@ void deflectprojectiles(char source,int index, Entity entities[]) {
 			proj->source = source;
 			
 		}
+		if (proj->source == PLAYER_PROJ_SOURCE1)
+			projectile_wall_bounce_particles(proj, source);
 	}
 	else{
 		proj->type = PROJ_TYPE_STATIC;
@@ -145,17 +181,17 @@ int Wall_Edge_Check(Projectile* proj, Position rect, float width, float height) 
 		
 		
 		Position Rect_Center = (Position){ rect.x + (width / 2),rect.y + (height / 2) };
-		float y_diff = (abs((proj->Future_Pos.y+proj->radius) - rect.y) < abs((proj->Future_Pos.y-proj->radius) - (rect.y + height))) ? ((proj->Future_Pos.y+ proj->radius) - rect.y) : ((proj->Future_Pos.y-proj->radius) - (rect.y + height));
-		float x_diff = (abs((proj->Future_Pos.x+ proj->radius) - rect.x) < abs((proj->Future_Pos.x- proj->radius) - (rect.x + width))) ? ((proj->Future_Pos.x+proj->radius) - rect.x) : ((proj->Future_Pos.x-proj->radius) - (rect.x + width));
+		float y_diff = (fabs((proj->Future_Pos.y+proj->radius) - rect.y) < fabs((proj->Future_Pos.y-proj->radius) - (rect.y + height))) ? ((proj->Future_Pos.y+ proj->radius) - rect.y) : ((proj->Future_Pos.y-proj->radius) - (rect.y + height));
+		float x_diff = (fabs((proj->Future_Pos.x+ proj->radius) - rect.x) < fabs((proj->Future_Pos.x- proj->radius) - (rect.x + width))) ? ((proj->Future_Pos.x+proj->radius) - rect.x) : ((proj->Future_Pos.x-proj->radius) - (rect.x + width));
 
-		if (abs(y_diff) < abs(x_diff)) {
+		if (fabs(y_diff) < fabs(x_diff)) {
 			proj->toRebound_NextFrame = PROJ_HORIZONTAL_WALL;
-			int direction = (abs((proj->Future_Pos.y + proj->radius) - rect.y) < abs((proj->Future_Pos.y - proj->radius) - (rect.y + height))) ? -1 : 1;
+			int direction = (fabs((proj->Future_Pos.y + proj->radius) - rect.y) < fabs((proj->Future_Pos.y - proj->radius) - (rect.y + height))) ? -1 : 1;
 			proj->Future_Pos.y = Rect_Center.y + direction * ((height / 2) + proj->radius);
 		}
 		else {
 			proj->toRebound_NextFrame = PROJ_VERTICAL_WALL;
-			int direction = (abs((proj->Future_Pos.x + proj->radius) - rect.x) < abs((proj->Future_Pos.x - proj->radius) - (rect.x + width))) ? -1 : 1;
+			int direction = (fabs((proj->Future_Pos.x + proj->radius) - rect.x) < fabs((proj->Future_Pos.x - proj->radius) - (rect.x + width))) ? -1 : 1;
 			proj->Future_Pos.x = Rect_Center.x + direction * ((width / 2) + proj->radius);
 		}
 		
