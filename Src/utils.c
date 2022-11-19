@@ -95,7 +95,8 @@ int IsCircleClicked(float circle_center_x, float circle_center_y, float diameter
 
 }
 CP_Vector angleToVector(float angle) {
-	return CP_Vector_Normalize(CP_Vector_Set(cos(angle), sin(angle)));
+	float radians = angle * (M_PI / 180.0f);
+	return CP_Vector_Normalize(CP_Vector_Set(cos(radians), sin(radians)));
 
 }
 float vectorToAngle(CP_Vector a, Position from) {
