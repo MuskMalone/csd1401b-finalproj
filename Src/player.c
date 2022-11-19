@@ -216,19 +216,19 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 	//Basic Player movement
 	if (CP_Input_KeyDown(KEY_D)) {
 		set_state(player, moving);
-		player->horizontal_dir = 1;
+		player->horizontal_dir = 2;
 	}
 	else if (CP_Input_KeyDown(KEY_A)) {
 		set_state(player, moving);
-		player->horizontal_dir = -1;
+		player->horizontal_dir = -2;
 	}
 	if (CP_Input_KeyDown(KEY_W)) {
 		set_state(player, moving);
-		player->vertical_dir = -1;
+		player->vertical_dir = -2;
 	}
 	else if (CP_Input_KeyDown(KEY_S)) {
 		set_state(player, moving);
-		player->vertical_dir = 1;
+		player->vertical_dir = 2;
 	}
 
 	if (CP_Input_KeyReleased(KEY_D) || CP_Input_KeyReleased(KEY_A)) {
@@ -335,28 +335,28 @@ void set_player_position(Player* player, Position pos) {
 }
 void draw_player(Player* player) {
 
-	if (player->horizontal_dir == 1 && player->vertical_dir == 0) {
+	if (player->horizontal_dir == 2 && player->vertical_dir == 0) {
 		player_sprite_ptr = player_right;
 	}
-	else if (player->horizontal_dir == -1 && player->vertical_dir == 0) {
+	else if (player->horizontal_dir == -2 && player->vertical_dir == 0) {
 		player_sprite_ptr = player_left;
 	}
-	else if (player->horizontal_dir == 0 && player->vertical_dir == 1) {
+	else if (player->horizontal_dir == 0 && player->vertical_dir == 2) {
 		player_sprite_ptr = player_front;
 	}
-	else if (player->horizontal_dir == 0 && player->vertical_dir == -1) {
+	else if (player->horizontal_dir == 0 && player->vertical_dir == -2) {
 		player_sprite_ptr = player_back;
 	}
-	else if (player->horizontal_dir == 1 && player->vertical_dir == 1) {
+	else if (player->horizontal_dir == 2 && player->vertical_dir == 2) {
 		player_sprite_ptr = player_frontdiagright;
 	}
-	else if (player->horizontal_dir == -1 && player->vertical_dir == 1) {
+	else if (player->horizontal_dir == -2 && player->vertical_dir == 2) {
 		player_sprite_ptr = player_frontdiagleft;
 	}
-	else if (player->horizontal_dir == 1 && player->vertical_dir == -1) {
+	else if (player->horizontal_dir == 2 && player->vertical_dir == -2) {
 		player_sprite_ptr = player_backdiagright;
 	}
-	else if (player->horizontal_dir == -1 && player->vertical_dir == -1) {
+	else if (player->horizontal_dir == -2 && player->vertical_dir == -2) {
 		player_sprite_ptr = player_backdiagleft;
 	}
 

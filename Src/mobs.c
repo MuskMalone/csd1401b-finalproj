@@ -219,7 +219,7 @@ entity_struct init_mob() {
 	int type = rand() % 3;
 	Mob mob;
 	mob.type = (attack_type)type;
-	mob.diameter = WALL_DIM;
+	mob.diameter = 50.0f;
 	mob.health = MOB_HEALTH;
 
 	switch (mob.type) {

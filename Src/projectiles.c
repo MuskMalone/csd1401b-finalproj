@@ -284,7 +284,7 @@ void draw_projectile(Projectile* proj) {
 				sword_left[proj->frame_idx % WEAPON_PROJECTILE_SPRITE_COUNT], 
 				get_camera_x_pos(proj->pos.x), 
 				get_camera_y_pos(proj->pos.y), 
-				proj->radius * 3.0f, proj->radius * 3.0f, 
+				proj->radius * 2.0f, proj->radius * 2.0f, 
 				255,
 				angle
 			);
