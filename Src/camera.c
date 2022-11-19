@@ -80,7 +80,7 @@ void init_sprites(void) {
 	GameOverMenu = CP_Image_Load("./Assets/gameover.png");
 	Boss_Barrier_Img = CP_Image_Load("./Assets/Tiles/Boss/Boss_Barrier.png");
 	Cannon_Img = CP_Image_Load("./Assets/Tiles/Boss/Cannon.png");
-	boss_def = CP_Image_Load("./Assets/Tiles/Boss/Boss_Base3.png");
+	boss_def = CP_Image_Load("./Assets/Tiles/Boss/Boss_Base.png");
 	Pause_Menu = CP_Image_Load("./Assets/PauseMenu.png");
 	BackToMenuBut = CP_Image_Load("./Assets/BACKTOMENU.png");
 
