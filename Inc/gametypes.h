@@ -5,6 +5,20 @@
 #define PLAYER_IDX 0
 #define GRID_ROWS 25
 #define GRID_COLS 30
+#define PARTICLE_CAP 5000
+
+typedef struct Particle {
+	int running;
+	float diameter;
+	Position curr_pos; 
+	Position start_pos;
+	CP_Vector dir;
+	float distance;
+	float max_timer;
+	float timer;
+	CP_Color color;
+	float (*pos_lerp_func)(float start, float end, float value);
+} Particle;
 
 enum tile_type { FLOOR_TILE, WALL_TILE, MOB_TILE, BOSS_TILE };
 typedef enum room_state { room_pause, room_active, room_clear, loading, room_failed } room_state;

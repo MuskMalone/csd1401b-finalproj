@@ -2,19 +2,8 @@
 #include <stdlib.h>
 #include "player.h"
 #include "camera.h"
-#define COOLDOWN_DURATION 2.0f
-#define MAX_COOLDOWN 3.0f
-#define MAX_PARRYRADIUS WALL_DIM * 1.4f
-#define DASH_DURATION .15f
-#define STAMINA_COST 70.0f
-#define STAMINA_COST_HOLD 90.0f * CP_System_GetDt()
-#define NORMAL_SPEED 200
-#define DASH_SPEED NORMAL_SPEED*5
-#define HOLDING_PROJ_SPEED 50.0f
-#define ACCESS_ALL_ENTITIES for (int i = 0; i < ENTITY_CAP; ++i) 
-#define MELEE_DEFLECT_SHAKE 150.0f
-#define PROJ_DEFLECT_SHAKE 50.0f
-#define PROJ_HOLDING_SHAKE 2.0f
+#include "easing.h"
+
 
 CP_Image player_front[PLAYER_SPRITE_COUNT];
 CP_Image player_frontdiagleft[PLAYER_SPRITE_COUNT];
@@ -33,6 +22,7 @@ static int is_cooldown = 0;
 static float cooldown = .0f;
 static int melee_deflect_triggered = 0;
 
+CP_Image player_deflect_arrow;
 CP_Image Player_Barrier_Img;
 CP_Image *player_sprite_ptr;
 
@@ -46,17 +36,20 @@ int release_held_projectiles(Player * player, Entity entities[]) {
 			Projectile* proj = &(entities[i].projectile);
 			if (collisionCircle(player->pos, MAX_PARRYRADIUS, proj->pos, proj->radius) && proj->source != PLAYER_PROJ_SOURCE1 && proj->type != PROJ_TYPE_STATIC) {
 				int dir_x, dir_y;
-				if (player->horizontal_dir == 0 && player->vertical_dir == 0) {
-					//sets a random direction
-					dir_x = rand() % 1, dir_y = rand() % 2;
-					(dir_x) ? (dir_x = 1) : (dir_x = -1);
-					(dir_y) ? (dir_y = 1) : (dir_y = -1);
-				}
-				else {
-					dir_x = player->horizontal_dir;
-					dir_y = player->vertical_dir;
-				}
-				set_projectile_values(&(entities[i].projectile), PLAYER_PROJ_SOURCE1, 'm', 10, proj->pos, CP_Vector_Normalize(CP_Vector_Set((float)dir_x, (float)dir_y)));
+
+				set_projectile_values(
+					&(entities[i].projectile), 
+					PLAYER_PROJ_SOURCE1, PROJ_TYPE_MOBILE, 
+					10, 
+					proj->pos, 
+					getVectorBetweenPositions(
+						player->pos, 
+						(Position) { 
+							CP_Input_GetMouseX(), 
+							CP_Input_GetMouseY() 
+						}
+					)
+				);
 				proj->speed = 1000;
 				out = 1;
 			}
@@ -91,7 +84,7 @@ static int player_deflect_projectile(Player *p, Entity entities[]) {
 		if (entities[i].type == entity_projectile) {
 			Projectile* projectile = &(entities[i].projectile);
 			int collided = collisionCircle(p->pos, p->parryrad, projectile->pos, projectile->radius);
-			if (collided && projectile->source != (char) PLAYER_PROJ_SOURCE1 && projectile->type == PROJ_TYPE_STATIC) {
+			if (collided && projectile->source != (char) PLAYER_PROJ_SOURCE1 && projectile->type != PROJ_TYPE_MOBILE) {
 				deflectprojectiles((char)PLAYER_PROJ_SOURCE1, i, entities);
 				out = 1;
 			}
@@ -118,12 +111,12 @@ entity_struct init_player(void) {
 	float Window_Height = CP_System_GetWindowHeight();
 	Position p;
 	player_sprite_ptr = player_front;
-	player.health = 5;
+	player.health = PLAYER_HEALTH_SPRITE_COUNT;
 
 	player.speed = NORMAL_SPEED;
 	player.horizontal_dir = 0, player.vertical_dir = 0;
 	player.state = resting;
-	player.diameter = WALL_DIM;//50.0f;
+	player.diameter = PLAYER_DIAMETER;//50.0f;
 	p.x = (Window_Width / 2) - (player.diameter / 2);
 	p.y = (Window_Height / 2) - (player.diameter / 2);
 	player.pos = p;
@@ -150,7 +143,7 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 	//Reduces the barrier strength whenever the player clicks spacebar
 	// If you want to reduce the opacity of the barrier, uncomment the "basewieght" variable in the "if" statement bellow
 	// If you want to reduce the size of the barrier, uncomment the "radius_reduction" variable in the "if" statement bellow
-	if (CP_Input_KeyDown(KEY_K)) {
+	if (CP_Input_MouseDown(MOUSE_BUTTON_1)) {
 		if (!is_cooldown)
 			set_state(player, holding);
 		if (!melee_deflect_triggered) {
@@ -189,12 +182,12 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 		}
 	}
 
-	if (CP_Input_KeyReleased(KEY_K)) {
+	if (CP_Input_MouseReleased(MOUSE_BUTTON_1)) {
 		if (!is_cooldown)
 			if (release_held_projectiles(player, entities)) shake_camera(PROJ_DEFLECT_SHAKE, 1);
 		set_state(player, resting);
 	}
-	if (CP_Input_KeyTriggered(KEY_L)) {
+	if (CP_Input_MouseTriggered(MOUSE_BUTTON_2)) {
 		// make sure player is moving
 		if ((player->horizontal_dir || player->vertical_dir) && player->state != holding) {
 
@@ -249,16 +242,15 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 
 	// if holding
 	if (player->state == holding) {
-		float line_dist_x = WALL_DIM * (float)player->horizontal_dir, line_dist_y = WALL_DIM * (float)player->vertical_dir;
-		float start_x = player->pos.x + ((float)player->horizontal_dir * (MAX_PARRYRADIUS / 2.0f)),
-			start_y = player->pos.y + ((float)player->vertical_dir * (MAX_PARRYRADIUS / 2.0f));
+		CP_Vector mouse_dir = getVectorBetweenPositions(player->pos, (Position) { CP_Input_GetMouseX(), CP_Input_GetMouseY() });
+		float start_x = player->pos.x + (mouse_dir.x * (MAX_PARRYRADIUS / 2.0f)),
+			start_y = player->pos.y + (mouse_dir.y * (MAX_PARRYRADIUS / 2.0f));
 		ACCESS_ALL_ENTITIES {
 			if (entities[i].type == entity_projectile) {
 				Projectile* proj = &(entities[i].projectile);
 				if (collisionCircle(player->pos, MAX_PARRYRADIUS, proj->pos, proj->radius) && proj->source != PLAYER_PROJ_SOURCE1 && proj->type != PROJ_TYPE_STATIC) {
 					proj->speed = 0; proj->source = PLAYER_PROJ_SOURCE2;
-					Position pos = (Position){ start_x, start_y };
-					CP_Vector dir = getVectorBetweenPositions(&(proj->pos), &pos);
+					CP_Vector dir = getVectorBetweenPositions(proj->pos, (Position) { start_x, start_y });
 					moveEntity(&(proj->pos), dir.x * HOLDING_PROJ_SPEED, dir.y * HOLDING_PROJ_SPEED);
 				}
 
@@ -313,9 +305,25 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 		}
 	}
 }
-
+void player_injured_particles(Player *player) {
+	create_particle_burst(
+		2.0f,
+		EaseOutExpo,
+		CP_Color_Create(0, 0, 0, 255),
+		player->pos,
+		player->diameter * 2.0f,
+		10.0f,
+		20.0f,
+		0.0f,
+		360.f,
+		10
+	);
+}
 int damage_player(Player *p) {
 	if (p->state != dashing) {
+		flash_hue(CP_Color_Create(255, 0, 0, 0), DAMAGE_TINT_TIMER, 10, 80);
+		shake_camera(DAMAGE_SHAKE, 1);
+		player_injured_particles(p);
 		p->health -= 1;
 		return 1;
 	}
@@ -353,12 +361,10 @@ void draw_player(Player* player) {
 	}
 
 	if (player->state == holding) {
-		float line_dist_x = WALL_DIM * (float)player->horizontal_dir, line_dist_y = WALL_DIM * (float)player->vertical_dir;
-		float start_x = player->pos.x + ((float)player->horizontal_dir * (MAX_PARRYRADIUS / 2.0f)),
-			start_y = player->pos.y + ((float)player->vertical_dir * (MAX_PARRYRADIUS / 2.0f));
-		CP_Settings_Stroke(CP_Color_Create(255, 160, 20, 255));
-		CP_Settings_StrokeWeight(10.0f);
-		CP_Graphics_DrawLine(get_camera_x_pos(start_x), get_camera_y_pos(start_y), get_camera_x_pos(start_x + line_dist_x), get_camera_y_pos(start_y + line_dist_y));
+		CP_Vector mouse_dir = getVectorBetweenPositions(player->pos, (Position) { CP_Input_GetMouseX(), CP_Input_GetMouseY() });
+		float start_x = player->pos.x + (mouse_dir.x * (MAX_PARRYRADIUS * 1.2f)),
+			start_y = player->pos.y + (mouse_dir.y * (MAX_PARRYRADIUS * 1.2f));		
+		CP_Image_DrawAdvanced(player_deflect_arrow, start_x, start_y, WALL_DIM, WALL_DIM, 255, vectorToAngle(mouse_dir));
 		CP_Image_Draw(player_sprite_ptr[PLAYER_SPRITE_COUNT - 1], get_camera_x_pos(player->pos.x), get_camera_y_pos(player->pos.y), player->diameter, player->diameter, 255);
 	}
 	else if (player->state == resting) {

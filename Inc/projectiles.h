@@ -2,13 +2,15 @@
 #include "utils.h"
 #include "cprocessing.h"
 #include "gametypes.h"
-#define PROJ_MELEE_LIFESPAN .5f
-#define PROJ_MELEE_FRAME_DT PROJ_MELEE_LIFESPAN / 6.0f
+#define PROJ_MELEE_LIFESPAN .4f
+#define PROJ_EXPLOSION_FRAME_DT (PROJ_MELEE_LIFESPAN / (float) (EXPLOSION_PROJECTILE_SPRITE_COUNT - 1))
+#define PROJ_WEAPON_FRAME_DT (PROJ_MELEE_LIFESPAN / (float) (WEAPON_PROJECTILE_SPRITE_COUNT - 1))
 #define MAX_REBOUND_COUNT 2
 #define PLAYER_PROJ_SOURCE1 'p'
 #define PLAYER_PROJ_SOURCE2 'q'
-#define PROJ_TYPE_MOBILE 'm'
-#define PROJ_TYPE_STATIC 's'
+#define PROJ_TYPE_MOBILE 'm' //can be used by player or enemies
+#define PROJ_TYPE_STATIC 's' //can be used by player or enemies
+#define PROJ_TYPE_WEAPON 'w' //can be used only by enemies
 #define PROJ_VERTICAL_WALL 'x'
 #define PROJ_HORIZONTAL_WALL 'y'
 #define PROJ_NOT_REBOUNDING 'n'

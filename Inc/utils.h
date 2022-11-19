@@ -14,7 +14,7 @@ typedef struct Position {
 // accesses pointer location for struct position within movable structs
 void moveEntity(Position* p, float xspeed, float yspeed);
 
-CP_Vector getVectorBetweenPositions(Position* from, Position* to);
+CP_Vector getVectorBetweenPositions(Position from, Position to);
 
 // aabb collision
 // works for collision between 
