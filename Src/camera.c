@@ -199,9 +199,9 @@ void init_sprites(void) {
 
 	//room tiles
 	tile_list[1] = CP_Image_Load("./Assets/Tiles/tile_0012.png"); // rock floor
-	tile_list[2] = CP_Image_Load("./Assets/Tiles/tile_0065.png"); // grave
-	tile_list[3] = CP_Image_Load("./Assets/Tiles/tile_0074.png"); // anvil
-	tile_list[4] = CP_Image_Load("./Assets/Tiles/tile_0082.png"); // barrel
+	tile_list[2] = CP_Image_Load("./Assets/Tiles/Wall1.png"); // grave
+	tile_list[3] = CP_Image_Load("./Assets/Tiles/Wall2.png"); // anvil
+	tile_list[4] = CP_Image_Load("./Assets/Tiles/Wall3.png"); // barrel
 	tile_list[5] = CP_Image_Load("./Assets/Tiles/TopWall.png");
 	tile_list[6] = CP_Image_Load("./Assets/Tiles/BottomWall.png");
 	tile_list[7] = CP_Image_Load("./Assets/Tiles/RightWall.png");

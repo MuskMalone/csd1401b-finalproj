@@ -45,6 +45,9 @@
     <ClCompile Include="..\Src\camera.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\particle.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Inc\game.h">
@@ -76,6 +79,9 @@
     </ClInclude>
     <ClInclude Include="..\Inc\easing.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Inc\particle.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +163,21 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Assets\BACKTOMENU.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Floor1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Floor2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Wall1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Wall2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Wall3.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
