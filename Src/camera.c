@@ -7,31 +7,58 @@
 #include "utils.h"
 #include "easing.h"
 #include "gametypes.h"
+#include "particle.h"
 #include <stdio.h>
 #include <stdlib.h>
-#define TRANSITION_TIMER .5f
+#define TRANSITION_TIMER 1.25f
+#define PLAYER_HEART_SPEED NORMAL_SPEED * 4.0f
 
-CP_Image player_heart;
+static Position player_heart_pos;
+static float player_heart_speed;
+CP_Image player_heart[PLAYER_HEALTH_SPRITE_COUNT];
 CP_Image Pause_Menu;
 CP_Image GameOverMenu; 
+CP_Image player_deflect_arrow;
 CP_Image Player_Barrier_Img;
+CP_Image player_front[PLAYER_SPRITE_COUNT];
+CP_Image player_frontdiagleft[PLAYER_SPRITE_COUNT];
+CP_Image player_frontdiagright[PLAYER_SPRITE_COUNT];
+CP_Image player_back[PLAYER_SPRITE_COUNT];
+CP_Image player_backdiagleft[PLAYER_SPRITE_COUNT];
+CP_Image player_backdiagright[PLAYER_SPRITE_COUNT];
+CP_Image player_left[PLAYER_SPRITE_COUNT];
+CP_Image player_right[PLAYER_SPRITE_COUNT];
 CP_Image BackToMenuBut;
 CP_Image Cannon_Img;
 CP_Image boss_def;
+CP_Image Boss_Stun[2];
 CP_Image Boss_Barrier_Img;
 CP_Image Boss_Atk_Right[BOSS_SPRITE_COUNT];
 CP_Image Boss_Atk_Left[BOSS_SPRITE_COUNT];
 
 CP_Image Mobile_Proj_E;
 CP_Image Mobile_Proj_P;
-CP_Image player_projectile_sprites[MELEE_PROJECTILE_SPRITE_COUNT];
-CP_Image enemy_projectile_sprites[MELEE_PROJECTILE_SPRITE_COUNT];
+CP_Image player_projectile_sprites[EXPLOSION_PROJECTILE_SPRITE_COUNT];
+CP_Image enemy_projectile_sprites[EXPLOSION_PROJECTILE_SPRITE_COUNT];
+CP_Image sword_right[WEAPON_PROJECTILE_SPRITE_COUNT];
+CP_Image sword_left[WEAPON_PROJECTILE_SPRITE_COUNT];
 
-CP_Image melee_mob[MELEE_MOB_SPRITE_COUNT];
-CP_Image explode_mob[MELEE_MOB_SPRITE_COUNT];
+CP_Image melee_mob_left[MELEE_MOB_SPRITE_COUNT];
+CP_Image explode_mob_left[MELEE_MOB_SPRITE_COUNT];
+CP_Image melee_mob_right[MELEE_MOB_SPRITE_COUNT];
+CP_Image explode_mob_right[MELEE_MOB_SPRITE_COUNT];
 CP_Image range_mob[RANGE_MOB_SPRITE_COUNT];
 
 Position world_offset;
+
+Particle particle_array[PARTICLE_CAP];
+unsigned int particle_count = 0;
+
+int hue_flashing = 0;
+float hue_max_flashing_timer = 0.0f;
+int hue_min_alpha, hue_max_alpha;
+float hue_flashing_timer = 0.0f;
+CP_Color hue_color;
 
 int shaking = 0;
 float shaking_scale = 1.0f;
@@ -42,16 +69,76 @@ int transition_side = -1;
 float transition_timer = 0.0f;
 int prev_room_tilemap[GRID_ROWS][GRID_COLS];
 
+
 void init_sprites(void) {
+	player_heart_pos = (Position){
+		0.0f,
+		0.0f
+	};
+
 	world_offset = (Position){ 0.0f, 0.0f };
-	player_heart = CP_Image_Load("./Assets/PlayerLife.png");
-	Player_Barrier_Img = CP_Image_Load("./Assets/Tiles/Player/Player_Barrier4.png");
 	GameOverMenu = CP_Image_Load("./Assets/gameover.png");
 	Boss_Barrier_Img = CP_Image_Load("./Assets/Tiles/Boss/Boss_Barrier.png");
 	Cannon_Img = CP_Image_Load("./Assets/Tiles/Boss/Cannon.png");
-	boss_def = CP_Image_Load("./Assets/Tiles/Boss/Boss_Base3.png");
+	boss_def = CP_Image_Load("./Assets/Tiles/Boss/Boss_Base.png");
 	Pause_Menu = CP_Image_Load("./Assets/PauseMenu.png");
 	BackToMenuBut = CP_Image_Load("./Assets/BACKTOMENU.png");
+
+	player_heart[0] = CP_Image_Load("./Assets/Tiles/Player/heart7.png");
+	player_heart[1] = CP_Image_Load("./Assets/Tiles/Player/heart6.png");
+	player_heart[2] = CP_Image_Load("./Assets/Tiles/Player/heart5.png");
+	player_heart[3] = CP_Image_Load("./Assets/Tiles/Player/heart4.png");
+	player_heart[4] = CP_Image_Load("./Assets/Tiles/Player/heart3.png");
+	player_heart[5] = CP_Image_Load("./Assets/Tiles/Player/heart2.png");
+	player_heart[6] = CP_Image_Load("./Assets/Tiles/Player/heart1.png");
+	player_heart[7] = CP_Image_Load("./Assets/Tiles/Player/heart0.png");
+
+	Player_Barrier_Img = CP_Image_Load("./Assets/Tiles/Player/Player_Barrier4.png");
+	player_deflect_arrow = CP_Image_Load("./Assets/Tiles/Player/up.png");
+	player_front[0] = CP_Image_Load("./Assets/Tiles/Player/front1.png");
+	player_front[1] = CP_Image_Load("./Assets/Tiles/Player/front0.png");
+	player_front[2] = CP_Image_Load("./Assets/Tiles/Player/front2.png");
+	player_front[3] = CP_Image_Load("./Assets/Tiles/Player/front0.png");
+	player_front[4] = CP_Image_Load("./Assets/Tiles/Player/front3.png");
+	player_frontdiagright[0] = CP_Image_Load("./Assets/Tiles/Player/45front1.png");
+	player_frontdiagright[1] = CP_Image_Load("./Assets/Tiles/Player/45front0.png");
+	player_frontdiagright[2] = CP_Image_Load("./Assets/Tiles/Player/45front2.png");
+	player_frontdiagright[3] = CP_Image_Load("./Assets/Tiles/Player/45front0.png");
+	player_frontdiagright[4] = CP_Image_Load("./Assets/Tiles/Player/45front3.png");
+	player_frontdiagleft[0] = CP_Image_Load("./Assets/Tiles/Player/45front21.png");
+	player_frontdiagleft[1] = CP_Image_Load("./Assets/Tiles/Player/45front20.png");
+	player_frontdiagleft[2] = CP_Image_Load("./Assets/Tiles/Player/45front22.png");
+	player_frontdiagleft[3] = CP_Image_Load("./Assets/Tiles/Player/45front20.png");
+	player_frontdiagleft[4] = CP_Image_Load("./Assets/Tiles/Player/45front23.png");
+	player_back[0] = CP_Image_Load("./Assets/Tiles/Player/back1.png");
+	player_back[1] = CP_Image_Load("./Assets/Tiles/Player/back0.png");
+	player_back[2] = CP_Image_Load("./Assets/Tiles/Player/back2.png");
+	player_back[3] = CP_Image_Load("./Assets/Tiles/Player/back0.png");
+	player_back[4] = CP_Image_Load("./Assets/Tiles/Player/back3.png");
+	player_backdiagright[0] = CP_Image_Load("./Assets/Tiles/Player/45back21.png");
+	player_backdiagright[1] = CP_Image_Load("./Assets/Tiles/Player/45back20.png");
+	player_backdiagright[2] = CP_Image_Load("./Assets/Tiles/Player/45back22.png");
+	player_backdiagright[3] = CP_Image_Load("./Assets/Tiles/Player/45back20.png");
+	player_backdiagright[4] = CP_Image_Load("./Assets/Tiles/Player/45back23.png");
+	player_backdiagleft[0] = CP_Image_Load("./Assets/Tiles/Player/45back1.png");
+	player_backdiagleft[1] = CP_Image_Load("./Assets/Tiles/Player/45back0.png");
+	player_backdiagleft[2] = CP_Image_Load("./Assets/Tiles/Player/45back2.png");
+	player_backdiagleft[3] = CP_Image_Load("./Assets/Tiles/Player/45back0.png");
+	player_backdiagleft[4] = CP_Image_Load("./Assets/Tiles/Player/45back3.png");
+	player_left[0] = CP_Image_Load("./Assets/Tiles/Player/side1.png");
+	player_left[1] = CP_Image_Load("./Assets/Tiles/Player/side0.png");
+	player_left[2] = CP_Image_Load("./Assets/Tiles/Player/side2.png");
+	player_left[3] = CP_Image_Load("./Assets/Tiles/Player/side0.png");
+	player_left[4] = CP_Image_Load("./Assets/Tiles/Player/side3.png");
+	player_right[0] = CP_Image_Load("./Assets/Tiles/Player/side21.png");
+	player_right[1] = CP_Image_Load("./Assets/Tiles/Player/side20.png");
+	player_right[2] = CP_Image_Load("./Assets/Tiles/Player/side22.png");
+	player_right[3] = CP_Image_Load("./Assets/Tiles/Player/side20.png");
+	player_right[4] = CP_Image_Load("./Assets/Tiles/Player/side23.png");
+
+	
+	Boss_Stun[0] = CP_Image_Load("./Assets/Tiles/Boss/BossStunLeft.png");
+	Boss_Stun[1] = CP_Image_Load("./Assets/Tiles/Boss/BossStunRight.png");
 	Boss_Atk_Right[0] = CP_Image_Load("./Assets/Tiles/Boss/BossAtk1.png");
 	Boss_Atk_Right[1] = CP_Image_Load("./Assets/Tiles/Boss/BossAtk2.png");
 	Boss_Atk_Right[2] = CP_Image_Load("./Assets/Tiles/Boss/BossAtk3.png");
@@ -76,6 +163,7 @@ void init_sprites(void) {
 	player_projectile_sprites[3] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P4.png");
 	player_projectile_sprites[4] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P5.png");
 	player_projectile_sprites[5] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P6.png");
+	player_projectile_sprites[6] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_P7.png");
 
 	enemy_projectile_sprites[0] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E1.png");
 	enemy_projectile_sprites[1] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E2.png");
@@ -83,12 +171,22 @@ void init_sprites(void) {
 	enemy_projectile_sprites[3] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E4.png");
 	enemy_projectile_sprites[4] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E5.png");
 	enemy_projectile_sprites[5] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E6.png");
+	enemy_projectile_sprites[6] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E7.png");
 
-	melee_mob[0] = CP_Image_Load("./Assets/Tiles/Mobs/Melee/Slime_Idle1.png");
-	melee_mob[1] = CP_Image_Load("./Assets/Tiles/Mobs/Melee/Slime_Idle2.png");
+	sword_left[0] = CP_Image_Load("./Assets/Tiles/Projectiles/swordleft0.png");
+	sword_left[1] = CP_Image_Load("./Assets/Tiles/Projectiles/swordleft1.png");
+	sword_left[2] = CP_Image_Load("./Assets/Tiles/Projectiles/swordleft2.png");
+	sword_left[3] = CP_Image_Load("./Assets/Tiles/Projectiles/swordleft3.png");
 
-	explode_mob[0] = CP_Image_Load("./Assets/Tiles/Mobs/Explode/ExplodeSlime_Idle1.png");
-	explode_mob[1] = CP_Image_Load("./Assets/Tiles/Mobs/Explode/ExplodeSlime_Idle2.png");
+	melee_mob_left[0] = CP_Image_Load("./Assets/Tiles/Mobs/Melee/skeletonleft0.png");
+	melee_mob_left[1] = CP_Image_Load("./Assets/Tiles/Mobs/Melee/skeletonleft1.png");
+	melee_mob_right[0] = CP_Image_Load("./Assets/Tiles/Mobs/Melee/skeletonright0.png");
+	melee_mob_right[1] = CP_Image_Load("./Assets/Tiles/Mobs/Melee/skeletonright1.png");
+
+	explode_mob_left[0] = CP_Image_Load("./Assets/Tiles/Mobs/Explode/boomberleft0.png");
+	explode_mob_left[1] = CP_Image_Load("./Assets/Tiles/Mobs/Explode/boomberleft1.png");
+	explode_mob_right[0] = CP_Image_Load("./Assets/Tiles/Mobs/Explode/boomberright0.png");
+	explode_mob_right[1] = CP_Image_Load("./Assets/Tiles/Mobs/Explode/boomberright1.png");
 
 	range_mob[7] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_right.png");
 	range_mob[6] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_rightup.png");
@@ -290,15 +388,97 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 
 	if (state != room_pause && state != room_failed)
 		draw_hud(&(entities[PLAYER_IDX].player));
-}
+	for (int i = 0; i < PARTICLE_CAP; ++i) {
+		if (particle_array[i].running) {
+			update_particle(&(particle_array[i]));
+			draw_particle(&(particle_array[i]));
+			//CP_Graphics_DrawCircle(100, 100, 20.0f);
+		}
+	}
+	if (hue_flashing) {
+		hue_flashing_timer += CP_System_GetDt();
+		if (hue_flashing_timer >= hue_max_flashing_timer) {
+			hue_flashing = 0;
+		}
+		float alpha = QuickSpikeEaseOut(
+			hue_min_alpha, 
+			hue_max_alpha, 
+			hue_flashing_timer / hue_max_flashing_timer
+		);
+		if (alpha >= 0.0f) {
+			hue_color.a = (int)alpha;
+			CP_Settings_Fill(hue_color);
+			CP_Graphics_DrawRect(0.0f, 0.0f, CP_System_GetWindowWidth(), CP_System_GetWindowHeight());
+		}
+	}
 
-void draw_hud(Player* player) {
-	for (int i = 1; i <= player->health; i++)
-	{
-		CP_Image_Draw(player_heart, 32 * i, 64, 32, 32, 255);
+}
+float insert_to_particle_array(
+	float diameter,
+	Position start_pos,
+	CP_Vector dir,
+	float distance,
+	float max_timer,
+	CP_Color color,
+	float (*pos_lerp_func)(float start, float end, float value)
+) {
+	init_particle(
+		&(particle_array[particle_count % PARTICLE_CAP]),
+		diameter,
+		start_pos,
+		dir,
+		distance,
+		max_timer,
+		color,
+		pos_lerp_func
+	);
+	particle_count++;
+}
+void create_particle_burst(
+	float timer,
+	float (*pos_lerp_func)(float start, float end, float value),
+	CP_Color color,
+	Position pos,
+	float distance,
+	float start_size,
+	float end_size,
+	float start_deg,
+	float end_deg,
+	unsigned int density) {
+	for (unsigned int i = 0; i < density; ++i) {
+		insert_to_particle_array(
+			CP_Random_RangeFloat(start_size, end_size),
+			pos,
+			angleToVector(CP_Random_RangeFloat(start_deg, end_deg)),
+			distance,
+			timer,
+			color,
+			pos_lerp_func
+		);
 	}
 }
-
+void draw_hud(Player* player) {
+	//for (int i = 1; i <= player->health; i++)
+	//{
+	//	CP_Image_Draw(player_heart, 32 * i, 64, 32, 32, 255);
+	//}
+	CP_Image_Draw(player_heart[player->health - 1], player_heart_pos.x, player_heart_pos.y, WALL_DIM, WALL_DIM, 255);
+	CP_Vector player_dir = getVectorBetweenPositions(player_heart_pos, player->pos);
+	float distance = CP_Math_Distance(player_heart_pos.x, player_heart_pos.y, player->pos.x, player->pos.y),
+		min_distance = (MAX_PARRYRADIUS + WALL_DIM * .8f);
+	player_heart_speed = (PLAYER_HEART_SPEED * (distance / min_distance)) - PLAYER_HEART_SPEED;
+	moveEntity(&player_heart_pos, player_dir.x * player_heart_speed, player_dir.y * player_heart_speed);
+	
+}
+void flash_hue(CP_Color color, float time, int min_alpha, int max_alpha) {
+	hue_color = color;
+	hue_min_alpha = min_alpha;
+	hue_max_alpha = max_alpha;
+	hue_color.a = min_alpha;
+	hue_flashing = 1;
+	hue_max_flashing_timer = time;
+	hue_flashing_timer = 0.0f;
+}
 float get_camera_x_pos(float x) {
 	return x + world_offset.x;
 }
@@ -319,4 +499,5 @@ void shake_camera(float scale, int override) {
 		}
 	}
 }
+
 

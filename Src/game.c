@@ -225,16 +225,6 @@ void game_init(void)
 
 void game_update(void)
 {
-	if (CP_Input_KeyTriggered(KEY_Q)) {
-		Position Mousepos = (Position){ CP_Input_GetMouseX(),CP_Input_GetMouseY() };
-		Position startposb;
-		startposb.x = ((float)CP_System_GetWindowWidth() / 2);
-		startposb.y = ((float)CP_System_GetWindowHeight() * 1 / 4);
-		int p_idx = insert_to_entity_array(entity_projectile, entities, init_projectile);
-		if (p_idx > -1) {
-			set_projectile_values(&(entities[p_idx].projectile), 'a', 'm', 10, startposb, getVectorBetweenPositions(&(startposb), &(Mousepos)));
-		}
-	}
 	if (CP_Input_KeyTriggered(KEY_F)) {
 		clear_all_entities();
 	}
