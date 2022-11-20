@@ -462,10 +462,10 @@ void draw_hud(Player* player) {
 	//{
 	//	CP_Image_Draw(player_heart, 32 * i, 64, 32, 32, 255);
 	//}
-	CP_Image_Draw(player_heart[player->health - 1], player_heart_pos.x, player_heart_pos.y, 20.0f, 20.0f, 255);
+	CP_Image_Draw(player_heart[player->health - 1], player_heart_pos.x, player_heart_pos.y, WALL_DIM * .5f, WALL_DIM * .5f, 255);
 	CP_Vector player_dir = getVectorBetweenPositions(player_heart_pos, player->pos);
 	float distance = CP_Math_Distance(player_heart_pos.x, player_heart_pos.y, player->pos.x, player->pos.y),
-		min_distance = (MAX_PARRYRADIUS + WALL_DIM * .8f);
+		min_distance = (MAX_PARRYRADIUS + WALL_DIM * .5f);
 	player_heart_speed = (PLAYER_HEART_SPEED * (distance / min_distance)) - PLAYER_HEART_SPEED;
 	moveEntity(&player_heart_pos, player_dir.x * player_heart_speed, player_dir.y * player_heart_speed);
 	
