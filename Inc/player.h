@@ -14,11 +14,11 @@
 #define DASH_SPEED NORMAL_SPEED*5.0f
 #define HOLDING_PROJ_SPEED 50.0f
 #define ACCESS_ALL_ENTITIES for (int i = 0; i < ENTITY_CAP; ++i) 
-#define MELEE_DEFLECT_SHAKE 150.0f
 #define PROJ_DEFLECT_SHAKE 50.0f
 #define PROJ_HOLDING_SHAKE 2.0f
 #define DAMAGE_SHAKE 15.0f
 #define DAMAGE_TINT_TIMER .5f
+#define DEFLECT_TINT_TIMER .2f
 
 // returns the addr of the player intialized 
 // to insert into entities

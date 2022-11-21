@@ -2,6 +2,7 @@
 #include "player.h"
 #include "projectiles.h"
 #include "map.h"
+#include "easing.h"
 #include <stdlib.h>
 #include "camera.h"
 //what each mob had run
@@ -32,6 +33,18 @@ void explode_mob(int mob_idx, Entity entities[] ) {
 		Projectile* p = &(entities[p_idx].projectile);
 		set_projectile_values(p, MOB_PROJ_SOURCE, PROJ_TYPE_STATIC, mob->diameter / 2.0f, mob->pos, getVectorBetweenPositions(mob->pos, entities[PLAYER_IDX].player.pos));
 	}
+	create_particle_burst(
+		2.0f,
+		EaseOutExpo,
+		CP_Color_Create(255, 0, 0, 255),
+		mob->pos,
+		mob->diameter,
+		10.0f,
+		20.0f,
+		0.0f,
+		360.f,
+		10
+	);
 	entities[mob_idx].type = entity_null;
 }
 void expansion_mob_size(Entity entities[], int mob_idx)
@@ -246,6 +259,18 @@ void update_mob(int mob_idx, int player_idx, Entity entities[], int wall_pos[GRI
 	Mob* mob = &(entities[mob_idx].mob);
 	mob->direction = getVectorBetweenPositions(mob->pos, entities[player_idx].player.pos);
 	if (mob->health <= 0) {
+		create_particle_burst(
+			2.0f,
+			EaseOutExpo,
+			CP_Color_Create(255, 255, 255, 255),
+			mob->pos,
+			mob->diameter * 2.0f,
+			10.0f,
+			20.0f,
+			0.0f,
+			360.f,
+			10
+		);
 		entities[mob_idx].type = entity_null;
 		return;
 	}
