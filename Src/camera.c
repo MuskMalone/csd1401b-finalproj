@@ -11,10 +11,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #define TRANSITION_TIMER 1.25f
+#define PLAYER_HEART_SPEED NORMAL_SPEED * 4.0f
 
-CP_Image player_heart;
+static Position player_heart_pos;
+static float player_heart_speed;
+CP_Image player_heart[PLAYER_HEALTH_SPRITE_COUNT];
 CP_Image Pause_Menu;
 CP_Image GameOverMenu; 
+CP_Image player_deflect_arrow;
 CP_Image Player_Barrier_Img;
 CP_Image player_front[PLAYER_SPRITE_COUNT];
 CP_Image player_frontdiagleft[PLAYER_SPRITE_COUNT];
@@ -67,6 +71,11 @@ int prev_room_tilemap[GRID_ROWS][GRID_COLS];
 
 
 void init_sprites(void) {
+	player_heart_pos = (Position){
+		0.0f,
+		0.0f
+	};
+
 	world_offset = (Position){ 0.0f, 0.0f };
 	GameOverMenu = CP_Image_Load("./Assets/gameover.png");
 	Boss_Barrier_Img = CP_Image_Load("./Assets/Tiles/Boss/Boss_Barrier.png");
@@ -75,9 +84,17 @@ void init_sprites(void) {
 	Pause_Menu = CP_Image_Load("./Assets/PauseMenu.png");
 	BackToMenuBut = CP_Image_Load("./Assets/BACKTOMENU.png");
 
-	player_heart = CP_Image_Load("./Assets/PlayerLife.png");
-	Player_Barrier_Img = CP_Image_Load("./Assets/Tiles/Player/Player_Barrier4.png");
+	player_heart[0] = CP_Image_Load("./Assets/Tiles/Player/heart7.png");
+	player_heart[1] = CP_Image_Load("./Assets/Tiles/Player/heart6.png");
+	player_heart[2] = CP_Image_Load("./Assets/Tiles/Player/heart5.png");
+	player_heart[3] = CP_Image_Load("./Assets/Tiles/Player/heart4.png");
+	player_heart[4] = CP_Image_Load("./Assets/Tiles/Player/heart3.png");
+	player_heart[5] = CP_Image_Load("./Assets/Tiles/Player/heart2.png");
+	player_heart[6] = CP_Image_Load("./Assets/Tiles/Player/heart1.png");
+	player_heart[7] = CP_Image_Load("./Assets/Tiles/Player/heart0.png");
 
+	Player_Barrier_Img = CP_Image_Load("./Assets/Tiles/Player/Player_Barrier4.png");
+	player_deflect_arrow = CP_Image_Load("./Assets/Tiles/Player/up.png");
 	player_front[0] = CP_Image_Load("./Assets/Tiles/Player/front1.png");
 	player_front[1] = CP_Image_Load("./Assets/Tiles/Player/front0.png");
 	player_front[2] = CP_Image_Load("./Assets/Tiles/Player/front2.png");
@@ -156,10 +173,10 @@ void init_sprites(void) {
 	enemy_projectile_sprites[5] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E6.png");
 	enemy_projectile_sprites[6] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E7.png");
 
-	sword_left[0] = CP_Image_Load("./Assets/Tiles/Projectiles/swordleft0.png");
-	sword_left[1] = CP_Image_Load("./Assets/Tiles/Projectiles/swordleft1.png");
-	sword_left[2] = CP_Image_Load("./Assets/Tiles/Projectiles/swordleft2.png");
-	sword_left[3] = CP_Image_Load("./Assets/Tiles/Projectiles/swordleft3.png");
+	sword_left[0] = CP_Image_Load("./Assets/Tiles/Projectiles/sword0.png");
+	sword_left[1] = CP_Image_Load("./Assets/Tiles/Projectiles/sword1.png");
+	sword_left[2] = CP_Image_Load("./Assets/Tiles/Projectiles/sword2.png");
+	sword_left[3] = CP_Image_Load("./Assets/Tiles/Projectiles/sword3.png");
 
 	melee_mob_left[0] = CP_Image_Load("./Assets/Tiles/Mobs/Melee/skeletonleft0.png");
 	melee_mob_left[1] = CP_Image_Load("./Assets/Tiles/Mobs/Melee/skeletonleft1.png");
@@ -441,10 +458,17 @@ void create_particle_burst(
 	}
 }
 void draw_hud(Player* player) {
-	for (int i = 1; i <= player->health; i++)
-	{
-		CP_Image_Draw(player_heart, 32 * i, 64, 32, 32, 255);
-	}
+	//for (int i = 1; i <= player->health; i++)
+	//{
+	//	CP_Image_Draw(player_heart, 32 * i, 64, 32, 32, 255);
+	//}
+	CP_Image_Draw(player_heart[player->health - 1], player_heart_pos.x, player_heart_pos.y, WALL_DIM * .5f, WALL_DIM * .5f, 255);
+	CP_Vector player_dir = getVectorBetweenPositions(player_heart_pos, player->pos);
+	float distance = CP_Math_Distance(player_heart_pos.x, player_heart_pos.y, player->pos.x, player->pos.y),
+		min_distance = (MAX_PARRYRADIUS + WALL_DIM * .5f);
+	player_heart_speed = (PLAYER_HEART_SPEED * (distance / min_distance)) - PLAYER_HEART_SPEED;
+	moveEntity(&player_heart_pos, player_dir.x * player_heart_speed, player_dir.y * player_heart_speed);
+	
 }
 void flash_hue(CP_Color color, float time, int min_alpha, int max_alpha) {
 	hue_color = color;

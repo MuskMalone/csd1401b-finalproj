@@ -2,6 +2,7 @@
 #include "player.h"
 #include "projectiles.h"
 #include "map.h"
+#include "easing.h"
 #include <stdlib.h>
 #include "camera.h"
 //what each mob had run
@@ -30,8 +31,20 @@ void explode_mob(int mob_idx, Entity entities[] ) {
 	if (p_idx > 0)
 	{
 		Projectile* p = &(entities[p_idx].projectile);
-		set_projectile_values(p, MOB_PROJ_SOURCE, PROJ_TYPE_STATIC, mob->diameter / 2.0f, mob->pos, getVectorBetweenPositions(&(mob->pos), &(entities[PLAYER_IDX].player.pos)));
+		set_projectile_values(p, MOB_PROJ_SOURCE, PROJ_TYPE_STATIC, mob->diameter / 2.0f, mob->pos, getVectorBetweenPositions(mob->pos, entities[PLAYER_IDX].player.pos));
 	}
+	create_particle_burst(
+		2.0f,
+		EaseOutExpo,
+		CP_Color_Create(255, 0, 0, 255),
+		mob->pos,
+		mob->diameter,
+		10.0f,
+		20.0f,
+		0.0f,
+		360.f,
+		10
+	);
 	entities[mob_idx].type = entity_null;
 }
 void expansion_mob_size(Entity entities[], int mob_idx)
@@ -67,7 +80,7 @@ void mob_explosion(int player_idx, Entity entities[], int mob_idx, int wall_pos[
 	
 	//creating of the mob
 
-	CP_Vector direction = getVectorBetweenPositions(&(mob->pos), &(player->pos));
+	CP_Vector direction = getVectorBetweenPositions(mob->pos, player->pos);
 
 
 	if (mob->is_exploding)
@@ -119,7 +132,7 @@ void mob_ranged(int player_idx, Entity entities[], int mob_idx)
 	if (mob->timer < 0.0f) {
 		int p_idx = insert_to_entity_array(entity_projectile, entities, init_projectile);
 		if (p_idx > 0) {
-			set_projectile_values(&(entities[p_idx].projectile), MOB_PROJ_SOURCE, PROJ_TYPE_MOBILE, proj_radius, mob_pos, getVectorBetweenPositions(&(mob_pos), &(position_player)));
+			set_projectile_values(&(entities[p_idx].projectile), MOB_PROJ_SOURCE, PROJ_TYPE_MOBILE, proj_radius, mob_pos, getVectorBetweenPositions(mob_pos, position_player));
 			// timer between 1 and 5 seconds
 			mob->timer = MOB_RANGED_TIMER;
 		}
@@ -131,7 +144,7 @@ void mob_melee(int player_idx, Entity entities[], int mob_idx, int wall_pos[GRID
 	float mob_speed = 100.0f;
 	Mob* mob = &(entities[mob_idx].mob);
 	Player* player = &(entities[player_idx].player);
-	CP_Vector direction = getVectorBetweenPositions(&(mob->pos), &(player->pos));
+	CP_Vector direction = getVectorBetweenPositions(mob->pos, player->pos);
 	Position position_player = player->pos;
 	Position mob_pos = mob->pos;
 	float mob_dia = mob->diameter;
@@ -178,7 +191,7 @@ void mob_melee(int player_idx, Entity entities[], int mob_idx, int wall_pos[GRID
 			mob->timer = MOB_MELEE_TIMER;
 			int p_idx = insert_to_entity_array(entity_projectile, entities, init_projectile);
 			if (p_idx > 0) {
-				CP_Vector v = getVectorBetweenPositions(&(mob_pos), &(position_player));
+				CP_Vector v = getVectorBetweenPositions(mob_pos, position_player);
 				set_projectile_values(
 						&(entities[p_idx].projectile),
 						MOB_PROJ_SOURCE, PROJ_TYPE_WEAPON,
@@ -244,8 +257,20 @@ entity_struct init_mob() {
 void update_mob(int mob_idx, int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS])
 {
 	Mob* mob = &(entities[mob_idx].mob);
-	mob->direction = getVectorBetweenPositions(&(mob->pos), &(entities[player_idx].player.pos));
+	mob->direction = getVectorBetweenPositions(mob->pos, entities[player_idx].player.pos);
 	if (mob->health <= 0) {
+		create_particle_burst(
+			2.0f,
+			EaseOutExpo,
+			CP_Color_Create(255, 255, 255, 255),
+			mob->pos,
+			mob->diameter * 2.0f,
+			10.0f,
+			20.0f,
+			0.0f,
+			360.f,
+			10
+		);
 		entities[mob_idx].type = entity_null;
 		return;
 	}

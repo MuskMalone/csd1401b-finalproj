@@ -7,13 +7,15 @@
 #define ROOM_TILE_TYPES 10
 #define PLAYER_SPRITE_COUNT 5
 #define BOSS_SPRITE_COUNT 7
+#define PLAYER_HEALTH_SPRITE_COUNT 8
 
 extern int transition_side;
 
 //HUD
-extern CP_Image player_heart;
+extern CP_Image player_heart[PLAYER_HEALTH_SPRITE_COUNT];
 
-//player 
+//player
+extern CP_Image player_deflect_arrow;
 extern CP_Image Player_Barrier_Img;
 extern CP_Image player_front[PLAYER_SPRITE_COUNT];
 extern CP_Image player_frontdiagleft[PLAYER_SPRITE_COUNT];
