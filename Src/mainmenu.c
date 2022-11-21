@@ -47,6 +47,12 @@ void goGame()
 	CP_Engine_SetNextGameState(game_init, game_update, game_exit);
 	CP_Engine_Run();
 }
+
+void Credit_screen()
+{
+
+}
+
 void Main_Menu_Init()
 {
 

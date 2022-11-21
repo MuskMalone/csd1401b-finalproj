@@ -198,10 +198,11 @@ void init_sprites(void) {
 	range_mob[0] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_rightdown.png");
 
 	//room tiles
-	tile_list[1] = CP_Image_Load("./Assets/Tiles/tile_0012.png"); // rock floor
-	tile_list[2] = CP_Image_Load("./Assets/Tiles/Wall1.png"); // grave
+	
+	tile_list[1] = CP_Image_Load("./Assets/Tiles/test.png"); // rock floor
+	tile_list[2] = CP_Image_Load("./Assets/Tiles/walltest1.png"); // grave
 	tile_list[3] = CP_Image_Load("./Assets/Tiles/Wall2.png"); // anvil
-	tile_list[4] = CP_Image_Load("./Assets/Tiles/Wall3.png"); // barrel
+	tile_list[4] = CP_Image_Load("./Assets/Tiles/walltest2.png"); // barrel
 	tile_list[5] = CP_Image_Load("./Assets/Tiles/TopWall.png");
 	tile_list[6] = CP_Image_Load("./Assets/Tiles/BottomWall.png");
 	tile_list[7] = CP_Image_Load("./Assets/Tiles/RightWall.png");

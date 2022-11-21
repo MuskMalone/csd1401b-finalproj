@@ -26,6 +26,11 @@ int isplaying = 0;
 CP_Sound bgm;
 CP_Sound bossbgm;
 CP_Sound defeat;
+CP_Image DoorTop;
+CP_Image DoorLeft;
+CP_Image DoorRight;
+CP_Image DoorBot;
+
 static room_state state = loading;
 
 // map of the tiles that the game will draw
@@ -139,16 +144,19 @@ void draw_door(void) {
 	//		}
 	//	}
 	//}
-	CP_Settings_StrokeWeight(0.0);
-
+	DoorTop = CP_Image_Load("./Assets/Tiles/DoorToptest.png");
+	DoorLeft = CP_Image_Load("./Assets/Tiles/doorLeft.png");
+	DoorRight = CP_Image_Load("./Assets/Tiles/doorRight.png");
+	DoorBot = CP_Image_Load("./Assets/Tiles/doorBot.png");
 	// top door
-	CP_Graphics_DrawRect(get_camera_x_pos(doors[0].x), get_camera_y_pos(doors[0].y), WALL_DIM * 4.0f, WALL_DIM);
+	//CP_Graphics_DrawRect(get_camera_x_pos(doors[0].x), get_camera_y_pos(doors[0].y), WALL_DIM * 4.0f, WALL_DIM);
+	CP_Image_Draw(DoorTop, get_camera_x_pos(doors[0].x) + 80, get_camera_y_pos(doors[0].y) + 20, WALL_DIM * 4.0f, WALL_DIM, 255);
 	// bottom door
-	CP_Graphics_DrawRect(get_camera_x_pos(doors[1].x), get_camera_y_pos(doors[1].y), WALL_DIM * 4.0f, WALL_DIM);
+	CP_Image_Draw(DoorBot, get_camera_x_pos(doors[1].x) + 80, get_camera_y_pos(doors[1].y) + 20, WALL_DIM * 4.0f, WALL_DIM, 255);
 	// left door
-	CP_Graphics_DrawRect(get_camera_x_pos(doors[2].x), get_camera_y_pos(doors[2].y), WALL_DIM, WALL_DIM * 4.0f);
+	CP_Image_Draw(DoorLeft, get_camera_x_pos(doors[2].x) + 20, get_camera_y_pos(doors[2].y) + 80, WALL_DIM, WALL_DIM * 4.0f, 255);
 	// right door
-	CP_Graphics_DrawRect(get_camera_x_pos(doors[3].x), get_camera_y_pos(doors[3].y), WALL_DIM, WALL_DIM * 4.0f);
+	CP_Image_Draw(DoorRight, get_camera_x_pos(doors[3].x) + 20, get_camera_y_pos(doors[3].y) + 80, WALL_DIM, WALL_DIM * 4.0f, 255);
 }
 
 void draw_room_wall(void) {
