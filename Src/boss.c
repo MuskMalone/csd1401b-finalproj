@@ -67,8 +67,8 @@ entity_struct init_boss(void) {
 	return (entity_struct) { .boss = boss };
 }
 void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
-	Boss* boss = &(entities[boss_idx].boss);
-	Player* player = &(entities[player_idx].boss);
+	Boss *boss = &(entities[boss_idx].boss);
+	Player *player = &(entities[player_idx].player);
 	if (boss->health) {
 		if (Boss_is_stun) {
 			
@@ -132,16 +132,16 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 					Position Next_Position;
 					Next_Position.x = boss->pos.x + (D_vector.x * (Acceleration_Count / Acceleration) / x);
 					Next_Position.y = boss->pos.y + (D_vector.x * (Acceleration_Count / Acceleration) / x);
-					Destory_Wall(wall_pos, Next_Position, boss->diameter, boss->parryrad, boss->parry_ammo, WALL_DIM, WALL_DIM);
+					Destroy_Wall(wall_pos, Next_Position, boss->diameter, boss->parryrad, (float)boss->parry_ammo, WALL_DIM, WALL_DIM);
 				}
 
 				if (Acceleration_Count == boss->speed) {
 					boss->pos = target_location;
 					//Draw the Boss atked Animation 
-					Destory_Wall(wall_pos, boss->pos, boss->diameter, boss->parryrad, boss->parry_ammo, WALL_DIM, WALL_DIM);
+					Destroy_Wall(wall_pos, boss->pos, boss->diameter, boss->parryrad, (float)boss->parry_ammo, WALL_DIM, WALL_DIM);
 					int p_idx = insert_to_entity_array(entity_projectile, entities, init_projectile);
 					if (p_idx > -1) {
-						set_projectile_values(&(entities[p_idx].projectile), 'e', 's', boss->parryrad, boss->pos, CP_Vector_Set(0, 0));
+						set_projectile_values(&(entities[p_idx].projectile), 'e', 's', (int)boss->parryrad, boss->pos, CP_Vector_Set(0, 0));
 					}
 					boss_img = *(Boss_Atk_Img + boss_direction) + 6;
 					To_Atk = 0;
@@ -175,7 +175,7 @@ void update_boss(int boss_idx, int player_idx, Entity entities[], int wall_pos[G
 	Cannon_Timer += CP_System_GetDt();
 
 }
-void Destory_Wall(int wall_pos[GRID_ROWS][GRID_COLS], Position Boss_Pos, int boss_diameter, int parry_rad ,int parry_ammo, int wall_width, int wall_height) {
+void Destroy_Wall(int wall_pos[GRID_ROWS][GRID_COLS], Position Boss_Pos, float boss_diameter, float parry_rad ,float parry_ammo, float wall_width, float wall_height) {
 	for (int i = 0; i < GRID_ROWS; ++i) {
 		for (int j = 0; j < GRID_COLS; ++j) {
 			if (wall_pos[i][j]) {
@@ -189,7 +189,7 @@ void Destory_Wall(int wall_pos[GRID_ROWS][GRID_COLS], Position Boss_Pos, int bos
 	}
 }
 
-void damage_boss(Boss* b, Player* p) {
+void damage_boss(Boss* b, Player* p){
 	b->health -= 1;
 	Boss_is_stun = 1;
 	animationcount = 0;
@@ -199,17 +199,17 @@ void damage_boss(Boss* b, Player* p) {
 }
 
 void draw_boss(Boss* b) {
-	CP_Image_Draw(Boss_Barrier_Img, get_camera_x_pos(b->pos.x), get_camera_y_pos(b->pos.y), b->parryrad * 2, b->parryrad * 2, b->Parry_BaseWeight);
-	int size = 4.63 *WALL_DIM;
+	CP_Image_Draw(Boss_Barrier_Img, get_camera_x_pos(b->pos.x), get_camera_y_pos(b->pos.y), b->parryrad * 2, b->parryrad * 2, (int)b->Parry_BaseWeight);
+	float size = 4.63f * WALL_DIM;
 	CP_Image_Draw(*boss_img, get_camera_x_pos(b->pos.x), get_camera_y_pos(b->pos.y), size, size, 255);
-	CP_Image_DrawAdvanced(Cannon_Img, get_camera_x_pos(0.5 * (float)CP_System_GetWindowWidth()), get_camera_y_pos(0 + WALL_DIM), WALL_DIM * 2, WALL_DIM * 2, 255,180);
-	CP_Image_Draw(Cannon_Img, get_camera_x_pos(0.5 * (float)CP_System_GetWindowWidth()), get_camera_y_pos(CP_System_GetWindowHeight() - WALL_DIM), WALL_DIM * 2, WALL_DIM * 2, 255);
+	CP_Image_DrawAdvanced(Cannon_Img, get_camera_x_pos(0.5f * (float)CP_System_GetWindowWidth()), get_camera_y_pos(0 + WALL_DIM), WALL_DIM * 2, WALL_DIM * 2, 255,180);
+	CP_Image_Draw(Cannon_Img, get_camera_x_pos(0.5f * (float)CP_System_GetWindowWidth()), get_camera_y_pos(CP_System_GetWindowHeight() - WALL_DIM), WALL_DIM * 2, WALL_DIM * 2, 255);
 }
 
 void Cannon_Fire_Proj(Entity entities[],Player *player) {
 	
-	Position CanonProj1 = (Position){0.5* CP_System_GetWindowWidth(),0+WALL_DIM+10};
-	Position CanonProj2 = (Position){ 0.5 * CP_System_GetWindowWidth(),CP_System_GetWindowHeight()-WALL_DIM-10 };
+	Position CanonProj1 = (Position){ 0.5f * (float)CP_System_GetWindowWidth(),WALL_DIM};
+	Position CanonProj2 = (Position){ 0.5f * (float)CP_System_GetWindowWidth(),(float)CP_System_GetWindowHeight()-WALL_DIM };
 	if(Cannon_Timer >= 2){
 		int p_idx1 = insert_to_entity_array(entity_projectile, entities, init_projectile);
 		if (p_idx1 > 0) {

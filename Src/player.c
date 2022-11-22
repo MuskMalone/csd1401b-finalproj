@@ -61,13 +61,16 @@ int release_held_projectiles(Player * player, Entity entities[]) {
 	return out;
 }
 
-static void init_cooldown(void) {
+static void init_cooldown(Player *player, Entity entities[], int dash) {
 	if (!is_cooldown) {
 		stamina = 0.0f;
 		cooldown = COOLDOWN_DURATION;
 		is_cooldown = 1;
+		if (!dash)
+			release_held_projectiles(player, entities);
 	}
 }
+
 static int check_collision(Position p, float diameter, int wall_pos[GRID_ROWS][GRID_COLS]) {
 	for (int i = 0; i < GRID_ROWS; ++i) {
 		for (int j = 0; j < GRID_COLS; ++j) {
@@ -162,7 +165,7 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 					stamina -= STAMINA_COST; // if stamina 
 				}
 				else {
-					init_cooldown();
+					init_cooldown(player, entities, 0);
 				}
 			}
 			melee_deflect_triggered = 1;
@@ -178,8 +181,8 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 					shake_camera(PROJ_HOLDING_SHAKE, 1);
 				}
 				else {
-					release_held_projectiles(player, entities);
-					init_cooldown();
+					
+					init_cooldown(player, entities, 0);
 				}
 			}
 
@@ -207,7 +210,7 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 					stamina -= STAMINA_COST;
 				}
 				else {
-					init_cooldown();
+					init_cooldown(player, entities, 1);
 				}
 				if (player->state != dashing) {
 					set_state(player, dashing);
@@ -263,6 +266,7 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 	}
 	else {
 		// if dashing
+		//release_held_projectiles(player, entities); // uncomment this for perfect deflect
 		if (player->state == dashing) {
 			player->speed = DASH_SPEED;
 			dashed_duration += CP_System_GetDt();
@@ -344,7 +348,7 @@ void player_injured_effect(Player *player) {
 int damage_player(Player *p) {
 	if (p->state != dashing) {
 		player_injured_effect(p);
-		p->health -= 1;
+		//p->health -= 1;
 		return 1;
 	}
 	return 0;
