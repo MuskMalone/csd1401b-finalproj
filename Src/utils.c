@@ -9,9 +9,9 @@ void moveEntity(Position* p, float xspeed, float yspeed) {
 }
 
 // get normalized direction vector between two positions
-CP_Vector getVectorBetweenPositions(Position *from, Position *to) {
-	float x = (to->x) - (from->x);
-	float y = (to->y) - (from->y);
+CP_Vector getVectorBetweenPositions(Position from, Position to) {
+	float x = (to.x) - (from.x);
+	float y = (to.y) - (from.y);
 	return CP_Vector_Normalize(CP_Vector_Set(x, y));
 }
 
@@ -95,7 +95,8 @@ int IsCircleClicked(float circle_center_x, float circle_center_y, float diameter
 
 }
 CP_Vector angleToVector(float angle) {
-	return CP_Vector_Normalize(CP_Vector_Set(cos(angle), sin(angle)));
+	float radians = angle * (M_PI / 180.0f);
+	return CP_Vector_Normalize(CP_Vector_Set(cos(radians), sin(radians)));
 
 }
 float vectorToAngle(CP_Vector a, Position from) {

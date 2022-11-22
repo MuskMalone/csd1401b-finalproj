@@ -45,6 +45,12 @@
     <ClCompile Include="..\Src\camera.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\particle.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\button.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Inc\game.h">
@@ -75,6 +81,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Inc\easing.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Inc\particle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Inc\button.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -153,5 +165,67 @@
     <Image Include="..\Assets\PauseMenu.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\Assets\gameover.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\BACKTOMENU.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Floor1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Floor2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Wall1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Wall2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\Wall3.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\test.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\walltest1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\walltest2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\doorBot.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\doorLeft.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\doorRight.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\DoorTop.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\DoorToptest.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\Assets\SFX\BGM1.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="..\Assets\SFX\Boss.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="..\Assets\SFX\Defeat.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="..\Assets\SFX\MainMenu.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="..\Assets\SFX\Comedy.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
   </ItemGroup>
 </Project>

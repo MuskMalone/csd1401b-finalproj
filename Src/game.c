@@ -2,6 +2,7 @@
 #include "gamestates.h"
 #include "camera.h"
 #include "game.h"
+#include "button.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -14,6 +15,9 @@
 #pragma warning(disable : 4996)
 
 // @todo auto resize the array
+CP_Image game_button_sprites[BUTTON_SPRITE_COUNT];
+Game_Button fail_menu_btns[2];
+Game_Button pause_menu_btns[2];
 int transition_side;
 Entity entities[ENTITY_CAP];
 static int map_pos[SIZE][GRID_ROWS][GRID_COLS];
@@ -22,7 +26,14 @@ static int room_wall_pos[GRID_ROWS][GRID_COLS];
 static unsigned int random_tile_number;
 static int rooms_cleared = 0;
 static int map_idx = 0;
-
+int isplaying = 0;
+CP_Sound bgm;
+CP_Sound bossbgm;
+CP_Sound defeat;
+CP_Image DoorTop;
+CP_Image DoorLeft;
+CP_Image DoorRight;
+CP_Image DoorBot;
 
 static room_state state = loading;
 
@@ -35,12 +46,11 @@ CP_Image tile_list[ROOM_TILE_TYPES];
 //float W_height = WALL_DIM * GRID_ROWS;
 Position doors[4];
 
-static void pause_menu(void) {
-
-
-	CP_Settings_RectMode(CP_POSITION_CENTER);
-	CP_Graphics_DrawRect(480, 480, 480, 480);
-
+void back_to_mainmenu(void){
+	CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
+}
+void resume_game(void) {
+	state = room_active;
 }
 
 static void load_maps(void) {
@@ -134,7 +144,17 @@ void generate_current_map(void) {
 		}
 	}
 }
+void draw_room_failed_buttons(void) {
+	for (int i = 0; i < 2; ++i) {
+		draw_button(&(fail_menu_btns[i]));
+	}
+}
 
+void draw_pause_menu_btns(void) {
+	for (int i = 0; i < 2; ++i) {
+		draw_button(&(pause_menu_btns[i]));
+	}
+}
 void draw_door(void) {
 	//for (int i = 0; i < GRID_ROWS; i++) {
 	//	for (int j = 0; j < GRID_COLS; ++j) {
@@ -144,16 +164,19 @@ void draw_door(void) {
 	//		}
 	//	}
 	//}
-	CP_Settings_StrokeWeight(0.0);
-
+	DoorTop = CP_Image_Load("./Assets/Tiles/DoorToptest.png");
+	DoorLeft = CP_Image_Load("./Assets/Tiles/doorLeft.png");
+	DoorRight = CP_Image_Load("./Assets/Tiles/doorRight.png");
+	DoorBot = CP_Image_Load("./Assets/Tiles/doorBot.png");
 	// top door
-	CP_Graphics_DrawRect(get_camera_x_pos(doors[0].x), get_camera_y_pos(doors[0].y), WALL_DIM * 4.0f, WALL_DIM);
+	//CP_Graphics_DrawRect(get_camera_x_pos(doors[0].x), get_camera_y_pos(doors[0].y), WALL_DIM * 4.0f, WALL_DIM);
+	CP_Image_Draw(DoorTop, get_camera_x_pos(doors[0].x) + 80, get_camera_y_pos(doors[0].y) + 20, WALL_DIM * 4.0f, WALL_DIM, 255);
 	// bottom door
-	CP_Graphics_DrawRect(get_camera_x_pos(doors[1].x), get_camera_y_pos(doors[1].y), WALL_DIM * 4.0f, WALL_DIM);
+	CP_Image_Draw(DoorBot, get_camera_x_pos(doors[1].x) + 80, get_camera_y_pos(doors[1].y) + 20, WALL_DIM * 4.0f, WALL_DIM, 255);
 	// left door
-	CP_Graphics_DrawRect(get_camera_x_pos(doors[2].x), get_camera_y_pos(doors[2].y), WALL_DIM, WALL_DIM * 4.0f);
+	CP_Image_Draw(DoorLeft, get_camera_x_pos(doors[2].x) + 20, get_camera_y_pos(doors[2].y) + 80, WALL_DIM, WALL_DIM * 4.0f, 255);
 	// right door
-	CP_Graphics_DrawRect(get_camera_x_pos(doors[3].x), get_camera_y_pos(doors[3].y), WALL_DIM, WALL_DIM * 4.0f);
+	CP_Image_Draw(DoorRight, get_camera_x_pos(doors[3].x) + 20, get_camera_y_pos(doors[3].y) + 80, WALL_DIM, WALL_DIM * 4.0f, 255);
 }
 
 void draw_room_wall(void) {
@@ -194,6 +217,7 @@ void draw_room_floor(void) {
 
 void game_init(void)
 {
+	isplaying = 0;
 	// top door
 	doors[0] = (Position){ ((float)CP_System_GetWindowWidth() / 2.0f) - (WALL_DIM * 2.0f), 0.0f};
 	// bottom door
@@ -203,11 +227,45 @@ void game_init(void)
 	doors[2] = (Position){ 0.0f, ((float)CP_System_GetWindowHeight() / 2.0f) - (WALL_DIM * 2.0f) };
 	//right door
 	doors[3] = (Position){(float)CP_System_GetWindowWidth() - WALL_DIM, ((float)CP_System_GetWindowHeight() / 2.0f) - (WALL_DIM * 2.0f) };
+	
+	fail_menu_btns[0].image = &(game_button_sprites[MENU_BUTTON]);
+	fail_menu_btns[0].on_click_func = back_to_mainmenu;
+	fail_menu_btns[1].image = &(game_button_sprites[EXIT_BUTTON]);
+	fail_menu_btns[1].on_click_func = CP_Engine_Terminate;
+
+	pause_menu_btns[0].image = &(game_button_sprites[RESUME_BUTTON]);
+	pause_menu_btns[0].on_click_func = resume_game;
+	pause_menu_btns[1].image = &(game_button_sprites[EXIT_BUTTON]);
+	pause_menu_btns[1].on_click_func = CP_Engine_Terminate;
+
+	for (int i = 0; i < 2; ++i) {
+		fail_menu_btns[i].pos = (Position){
+			((float)CP_System_GetWindowWidth() * ((float)i + 1.0f)) / 3.0f,
+			(float)CP_System_GetWindowHeight() * 3.0f / 4.0f
+		};
+		fail_menu_btns[i].size = (Position){ 440.0f, 90.0f };
+		fail_menu_btns[i].scale = 1.0f;
+		fail_menu_btns[i].timer = 0.0f;
+
+		pause_menu_btns[i].pos = (Position){
+			(float)CP_System_GetWindowWidth() / 2.0f,
+			(float)CP_System_GetWindowHeight() * ((float)i + 5.0f) / 10.0f
+		};
+		pause_menu_btns[i].size = (Position){ 440.0f, 90.0f };
+		pause_menu_btns[i].scale = 1.0f;
+		pause_menu_btns[i].timer = 0.0f;
+	}
+
 	srand(time(0));
 	init_sprites();
 	rooms_cleared = 0;
 	map_idx = 0;
 	state = loading;
+	bossbgm = CP_Sound_Load("./Assets/SFX/Boss.wav");
+	bgm = CP_Sound_Load("./Assets/SFX/BGM1.wav");
+	//defeat = CP_Sound_Load("./Assets/SFX/Defeat.wav");
+	defeat = CP_Sound_Load("./Assets/SFX/Comedy.wav");
+
 	//initialized the player as idx 0
 	for (int i = 0; i < ENTITY_CAP; ++i) {
 		entities[i].type = entity_null;
@@ -224,43 +282,26 @@ void game_init(void)
 
 void game_update(void)
 {
-	if (CP_Input_KeyTriggered(KEY_Q)) {
-		Position Mousepos = (Position){ CP_Input_GetMouseX(),CP_Input_GetMouseY() };
-		Position startposb;
-		startposb.x = ((float)CP_System_GetWindowWidth() / 2);
-		startposb.y = ((float)CP_System_GetWindowHeight() * 1 / 4);
-		int p_idx = insert_to_entity_array(entity_projectile, entities, init_projectile);
-		if (p_idx > -1) {
-			set_projectile_values(&(entities[p_idx].projectile), 'a', 'm', 10, startposb, getVectorBetweenPositions(&(startposb), &(Mousepos)));
-		}
-	}
 	if (CP_Input_KeyTriggered(KEY_F)) {
 		clear_all_entities();
 	}
 	if (state == room_failed) {
-
-		// draw ur room failed stuff here
+		if (isplaying == 1 || isplaying == 0)
+		{
+			CP_Sound_StopAll();
+			CP_Sound_PlayMusic(defeat);
+			//play defeat music
+			isplaying = 2;
+		}
 		clear_all_entities();
-		if (CP_Input_KeyTriggered(KEY_ESCAPE)) exit(EXIT_SUCCESS);
-		else if (CP_Input_KeyTriggered(KEY_R)) CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
+
+		for (int i = 0; i < 2; ++i) {
+			update_button(&(fail_menu_btns[i]));
+		}
 	}
 	else if (state == room_pause) {
-
-		//resume game
-		if (CP_Input_KeyTriggered(KEY_ESCAPE)) {
-
-			// explicitly goes to room_active state, or itll cause undefined behavior
-			// room_active will check if the game can go to room_cleared
-			state = room_active;//!room_pause;
-		}
-		//exit to main menu
-		else if (IsAreaClicked(480, 480, 480, 480, CP_Input_GetMouseX(), CP_Input_GetMouseY())) {
-
-			if (CP_Input_MouseClicked(MOUSE_BUTTON_LEFT)) {
-
-				CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
-				state = loading;
-			}
+		for (int i = 0; i < 2; ++i) {
+			update_button(&(pause_menu_btns[i]));
 		}
 	}
 	else {
@@ -268,16 +309,28 @@ void game_update(void)
 			//if it is boss room
 			if ((rooms_cleared % BOSS_ROOM_INTERVAL) == (BOSS_ROOM_INTERVAL - 1)) {
 				map_idx = 0;
+				if (isplaying == 1)
+				{
+					CP_Sound_StopAll();
+					CP_Sound_PlayMusic(bossbgm);
+					//play boss scene music
+					isplaying = 0;
+				}
 			}
 			else {
 				map_idx = rand() % 10 + 1; //set map idx to a random range between 0 to 4
-
+				if (isplaying == 0) 
+				{
+					//play bgm
+					CP_Sound_StopAll();
+					CP_Sound_PlayMusic(bgm);
+					isplaying = 1;
+				}
 			}
 			generate_current_map();
 			state = room_active;
 		}
 		else {
-			//CP_Graphics_ClearBackground(CP_Color_Create(255, 255, 255, 255));
 			for (int i = 0; i < ENTITY_CAP; ++i) {
 				if (entities[i].type == entity_null) continue;
 				switch (entities[i].type) {
@@ -345,6 +398,10 @@ void game_update(void)
 
 void game_exit(void)
 {
+	CP_Sound_StopAll();
+	CP_Sound_Free(defeat);
+	CP_Sound_Free(bgm);
+	CP_Sound_Free(bossbgm);
 
 }
 
