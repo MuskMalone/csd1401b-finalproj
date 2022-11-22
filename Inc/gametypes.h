@@ -7,10 +7,10 @@
 #define GRID_COLS 30
 #define PARTICLE_CAP 5000
 
-typedef struct Game_Buton {
-	int mouse_on_button;
-	float timer;
-} Game_Button;
+//typedef struct Game_Buton {
+//	int mouse_on_button;
+//	float timer;
+//} Game_Button;
 
 typedef struct Particle {
 	int running;
