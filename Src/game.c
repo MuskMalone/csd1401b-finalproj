@@ -2,6 +2,7 @@
 #include "gamestates.h"
 #include "camera.h"
 #include "game.h"
+#include "button.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -14,6 +15,9 @@
 #pragma warning(disable : 4996)
 
 // @todo auto resize the array
+CP_Image game_button_sprites[BUTTON_SPRITE_COUNT];
+Game_Button fail_menu_btns[2];
+Game_Button pause_menu_btns[2];
 int transition_side;
 Entity entities[ENTITY_CAP];
 static int map_pos[SIZE][GRID_ROWS][GRID_COLS];
@@ -42,6 +46,12 @@ CP_Image tile_list[ROOM_TILE_TYPES];
 //float W_height = WALL_DIM * GRID_ROWS;
 Position doors[4];
 
+void back_to_mainmenu(void){
+	CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
+}
+void resume_game(void) {
+	state = room_active;
+}
 
 static void load_maps(void) {
 
@@ -134,7 +144,17 @@ void generate_current_map(void) {
 		}
 	}
 }
+void draw_room_failed_buttons(void) {
+	for (int i = 0; i < 2; ++i) {
+		draw_button(&(fail_menu_btns[i]));
+	}
+}
 
+void draw_pause_menu_btns(void) {
+	for (int i = 0; i < 2; ++i) {
+		draw_button(&(pause_menu_btns[i]));
+	}
+}
 void draw_door(void) {
 	//for (int i = 0; i < GRID_ROWS; i++) {
 	//	for (int j = 0; j < GRID_COLS; ++j) {
@@ -207,6 +227,35 @@ void game_init(void)
 	doors[2] = (Position){ 0.0f, ((float)CP_System_GetWindowHeight() / 2.0f) - (WALL_DIM * 2.0f) };
 	//right door
 	doors[3] = (Position){(float)CP_System_GetWindowWidth() - WALL_DIM, ((float)CP_System_GetWindowHeight() / 2.0f) - (WALL_DIM * 2.0f) };
+	
+	fail_menu_btns[0].image = &(game_button_sprites[MENU_BUTTON]);
+	fail_menu_btns[0].on_click_func = back_to_mainmenu;
+	fail_menu_btns[1].image = &(game_button_sprites[EXIT_BUTTON]);
+	fail_menu_btns[1].on_click_func = CP_Engine_Terminate;
+
+	pause_menu_btns[0].image = &(game_button_sprites[RESUME_BUTTON]);
+	pause_menu_btns[0].on_click_func = resume_game;
+	pause_menu_btns[1].image = &(game_button_sprites[EXIT_BUTTON]);
+	pause_menu_btns[1].on_click_func = CP_Engine_Terminate;
+
+	for (int i = 0; i < 2; ++i) {
+		fail_menu_btns[i].pos = (Position){
+			((float)CP_System_GetWindowWidth() * ((float)i + 1.0f)) / 3.0f,
+			(float)CP_System_GetWindowHeight() * 3.0f / 4.0f
+		};
+		fail_menu_btns[i].size = (Position){ 440.0f, 90.0f };
+		fail_menu_btns[i].scale = 1.0f;
+		fail_menu_btns[i].timer = 0.0f;
+
+		pause_menu_btns[i].pos = (Position){
+			(float)CP_System_GetWindowWidth() / 2.0f,
+			(float)CP_System_GetWindowHeight() * ((float)i + 5.0f) / 10.0f
+		};
+		pause_menu_btns[i].size = (Position){ 440.0f, 90.0f };
+		pause_menu_btns[i].scale = 1.0f;
+		pause_menu_btns[i].timer = 0.0f;
+	}
+
 	srand(time(0));
 	init_sprites();
 	rooms_cleared = 0;
@@ -247,27 +296,33 @@ void game_update(void)
 			isplaying = 2;
 		}
 		clear_all_entities();
-		if (CP_Input_KeyTriggered(KEY_ESCAPE)) exit(EXIT_SUCCESS);
-		else if (CP_Input_KeyTriggered(KEY_R)) CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
+
+		for (int i = 0; i < 2; ++i) {
+			update_button(&(fail_menu_btns[i]));
+		}
+		//if (CP_Input_KeyTriggered(KEY_ESCAPE)) exit(EXIT_SUCCESS);
+		//else if (CP_Input_KeyTriggered(KEY_R)) CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
 	}
 	else if (state == room_pause) {
-
+		for (int i = 0; i < 2; ++i) {
+			update_button(&(pause_menu_btns[i]));
+		}
 		//resume game
-		if (CP_Input_KeyTriggered(KEY_ESCAPE)) {
+		//if (CP_Input_KeyTriggered(KEY_ESCAPE)) {
 
-			// explicitly goes to room_active state, or itll cause undefined behavior
-			// room_active will check if the game can go to room_cleared
-			state = room_active;//!room_pause;
-		}
+		//	// explicitly goes to room_active state, or itll cause undefined behavior
+		//	// room_active will check if the game can go to room_cleared
+		//	state = room_active;//!room_pause;
+		//}
 		//exit to main menu
-		else if (CP_Input_MouseClicked(MOUSE_BUTTON_LEFT)) {
+		//else if (CP_Input_MouseClicked(MOUSE_BUTTON_LEFT)) {
 
-			if (IsAreaClicked(CP_System_GetWindowWidth() / 2, CP_System_GetWindowHeight() * 3 / 5, 440, 90, CP_Input_GetMouseX(), CP_Input_GetMouseY())) {
+		//	if (IsAreaClicked(CP_System_GetWindowWidth() / 2, CP_System_GetWindowHeight() * 3 / 5, 440, 90, CP_Input_GetMouseX(), CP_Input_GetMouseY())) {
 
-				CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
-				state = loading;
-			}
-		}
+		//		CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
+		//		state = loading;
+		//	}
+		//}
 	}
 	else {
 		if (state == loading) {

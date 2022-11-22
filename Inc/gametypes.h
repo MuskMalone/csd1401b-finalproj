@@ -8,11 +8,11 @@
 #define PARTICLE_CAP 5000
 
 typedef struct Game_Buton {
+	float (*on_click_func)(void);
 	CP_Image* image;
 	Position pos;
 	Position size;
 	float scale;
-	int mouse_on_button;
 	float timer;
 } Game_Button;
 

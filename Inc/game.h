@@ -17,6 +17,10 @@ static void clear_all_entities(void);
 
 void generate_current_map(void);
 
+void draw_room_failed_buttons(void);
+
+void draw_pause_menu_btns(void);
+
 void draw_door(void);
 
 void draw_room_wall(void);

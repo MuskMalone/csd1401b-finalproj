@@ -328,19 +328,23 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 	if (state == room_failed) {
 
 		// draw ur room failed stuff here
-		CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
-		CP_Settings_TextSize(50.0f);
 
-		char buffer[500] = { 0 };
+		
+		
 		CP_Image_Draw(GameOverMenu, CP_System_GetWindowWidth() / 2, CP_System_GetWindowHeight() / 2, CP_System_GetWindowWidth(), CP_System_GetWindowHeight(), 255);
-		sprintf_s(buffer, _countof(buffer), "R to main menu, ESC to quit");
-		CP_Font_DrawText(buffer, 300, 800);
+		draw_room_failed_buttons();
+		//CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
+		//CP_Settings_TextSize(50.0f);
+		//char buffer[500] = { 0 };
+		//sprintf_s(buffer, _countof(buffer), "R to main menu, ESC to quit");
+		//CP_Font_DrawText(buffer, 300, 800);
 	}
 	else if (state == room_pause) {
 
 		//draw the stuff here
 		CP_Image_Draw(Pause_Menu, CP_System_GetWindowWidth() / 2, CP_System_GetWindowHeight() / 2, 550,590,255);
-		CP_Image_Draw(BackToMenuBut, CP_System_GetWindowWidth() / 2, CP_System_GetWindowHeight() *3/5, 440, 90, 255);
+		draw_pause_menu_btns();
+		//CP_Image_Draw(BackToMenuBut, CP_System_GetWindowWidth() / 2, CP_System_GetWindowHeight() *3/5, 440, 90, 255);
 	}
 	else {
 		if (state == loading) {

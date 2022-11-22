@@ -348,7 +348,7 @@ void player_injured_effect(Player *player) {
 int damage_player(Player *p) {
 	if (p->state != dashing) {
 		player_injured_effect(p);
-		//p->health -= 1;
+		p->health -= 1;
 		return 1;
 	}
 	return 0;

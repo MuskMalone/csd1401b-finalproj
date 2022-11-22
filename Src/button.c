@@ -9,11 +9,13 @@ void update_button(Game_Button* button) {
 		button->size.x / 2.0f, button->size.y / 2.0f,
 		CP_Input_GetMouseX(), CP_Input_GetMouseY()
 	)){
-		button->mouse_on_button = 1;
 		if (button->timer < BUTTON_MAX_TIMER)
 			button->timer += CP_System_GetDt();
 		else button->timer = BUTTON_MAX_TIMER;
 		button->scale = EaseOutExpo(1.0f, BUTTON_MAX_SCALE, button->timer / BUTTON_MAX_TIMER);
+		if (CP_Input_MouseTriggered(MOUSE_BUTTON_1)) {
+			button->on_click_func();
+		}
 	}
 	else {
 		if (button->timer > 0.0f) 

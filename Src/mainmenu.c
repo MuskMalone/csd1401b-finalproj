@@ -25,6 +25,11 @@ CP_Sound bgm;
 //}Button;
 
 static Game_Button menu_buttons[3];
+void goGame(void);
+void turn_on_tut(void);
+void turn_on_tut(void) {
+	tutbool = 1;
+}
 
 void loadfile()
 {
@@ -32,8 +37,11 @@ void loadfile()
 	background = CP_Image_Load("./Assets/main.png");
 	Title = CP_Image_Load("./Assets/Title.png");
 	menu_buttons[0].image = &(game_button_sprites[START_BUTTON]);
+	menu_buttons[0].on_click_func = goGame;
 	menu_buttons[2].image = &(game_button_sprites[EXIT_BUTTON]);//CP_Image_Load("./Assets/EXIT.png");
+	menu_buttons[2].on_click_func = CP_Engine_Terminate;
 	menu_buttons[1].image = &(game_button_sprites[TUTORIAL_BUTTON]);//CP_Image_Load("./Assets/HOWTOPLAY.png");
+	menu_buttons[1].on_click_func = turn_on_tut;
 	Tuts = CP_Image_Load("./Assets/TUTS.png");
 	bgm = CP_Sound_Load("./Assets/SFX/MainMenu.wav");
 	for (int i = 0; i < 3; ++i) {
@@ -44,17 +52,16 @@ void loadfile()
 		menu_buttons[i].size = (Position){ 512.0f, 104.0f };
 		menu_buttons[i].scale = 1.0f;
 		menu_buttons[i].timer = 0.0f;
-		menu_buttons[i].mouse_on_button = 0;
 	}
 }
 
-void goGame()
+void goGame(void)
 {
 	CP_Engine_SetNextGameState(game_init, game_update, game_exit);
 	CP_Engine_Run();
 }
 
-void Credit_screen()
+void Credit_screen(void)
 {
 
 }
@@ -94,19 +101,19 @@ void Main_Menu_Update()
 		draw_button(&(menu_buttons[i]));
 	}
 
-	if (CP_Input_MouseTriggered(MOUSE_BUTTON_1))
-	{
-		if (is_mouse_on(&(menu_buttons[0]))) {
-			goGame();
-		}
-		if (is_mouse_on(&(menu_buttons[1]))) {
-			//show tuts
-			tutbool = 1;
-		}
-		if (is_mouse_on(&(menu_buttons[2]))) {
-			CP_Engine_Terminate();
-		}
-	}
+	//if (CP_Input_MouseTriggered(MOUSE_BUTTON_1))
+	//{
+	//	if (is_mouse_on(&(menu_buttons[0]))) {
+	//		goGame();
+	//	}
+	//	if (is_mouse_on(&(menu_buttons[1]))) {
+	//		//show tuts
+	//		tutbool = 1;
+	//	}
+	//	if (is_mouse_on(&(menu_buttons[2]))) {
+	//		CP_Engine_Terminate();
+	//	}
+	//}
 
 	if (tutbool == 1)
 	{
