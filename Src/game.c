@@ -286,8 +286,6 @@ void game_update(void)
 		clear_all_entities();
 	}
 	if (state == room_failed) {
-
-		// draw ur room failed stuff here
 		if (isplaying == 1 || isplaying == 0)
 		{
 			CP_Sound_StopAll();
@@ -300,29 +298,11 @@ void game_update(void)
 		for (int i = 0; i < 2; ++i) {
 			update_button(&(fail_menu_btns[i]));
 		}
-		//if (CP_Input_KeyTriggered(KEY_ESCAPE)) exit(EXIT_SUCCESS);
-		//else if (CP_Input_KeyTriggered(KEY_R)) CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
 	}
 	else if (state == room_pause) {
 		for (int i = 0; i < 2; ++i) {
 			update_button(&(pause_menu_btns[i]));
 		}
-		//resume game
-		//if (CP_Input_KeyTriggered(KEY_ESCAPE)) {
-
-		//	// explicitly goes to room_active state, or itll cause undefined behavior
-		//	// room_active will check if the game can go to room_cleared
-		//	state = room_active;//!room_pause;
-		//}
-		//exit to main menu
-		//else if (CP_Input_MouseClicked(MOUSE_BUTTON_LEFT)) {
-
-		//	if (IsAreaClicked(CP_System_GetWindowWidth() / 2, CP_System_GetWindowHeight() * 3 / 5, 440, 90, CP_Input_GetMouseX(), CP_Input_GetMouseY())) {
-
-		//		CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
-		//		state = loading;
-		//	}
-		//}
 	}
 	else {
 		if (state == loading) {
@@ -351,7 +331,6 @@ void game_update(void)
 			state = room_active;
 		}
 		else {
-			//CP_Graphics_ClearBackground(CP_Color_Create(255, 255, 255, 255));
 			for (int i = 0; i < ENTITY_CAP; ++i) {
 				if (entities[i].type == entity_null) continue;
 				switch (entities[i].type) {

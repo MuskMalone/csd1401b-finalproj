@@ -6,6 +6,8 @@
 #include "camera.h"
 #include "button.h"
 
+
+#define SPLASH_SCREEN_DURATION 3.0f
 float M_width;
 float M_height;
 CP_Image game_button_sprites[BUTTON_SPRITE_COUNT];
@@ -24,6 +26,10 @@ CP_Sound bgm;
 //	CP_Image image;
 //}Button;
 
+float splash_screen_timer = 0.0f;
+float splash_screen_alpha = 0.0f;
+CP_Image splash_screen_image;
+
 static Game_Button menu_buttons[3];
 void goGame(void);
 void turn_on_tut(void);
@@ -36,6 +42,7 @@ void loadfile()
 	xbut = CP_Image_Load("./Assets/xBut.png");
 	background = CP_Image_Load("./Assets/main.png");
 	Title = CP_Image_Load("./Assets/Title.png");
+	splash_screen_image = CP_Image_Load("./Assets/DigiPen_Singapore_WEB_RED.png");
 	menu_buttons[0].image = &(game_button_sprites[START_BUTTON]);
 	menu_buttons[0].on_click_func = goGame;
 	menu_buttons[2].image = &(game_button_sprites[EXIT_BUTTON]);//CP_Image_Load("./Assets/EXIT.png");
@@ -86,13 +93,18 @@ void Main_Menu_Init()
 
 void Main_Menu_Update()
 {
-
-	float mousePosX = CP_Input_GetMouseX();
-	float mousePosY = CP_Input_GetMouseY();
-
-	
-	
 	CP_Graphics_ClearBackground(CP_Color_Create(0, 0, 0, 255));
+	if (splash_screen_timer <= SPLASH_SCREEN_DURATION) {
+		splash_screen_timer += CP_System_GetDt();
+		splash_screen_alpha = 255.0f * (splash_screen_timer / SPLASH_SCREEN_DURATION);
+		CP_Image_Draw(
+			splash_screen_image,
+			CP_System_GetWindowWidth() / 2.0f, CP_System_GetWindowHeight() / 2.0f,
+			CP_System_GetWindowWidth() / 2.0f, CP_System_GetWindowHeight() / 5.0f,
+			(int) splash_screen_alpha
+		);
+		return;
+	}
 	CP_Image_Draw(background, M_width, M_height, CP_System_GetWindowWidth() * 4, CP_System_GetWindowHeight() * 3, 190);
 	CP_Image_Draw(Title, M_width - 20, M_height * 3 / 4, 1024, 512, 255);
 	for (int i = 0; i < 3; i++)
@@ -101,19 +113,6 @@ void Main_Menu_Update()
 		draw_button(&(menu_buttons[i]));
 	}
 
-	//if (CP_Input_MouseTriggered(MOUSE_BUTTON_1))
-	//{
-	//	if (is_mouse_on(&(menu_buttons[0]))) {
-	//		goGame();
-	//	}
-	//	if (is_mouse_on(&(menu_buttons[1]))) {
-	//		//show tuts
-	//		tutbool = 1;
-	//	}
-	//	if (is_mouse_on(&(menu_buttons[2]))) {
-	//		CP_Engine_Terminate();
-	//	}
-	//}
 
 	if (tutbool == 1)
 	{
@@ -121,7 +120,7 @@ void Main_Menu_Update()
 		CP_Image_Draw(xbut, M_width *3.15/2, M_height /10, 75, 75, 255);
 		if (CP_Input_MouseTriggered(MOUSE_BUTTON_1)) 
 		{
-			if (IsCircleClicked(M_width * 3.15 / 2, M_height / 10, 50, mousePosX, mousePosY) == 1)
+			if (IsCircleClicked(M_width * 3.15 / 2, M_height / 10, 50, CP_Input_GetMouseX(), CP_Input_GetMouseY()))
 			{
 				tutbool = 0;
 			}
