@@ -26,7 +26,7 @@ CP_Image player_deflect_arrow;
 CP_Image Player_Barrier_Img;
 CP_Image *player_sprite_ptr;
 
-
+void player_deflected_effect(Player* player);
 int release_held_projectiles(Player * player, Entity entities[]) {
 	int out = 0;
 	set_state(player, resting);
@@ -38,15 +38,15 @@ int release_held_projectiles(Player * player, Entity entities[]) {
 				int dir_x, dir_y;
 
 				set_projectile_values(
-					&(entities[i].projectile), 
-					PLAYER_PROJ_SOURCE1, PROJ_TYPE_MOBILE, 
-					10, 
-					proj->pos, 
+					&(entities[i].projectile),
+					PLAYER_PROJ_SOURCE1, PROJ_TYPE_MOBILE,
+					10,
+					proj->pos,
 					getVectorBetweenPositions(
-						player->pos, 
-						(Position) { 
-							CP_Input_GetMouseX(), 
-							CP_Input_GetMouseY() 
+						player->pos,
+						(Position) {
+							CP_Input_GetMouseX(),
+							CP_Input_GetMouseY()
 						}
 					)
 				);
@@ -54,6 +54,9 @@ int release_held_projectiles(Player * player, Entity entities[]) {
 				out = 1;
 			}
 		}
+	}
+	if (out){
+		player_deflected_effect(player);
 	}
 	return out;
 }
@@ -154,7 +157,8 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 			}
 			else {
 				if (stamina >= STAMINA_COST) {
-					if (player_deflect_projectile(player, entities)) shake_camera(PROJ_DEFLECT_SHAKE, 1);
+					if (player_deflect_projectile(player, entities))
+						player_deflected_effect(player);
 					stamina -= STAMINA_COST; // if stamina 
 				}
 				else {
@@ -216,19 +220,19 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 	//Basic Player movement
 	if (CP_Input_KeyDown(KEY_D)) {
 		set_state(player, moving);
-		player->horizontal_dir = 1;
+		player->horizontal_dir = 2;
 	}
 	else if (CP_Input_KeyDown(KEY_A)) {
 		set_state(player, moving);
-		player->horizontal_dir = -1;
+		player->horizontal_dir = -2;
 	}
 	if (CP_Input_KeyDown(KEY_W)) {
 		set_state(player, moving);
-		player->vertical_dir = -1;
+		player->vertical_dir = -2;
 	}
 	else if (CP_Input_KeyDown(KEY_S)) {
 		set_state(player, moving);
-		player->vertical_dir = 1;
+		player->vertical_dir = 2;
 	}
 
 	if (CP_Input_KeyReleased(KEY_D) || CP_Input_KeyReleased(KEY_A)) {
@@ -305,7 +309,23 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 		}
 	}
 }
-void player_injured_particles(Player *player) {
+void player_deflected_effect(Player* player) {
+	create_particle_burst(
+		2.0f,
+		EaseOutExpo,
+		CP_Color_Create(0, 251, 255, 255),
+		player->pos,
+		player->diameter * 2.0f,
+		10.0f,
+		20.0f,
+		0.0f,
+		360.f,
+		10
+	);
+	//flash_hue(CP_Color_Create(0, 251, 255, 0), DEFLECT_TINT_TIMER, 10, 30);
+	shake_camera(PROJ_DEFLECT_SHAKE, 1);
+}
+void player_injured_effect(Player *player) {
 	create_particle_burst(
 		2.0f,
 		EaseOutExpo,
@@ -318,12 +338,12 @@ void player_injured_particles(Player *player) {
 		360.f,
 		10
 	);
+	flash_hue(CP_Color_Create(255, 0, 0, 0), DAMAGE_TINT_TIMER, 10, 30);
+	shake_camera(DAMAGE_SHAKE, 1);
 }
 int damage_player(Player *p) {
 	if (p->state != dashing) {
-		flash_hue(CP_Color_Create(255, 0, 0, 0), DAMAGE_TINT_TIMER, 10, 80);
-		shake_camera(DAMAGE_SHAKE, 1);
-		player_injured_particles(p);
+		player_injured_effect(p);
 		p->health -= 1;
 		return 1;
 	}
@@ -335,28 +355,28 @@ void set_player_position(Player* player, Position pos) {
 }
 void draw_player(Player* player) {
 
-	if (player->horizontal_dir == 1 && player->vertical_dir == 0) {
+	if (player->horizontal_dir == 2 && player->vertical_dir == 0) {
 		player_sprite_ptr = player_right;
 	}
-	else if (player->horizontal_dir == -1 && player->vertical_dir == 0) {
+	else if (player->horizontal_dir == -2 && player->vertical_dir == 0) {
 		player_sprite_ptr = player_left;
 	}
-	else if (player->horizontal_dir == 0 && player->vertical_dir == 1) {
+	else if (player->horizontal_dir == 0 && player->vertical_dir == 2) {
 		player_sprite_ptr = player_front;
 	}
-	else if (player->horizontal_dir == 0 && player->vertical_dir == -1) {
+	else if (player->horizontal_dir == 0 && player->vertical_dir == -2) {
 		player_sprite_ptr = player_back;
 	}
-	else if (player->horizontal_dir == 1 && player->vertical_dir == 1) {
+	else if (player->horizontal_dir == 2 && player->vertical_dir == 2) {
 		player_sprite_ptr = player_frontdiagright;
 	}
-	else if (player->horizontal_dir == -1 && player->vertical_dir == 1) {
+	else if (player->horizontal_dir == -2 && player->vertical_dir == 2) {
 		player_sprite_ptr = player_frontdiagleft;
 	}
-	else if (player->horizontal_dir == 1 && player->vertical_dir == -1) {
+	else if (player->horizontal_dir == 2 && player->vertical_dir == -2) {
 		player_sprite_ptr = player_backdiagright;
 	}
-	else if (player->horizontal_dir == -1 && player->vertical_dir == -1) {
+	else if (player->horizontal_dir == -2 && player->vertical_dir == -2) {
 		player_sprite_ptr = player_backdiagleft;
 	}
 

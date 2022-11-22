@@ -173,10 +173,10 @@ void init_sprites(void) {
 	enemy_projectile_sprites[5] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E6.png");
 	enemy_projectile_sprites[6] = CP_Image_Load("./Assets/Tiles/Projectiles/Static_Proj_E7.png");
 
-	sword_left[0] = CP_Image_Load("./Assets/Tiles/Projectiles/swordleft0.png");
-	sword_left[1] = CP_Image_Load("./Assets/Tiles/Projectiles/swordleft1.png");
-	sword_left[2] = CP_Image_Load("./Assets/Tiles/Projectiles/swordleft2.png");
-	sword_left[3] = CP_Image_Load("./Assets/Tiles/Projectiles/swordleft3.png");
+	sword_left[0] = CP_Image_Load("./Assets/Tiles/Projectiles/sword0.png");
+	sword_left[1] = CP_Image_Load("./Assets/Tiles/Projectiles/sword1.png");
+	sword_left[2] = CP_Image_Load("./Assets/Tiles/Projectiles/sword2.png");
+	sword_left[3] = CP_Image_Load("./Assets/Tiles/Projectiles/sword3.png");
 
 	melee_mob_left[0] = CP_Image_Load("./Assets/Tiles/Mobs/Melee/skeletonleft0.png");
 	melee_mob_left[1] = CP_Image_Load("./Assets/Tiles/Mobs/Melee/skeletonleft1.png");
@@ -462,10 +462,10 @@ void draw_hud(Player* player) {
 	//{
 	//	CP_Image_Draw(player_heart, 32 * i, 64, 32, 32, 255);
 	//}
-	CP_Image_Draw(player_heart[player->health - 1], player_heart_pos.x, player_heart_pos.y, WALL_DIM, WALL_DIM, 255);
+	CP_Image_Draw(player_heart[player->health - 1], player_heart_pos.x, player_heart_pos.y, WALL_DIM * .5f, WALL_DIM * .5f, 255);
 	CP_Vector player_dir = getVectorBetweenPositions(player_heart_pos, player->pos);
 	float distance = CP_Math_Distance(player_heart_pos.x, player_heart_pos.y, player->pos.x, player->pos.y),
-		min_distance = (MAX_PARRYRADIUS + WALL_DIM * .8f);
+		min_distance = (MAX_PARRYRADIUS + WALL_DIM * .5f);
 	player_heart_speed = (PLAYER_HEART_SPEED * (distance / min_distance)) - PLAYER_HEART_SPEED;
 	moveEntity(&player_heart_pos, player_dir.x * player_heart_speed, player_dir.y * player_heart_speed);
 	
