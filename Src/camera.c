@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #define TRANSITION_TIMER 1.25f
 #define PLAYER_HEART_SPEED NORMAL_SPEED * 4.0f
+static is_loaded = 0;
+CP_Image game_button_sprites[BUTTON_SPRITE_COUNT];
 
 static Position player_heart_pos;
 static float player_heart_speed;
@@ -77,6 +79,12 @@ void init_sprites(void) {
 	};
 
 	world_offset = (Position){ 0.0f, 0.0f };
+	game_button_sprites[START_BUTTON] = CP_Image_Load("./Assets/STARTGAME.png");
+	game_button_sprites[EXIT_BUTTON] = CP_Image_Load("./Assets/EXIT.png");
+	game_button_sprites[TUTORIAL_BUTTON] = CP_Image_Load("./Assets/HOWTOPLAY.png");
+	game_button_sprites[MENU_BUTTON] = CP_Image_Load("./Assets/BACKTOMENU.png");
+	game_button_sprites[RESUME_BUTTON] = CP_Image_Load("./Assets/RESUME.png");
+	if (is_loaded) return;
 	GameOverMenu = CP_Image_Load("./Assets/gameover.png");
 	Boss_Barrier_Img = CP_Image_Load("./Assets/Tiles/Boss/Boss_Barrier.png");
 	Cannon_Img = CP_Image_Load("./Assets/Tiles/Boss/Cannon.png");
@@ -188,24 +196,26 @@ void init_sprites(void) {
 	explode_mob_right[0] = CP_Image_Load("./Assets/Tiles/Mobs/Explode/boomberright0.png");
 	explode_mob_right[1] = CP_Image_Load("./Assets/Tiles/Mobs/Explode/boomberright1.png");
 
-	range_mob[7] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_right.png");
-	range_mob[6] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_rightup.png");
-	range_mob[5] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_up.png");
-	range_mob[4] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_leftup.png");
-	range_mob[3] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_left.png");
-	range_mob[2] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_leftdown.png");
-	range_mob[1] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_down.png");
-	range_mob[0] = CP_Image_Load("./Assets/Tiles/Mobs/Range/1_rightdown.png");
+	range_mob[7] = CP_Image_Load("./Assets/Tiles/Mobs/Range/flowerR.png");
+	range_mob[6] = CP_Image_Load("./Assets/Tiles/Mobs/Range/flowerRB45.png");
+	range_mob[5] = CP_Image_Load("./Assets/Tiles/Mobs/Range/flowerB.png");
+	range_mob[4] = CP_Image_Load("./Assets/Tiles/Mobs/Range/flowerLB45.png");
+	range_mob[3] = CP_Image_Load("./Assets/Tiles/Mobs/Range/flowerL.png");
+	range_mob[2] = CP_Image_Load("./Assets/Tiles/Mobs/Range/flowerLF45.png");
+	range_mob[1] = CP_Image_Load("./Assets/Tiles/Mobs/Range/flowerF.png");
+	range_mob[0] = CP_Image_Load("./Assets/Tiles/Mobs/Range/flowerRF45.png");
 
 	//room tiles
-	tile_list[1] = CP_Image_Load("./Assets/Tiles/tile_0012.png"); // rock floor
-	tile_list[2] = CP_Image_Load("./Assets/Tiles/tile_0065.png"); // grave
-	tile_list[3] = CP_Image_Load("./Assets/Tiles/tile_0074.png"); // anvil
-	tile_list[4] = CP_Image_Load("./Assets/Tiles/tile_0082.png"); // barrel
+	
+	tile_list[1] = CP_Image_Load("./Assets/Tiles/test.png"); // rock floor
+	tile_list[2] = CP_Image_Load("./Assets/Tiles/walltest1.png"); // grave
+	tile_list[3] = CP_Image_Load("./Assets/Tiles/Wall2.png"); // anvil
+	tile_list[4] = CP_Image_Load("./Assets/Tiles/walltest2.png"); // barrel
 	tile_list[5] = CP_Image_Load("./Assets/Tiles/TopWall.png");
 	tile_list[6] = CP_Image_Load("./Assets/Tiles/BottomWall.png");
 	tile_list[7] = CP_Image_Load("./Assets/Tiles/RightWall.png");
 	tile_list[8] = CP_Image_Load("./Assets/Tiles/LeftWall.png");
+	is_loaded = 1;
 }
 
 void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wall_pos[GRID_ROWS][GRID_COLS], room_state state) {

@@ -238,7 +238,7 @@ entity_struct init_mob() {
 	switch (mob.type) {
 	case(range):
 		mob.timer = MOB_RANGED_TIMER;
-		mob.diameter = WALL_DIM * 2;
+		mob.diameter = WALL_DIM * 1.5;
 		break;
 	case(melee):
 		mob.timer = MOB_MELEE_TIMER;
@@ -298,7 +298,7 @@ void draw_mob(Mob* mob) {
 	animationMelee += CP_System_GetDt();
 	switch (mob->type) {
 	case(range):
-		CP_Image_Draw(range_mob[(int)(angle / 45.0f)], get_camera_x_pos(mob->pos.x), get_camera_y_pos(mob->pos.y), mob->diameter * .667f, mob->diameter, 255);
+		CP_Image_Draw(range_mob[(int)(angle / 45.0f)], get_camera_x_pos(mob->pos.x), get_camera_y_pos(mob->pos.y), mob->diameter, mob->diameter, 255);
 		break;
 	case(melee):
 		if (angle >= 90.0f && angle <= 270.0f)
