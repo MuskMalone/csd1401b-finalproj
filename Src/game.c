@@ -256,7 +256,7 @@ void game_init(void)
 		pause_menu_btns[i].timer = 0.0f;
 	}
 
-	srand(time(0));
+	srand((unsigned int)time(0));
 	init_sprites();
 	rooms_cleared = 0;
 	map_idx = 0;
@@ -399,9 +399,9 @@ void game_update(void)
 void game_exit(void)
 {
 	CP_Sound_StopAll();
-	CP_Sound_Free(defeat);
-	CP_Sound_Free(bgm);
-	CP_Sound_Free(bossbgm);
+	CP_Sound_Free(&defeat);
+	CP_Sound_Free(&bgm);
+	CP_Sound_Free(&bossbgm);
 
 }
 
