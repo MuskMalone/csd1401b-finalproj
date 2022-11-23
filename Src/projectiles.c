@@ -1,8 +1,9 @@
 #include "projectiles.h"
 #include "camera.h"
 #include "easing.h"
-#include <stdlib.h>
-#include <stdio.h>
+#include "player.h"
+#include "boss.h"
+#include "mobs.h"
 CP_Image Mobile_Proj_E;
 CP_Image Mobile_Proj_P;
 CP_Image player_projectile_sprites[EXPLOSION_PROJECTILE_SPRITE_COUNT];
@@ -20,7 +21,7 @@ void set_projectile_values(Projectile* Proj, char Source, char type, int radius,
 	Proj->pos.x = Start_Pos.x; 
 	Proj->pos.y = Start_Pos.y;
 	Proj->Direction = Direction_Vector;
-	Proj->radius = radius;	   // default size 20
+	Proj->radius = (float)radius;	   // default size 20
 	
 	Proj->source = Source;	  // The owner of the projectile. Prevents the projectile from attacking its owner
 	Proj->Future_Pos = Proj->pos;
@@ -31,7 +32,7 @@ void set_projectile_values(Projectile* Proj, char Source, char type, int radius,
 		Proj->rebound_count = 0;
 }
 void projectile_wall_bounce_particles(Projectile* proj, char source) {
-	float start_angle, end_angle;
+	float start_angle = 0.0f, end_angle = 0.0f;
 	if (source == PROJ_VERTICAL_WALL) {
 		if (proj->Direction.x > 0.0f) {
 			start_angle = 270.0f, end_angle = 410.0f;
@@ -79,9 +80,9 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 		}
 		if(!Entities_Collision_Check(proj, index, entities)){
 			Position Left_Edge_Wall = (Position){ -WALL_DIM , 0 };
-			Position Right_Edge_Wall = (Position){ CP_System_GetWindowWidth() , 0 };
+			Position Right_Edge_Wall = (Position){ (float)CP_System_GetWindowWidth() , 0 };
 			Position Top_Edge_Wall = (Position){ 0,-WALL_DIM };
-			Position Bottom_Edge_Wall = (Position){ 0 , CP_System_GetWindowHeight() };
+			Position Bottom_Edge_Wall = (Position){ 0 , (float)CP_System_GetWindowHeight() };
 			proj->toRebound_NextFrame = PROJ_NOT_REBOUNDING;
 		
 
@@ -98,10 +99,10 @@ void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRI
 				}
 			}
 			if (!to_Rebound) {
-				if (!Wall_Edge_Check(proj, Left_Edge_Wall, WALL_DIM, CP_System_GetWindowHeight())) {
-					if (!Wall_Edge_Check(proj, Right_Edge_Wall, WALL_DIM, CP_System_GetWindowHeight())) {
-						if (!Wall_Edge_Check(proj, Top_Edge_Wall, CP_System_GetWindowWidth(), WALL_DIM)) {
-							Wall_Edge_Check(proj, Bottom_Edge_Wall, CP_System_GetWindowWidth(), WALL_DIM);
+				if (!Wall_Edge_Check(proj, Left_Edge_Wall, WALL_DIM, (float)CP_System_GetWindowHeight())) {
+					if (!Wall_Edge_Check(proj, Right_Edge_Wall, WALL_DIM, (float)CP_System_GetWindowHeight())) {
+						if (!Wall_Edge_Check(proj, Top_Edge_Wall, (float)CP_System_GetWindowWidth(), WALL_DIM)) {
+							Wall_Edge_Check(proj, Bottom_Edge_Wall, (float)CP_System_GetWindowWidth(), WALL_DIM);
 						}
 					}
 				}

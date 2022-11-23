@@ -35,7 +35,7 @@ int release_held_projectiles(Player * player, Entity entities[]) {
 		if (entities[i].type == entity_projectile) {
 			Projectile* proj = &(entities[i].projectile);
 			if (collisionCircle(player->pos, MAX_PARRYRADIUS, proj->pos, proj->radius) && proj->source != PLAYER_PROJ_SOURCE1 && proj->type != PROJ_TYPE_STATIC) {
-				int dir_x, dir_y;
+				int dir_x =0, dir_y =0;
 
 				set_projectile_values(
 					&(entities[i].projectile),
@@ -113,13 +113,13 @@ void set_state(Player* p, player_state state) {
 }
 entity_struct init_player(void) {
 	Player player;
-	float Window_Width = CP_System_GetWindowWidth();
-	float Window_Height = CP_System_GetWindowHeight();
+	float Window_Width = (float)CP_System_GetWindowWidth();
+	float Window_Height = (float)CP_System_GetWindowHeight();
 	Position p;
 	player_sprite_ptr = player_front;
 	player.health = PLAYER_HEALTH_SPRITE_COUNT;
 
-	player.speed = NORMAL_SPEED;
+	player.speed = (int)(NORMAL_SPEED);
 	player.horizontal_dir = 0, player.vertical_dir = 0;
 	player.state = resting;
 	player.diameter = PLAYER_DIAMETER;//50.0f;
@@ -173,7 +173,7 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 		else {
 			if (is_cooldown) {
 				if (cooldown <= MAX_COOLDOWN)
-				cooldown += 3.0 * CP_System_GetDt();
+				cooldown += 3.0f * CP_System_GetDt();
 			}
 			else {
 				if (stamina >= STAMINA_COST_HOLD) {
@@ -268,17 +268,17 @@ void update_player(int player_idx, Entity entities[], int wall_pos[GRID_ROWS][GR
 		// if dashing
 		//release_held_projectiles(player, entities); // uncomment this for perfect deflect
 		if (player->state == dashing) {
-			player->speed = DASH_SPEED;
+			player->speed = (int)(DASH_SPEED);
 			dashed_duration += CP_System_GetDt();
 			if (dashed_duration > DASH_DURATION) {
-				player->speed = NORMAL_SPEED;
+				player->speed = (int)(NORMAL_SPEED);
 				set_state(player, resting);
 				dashed_duration = .0f;
 			}
 		}
 		// moving or resting state
 		else if (player->state == moving){
-			player->speed = NORMAL_SPEED;
+			player->speed = (int)(NORMAL_SPEED);
 		}
 		int player_at_xborder, player_at_xwall, player_at_yborder, player_at_ywall;
 		float xspeed = (float)(player->horizontal_dir * player->speed),
@@ -400,7 +400,7 @@ void draw_player(Player* player) {
 	}
 
 	//CP_Settings_StrokeWeight(0.0f);
-	CP_Image_Draw(Player_Barrier_Img, get_camera_x_pos(player->pos.x), get_camera_y_pos(player->pos.y), player->parryrad*2, player->parryrad * 2, stamina);
+	CP_Image_Draw(Player_Barrier_Img, get_camera_x_pos(player->pos.x), get_camera_y_pos(player->pos.y), player->parryrad*2, player->parryrad * 2, (int)stamina);
 	//CP_Settings_Fill(CP_Color_Create(51, 255, 173, 255));
 	//CP_Graphics_DrawCircle(get_camera_x_pos(player->pos.x), get_camera_y_pos(player->pos.y), player->diameter);
 }

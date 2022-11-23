@@ -83,9 +83,9 @@ void Main_Menu_Init()
 	float W_height = WALL_DIM * GRID_ROWS;
 	float Menu_Rect_Width = W_width / 8;
 	float Menu_Rect_Height = W_height / 8;
-	CP_System_SetWindowSize(W_width, W_height);
-	M_width = CP_System_GetWindowWidth() / 2;
-	M_height = CP_System_GetWindowHeight() / 2;
+	CP_System_SetWindowSize((int)W_width, (int)W_height);
+	M_width = (float)CP_System_GetWindowWidth() / 2;
+	M_height = (float)CP_System_GetWindowHeight() / 2;
 	loadfile();
 	CP_Sound_PlayMusic(bgm);
 
@@ -105,7 +105,7 @@ void Main_Menu_Update()
 		);
 		return;
 	}
-	CP_Image_Draw(background, M_width, M_height, CP_System_GetWindowWidth() * 4, CP_System_GetWindowHeight() * 3, 190);
+	CP_Image_Draw(background, M_width, M_height, (float)CP_System_GetWindowWidth() * 4.0f, (float)CP_System_GetWindowHeight() * 3.0f, 190);
 	CP_Image_Draw(Title, M_width - 20, M_height * 3 / 4, 1024, 512, 255);
 	for (int i = 0; i < 3; i++)
 	{
@@ -116,11 +116,11 @@ void Main_Menu_Update()
 
 	if (tutbool == 1)
 	{
-		CP_Image_Draw(Tuts, M_width, M_height, 900, CP_System_GetWindowHeight(), 255);
-		CP_Image_Draw(xbut, M_width *3.15/2, M_height /10, 75, 75, 255);
+		CP_Image_Draw(Tuts, M_width, M_height, 900, (float)CP_System_GetWindowHeight(), 255);
+		CP_Image_Draw(xbut, M_width *3.15f/2.0f, M_height /10, 75, 75, 255);
 		if (CP_Input_MouseTriggered(MOUSE_BUTTON_1)) 
 		{
-			if (IsCircleClicked(M_width * 3.15 / 2, M_height / 10, 50, CP_Input_GetMouseX(), CP_Input_GetMouseY()))
+			if (IsCircleClicked(M_width * 3.15f / 2.0f, M_height / 10, 50, CP_Input_GetMouseX(), CP_Input_GetMouseY()))
 			{
 				tutbool = 0;
 			}

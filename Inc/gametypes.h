@@ -8,7 +8,7 @@
 #define PARTICLE_CAP 5000
 
 typedef struct Game_Buton {
-	float (*on_click_func)(void);
+	void (*on_click_func)(void);
 	CP_Image* image;
 	Position pos;
 	Position size;
@@ -111,4 +111,4 @@ typedef struct Entity
 	entity_struct;
 } Entity;
 
-int insert_to_entity_array(entity_type type, Entity entities[], entity_struct(*init_func)());
+int insert_to_entity_array(entity_type type, Entity entities[], entity_struct(*init_func)(void));
