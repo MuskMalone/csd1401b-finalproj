@@ -243,7 +243,7 @@ void game_init(void)
 			((float)CP_System_GetWindowWidth() * ((float)i + 1.0f)) / 3.0f,
 			(float)CP_System_GetWindowHeight() * 3.0f / 4.0f
 		};
-		fail_menu_btns[i].size = (Position){ 440.0f, 90.0f };
+		fail_menu_btns[i].size = (Position){ WALL_DIM * 6.0f, WALL_DIM * 1.0f };
 		fail_menu_btns[i].scale = 1.0f;
 		fail_menu_btns[i].timer = 0.0f;
 
@@ -251,7 +251,7 @@ void game_init(void)
 			(float)CP_System_GetWindowWidth() / 2.0f,
 			(float)CP_System_GetWindowHeight() * ((float)i + 5.0f) / 10.0f
 		};
-		pause_menu_btns[i].size = (Position){ 440.0f, 90.0f };
+		pause_menu_btns[i].size = (Position){ WALL_DIM * 6.0f, WALL_DIM * 1.0f };
 		pause_menu_btns[i].scale = 1.0f;
 		pause_menu_btns[i].timer = 0.0f;
 	}

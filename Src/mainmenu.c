@@ -56,7 +56,7 @@ void loadfile()
 			M_width,
 			(M_height * ((float)i + 5.0f)) / 4.0f
 		};
-		menu_buttons[i].size = (Position){ 512.0f, 104.0f };
+		menu_buttons[i].size = (Position){ WALL_DIM * 10.0f, WALL_DIM * 2.0f };
 		menu_buttons[i].scale = 1.0f;
 		menu_buttons[i].timer = 0.0f;
 	}
