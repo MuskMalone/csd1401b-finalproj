@@ -239,7 +239,6 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 	}
 	if (transitioning) {
 		transition_timer += CP_System_GetDt();
-		int multiplierx, multipliery;
 		if (transition_timer >= TRANSITION_TIMER){
 			transitioning = 0;
 			world_offset.y = 0.0f; world_offset.x = 0.0f;
@@ -248,7 +247,7 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 		else {
 			switch (transition_side) {
 			case 0:
-				world_offset.y = EaseOutExpo(-CP_System_GetWindowHeight(), 0.0f, transition_timer / TRANSITION_TIMER);
+				world_offset.y = EaseOutExpo((float) - CP_System_GetWindowHeight(), 0.0f, transition_timer / TRANSITION_TIMER);
 				for (int i = 0; i < GRID_ROWS; i++) {
 					for (int j = 0; j < GRID_COLS; ++j) {
 						if (prev_room_tilemap[i][j] == 1) { //Draw a flat floor bellow wall/object
@@ -266,7 +265,7 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 				}
 				break;
 			case 1:
-				world_offset.y = EaseOutExpo(CP_System_GetWindowHeight(), 0.0f, transition_timer / TRANSITION_TIMER);
+				world_offset.y = EaseOutExpo((float)CP_System_GetWindowHeight(), 0.0f, transition_timer / TRANSITION_TIMER);
 				for (int i = 0; i < GRID_ROWS; i++) {
 					for (int j = 0; j < GRID_COLS; ++j) {
 						if (prev_room_tilemap[i][j] == 1) { //Draw a flat floor bellow wall/object
@@ -284,7 +283,7 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 				}
 				break;
 			case 2:
-				world_offset.x = EaseOutExpo(-CP_System_GetWindowWidth(), 0.0f, transition_timer / TRANSITION_TIMER);
+				world_offset.x = EaseOutExpo((float) - CP_System_GetWindowWidth(), 0.0f, transition_timer / TRANSITION_TIMER);
 				for (int i = 0; i < GRID_ROWS; i++) {
 					for (int j = 0; j < GRID_COLS; ++j) {
 						if (prev_room_tilemap[i][j] == 1) { //Draw a flat floor bellow wall/object
@@ -302,7 +301,7 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 				}
 				break;
 			case 3:
-				world_offset.x = EaseOutExpo(CP_System_GetWindowWidth(), 0.0f, transition_timer / TRANSITION_TIMER);
+				world_offset.x = EaseOutExpo((float)CP_System_GetWindowWidth(), 0.0f, transition_timer / TRANSITION_TIMER);
 				for (int i = 0; i < GRID_ROWS; i++) {
 					for (int j = 0; j < GRID_COLS; ++j) {
 						if (prev_room_tilemap[i][j] == 1) { //Draw a flat floor bellow wall/object
@@ -331,7 +330,7 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 
 		
 		
-		CP_Image_Draw(GameOverMenu, CP_System_GetWindowWidth() / 2, CP_System_GetWindowHeight() / 2, CP_System_GetWindowWidth(), CP_System_GetWindowHeight(), 255);
+		CP_Image_Draw(GameOverMenu, (float) CP_System_GetWindowWidth() / 2.0f, (float)CP_System_GetWindowHeight() / 2.0f, (float)CP_System_GetWindowWidth(), (float)CP_System_GetWindowHeight(), 255);
 		draw_room_failed_buttons();
 		//CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
 		//CP_Settings_TextSize(50.0f);
@@ -342,7 +341,7 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 	else if (state == room_pause) {
 
 		//draw the stuff here
-		CP_Image_Draw(Pause_Menu, CP_System_GetWindowWidth() / 2, CP_System_GetWindowHeight() / 2, 550,590,255);
+		CP_Image_Draw(Pause_Menu, (float)CP_System_GetWindowWidth() / 2.0f, (float)CP_System_GetWindowHeight() / 2.0f, 550.0f,590.0f,255);
 		draw_pause_menu_btns();
 		//CP_Image_Draw(BackToMenuBut, CP_System_GetWindowWidth() / 2, CP_System_GetWindowHeight() *3/5, 440, 90, 255);
 	}
@@ -350,19 +349,19 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 		if (state == loading) {
 			switch(transition_side){
 			case 0: 
-				world_offset.y = -CP_System_GetWindowHeight();
+				world_offset.y = (float) - CP_System_GetWindowHeight();
 				transitioning = 1;
 				break;
 			case 1:
-				world_offset.y = CP_System_GetWindowHeight();
+				world_offset.y = (float)CP_System_GetWindowHeight();
 				transitioning = 1;
 				break;
 			case 2:
-				world_offset.x = -CP_System_GetWindowWidth();
+				world_offset.x = (float) - CP_System_GetWindowWidth();
 				transitioning = 1;
 				break;
 			case 3:
-				world_offset.x = CP_System_GetWindowWidth();
+				world_offset.x = (float)CP_System_GetWindowWidth();
 				transitioning = 1;
 				break;
 			}
@@ -370,15 +369,15 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 		}
 		else {
 			//CP_Graphics_ClearBackground(CP_Color_Create(255, 255, 255, 255));
-			draw_room_floor(world_offset);
-			draw_room_wall(world_offset);
+			draw_room_floor();
+			draw_room_wall();
 			for (int i = 0; i < ENTITY_CAP; ++i) {
 				if (entities[i].type == entity_null) continue;
 				switch (entities[i].type) {
-				case entity_player: draw_player(&(entities[i].player), world_offset); break;
-				case entity_mob: draw_mob(&(entities[i].mob), world_offset); break;
-				case entity_boss: draw_boss(&(entities[i].boss), world_offset); break;
-				case entity_projectile: draw_projectile(&(entities[i].projectile), world_offset); break;
+				case entity_player: draw_player(&(entities[i].player)); break;
+				case entity_mob: draw_mob(&(entities[i].mob)); break;
+				case entity_boss: draw_boss(&(entities[i].boss)); break;
+				case entity_projectile: draw_projectile(&(entities[i].projectile)); break;
 				}
 			}
 
@@ -394,7 +393,7 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 					}
 					tilemap_copied = 1;
 				}
-				draw_door(world_offset);
+				draw_door();
 
 			}
 		}
@@ -415,19 +414,19 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 			hue_flashing = 0;
 		}
 		float alpha = QuickSpikeEaseOut(
-			hue_min_alpha, 
-			hue_max_alpha, 
-			hue_flashing_timer / hue_max_flashing_timer
+			(float)hue_min_alpha, 
+			(float)hue_max_alpha, 
+			(float)hue_flashing_timer / hue_max_flashing_timer
 		);
 		if (alpha >= 0.0f) {
 			hue_color.a = (int)alpha;
 			CP_Settings_Fill(hue_color);
-			CP_Graphics_DrawRect(0.0f, 0.0f, CP_System_GetWindowWidth(), CP_System_GetWindowHeight());
+			CP_Graphics_DrawRect(0.0f, 0.0f, (float)CP_System_GetWindowWidth(), (float)CP_System_GetWindowHeight());
 		}
 	}
 
 }
-float insert_to_particle_array(
+void insert_to_particle_array(
 	float diameter,
 	Position start_pos,
 	CP_Vector dir,
