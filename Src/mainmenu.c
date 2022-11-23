@@ -30,6 +30,8 @@ float splash_screen_timer = 0.0f;
 float splash_screen_alpha = 0.0f;
 CP_Image splash_screen_image;
 
+int index = 0;
+
 static Game_Button menu_buttons[3];
 void goGame(void);
 void turn_on_tut(void);
@@ -112,11 +114,24 @@ void Main_Menu_Update()
 		update_button(&(menu_buttons[i]));
 		draw_button(&(menu_buttons[i]));
 	}
+	
+	if (CP_Input_KeyTriggered(KEY_A))
+	{
+		--index;
+		if (index < 0)index = 4;
 
-
+	}
+	if (CP_Input_KeyTriggered(KEY_D))
+	{
+		++index;
+		if (index > 4)index = 0;
+	}
 	if (tutbool == 1)
 	{
-		CP_Image_Draw(Tuts, M_width, M_height, 900, CP_System_GetWindowHeight(), 255);
+		
+		//index++;
+		//if (index > 3)index = 0;
+		CP_Image_Draw(tutorial[index], M_width, M_height, 900, CP_System_GetWindowHeight(), 255);
 		CP_Image_Draw(xbut, M_width *3.15/2, M_height /10, 75, 75, 255);
 		if (CP_Input_MouseTriggered(MOUSE_BUTTON_1)) 
 		{
@@ -125,6 +140,7 @@ void Main_Menu_Update()
 				tutbool = 0;
 			}
 		}
+		
 	}
 }
 
