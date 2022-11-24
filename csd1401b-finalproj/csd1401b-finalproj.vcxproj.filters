@@ -216,6 +216,9 @@
     <Image Include="..\Assets\Tiles\DoorToptest.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\Assets\Tiles\credits.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Media Include="..\Assets\SFX\BGM1.wav">

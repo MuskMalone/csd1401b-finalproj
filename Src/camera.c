@@ -56,7 +56,6 @@ CP_Image explode_mob_right[MELEE_MOB_SPRITE_COUNT];
 CP_Image range_mob[RANGE_MOB_SPRITE_COUNT];
 
 CP_Image door_sprites[DOOR_COUNT][DOOR_SPRITE_COUNT];
-
 Position world_offset;
 
 Particle particle_array[PARTICLE_CAP];
@@ -79,13 +78,11 @@ int prev_room_tilemap[GRID_ROWS][GRID_COLS];
 
 float door_timer = 0.0f;
 
-
 void init_sprites(void) {
 	player_heart_pos = (Position){
 		0.0f,
 		0.0f
 	};
-
 	world_offset = (Position){ 0.0f, 0.0f };
 	game_button_sprites[START_BUTTON] = CP_Image_Load("./Assets/STARTGAME.png");
 	game_button_sprites[EXIT_BUTTON] = CP_Image_Load("./Assets/EXIT.png");
@@ -366,11 +363,13 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 	if (state == room_failed) {
 
 		// draw ur room failed stuff here
+		//CP_Graphics_ClearBackground(CP_Color_Create(0, 0, 0, 255));
 
 		
 		
 		CP_Image_Draw(GameOverMenu, (float) CP_System_GetWindowWidth() / 2.0f, (float)CP_System_GetWindowHeight() / 2.0f, (float)CP_System_GetWindowWidth(), (float)CP_System_GetWindowHeight(), 255);
 		draw_room_failed_buttons();
+		//creditPosY--;
 		//CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
 		//CP_Settings_TextSize(50.0f);
 		//char buffer[500] = { 0 };

@@ -13,10 +13,13 @@ float M_height;
 CP_Image game_button_sprites[BUTTON_SPRITE_COUNT];
 CP_Image tutorial[TUTORIAL_SPRITE_COUNT];
 int tutbool = 0;
+int creditbool = 0;
 CP_Image background = NULL;
 CP_Image Title = NULL;
 CP_Image Tuts = NULL;
 CP_Image xbut = NULL;
+CP_Image credits;
+
 CP_Sound bgm;
 //typedef struct Button
 //{
@@ -30,6 +33,7 @@ CP_Sound bgm;
 float splash_screen_timer = 0.0f;
 float splash_screen_alpha = 0.0f;
 CP_Image splash_screen_image;
+float creditPosY;
 
 int index = 0;
 
@@ -42,6 +46,7 @@ void turn_on_tut(void) {
 
 void loadfile()
 {
+	credits = CP_Image_Load("./Assets/Tiles/credits.png");
 	xbut = CP_Image_Load("./Assets/xBut.png");
 	background = CP_Image_Load("./Assets/main.png");
 	Title = CP_Image_Load("./Assets/Title.png");
@@ -73,12 +78,14 @@ void goGame(void)
 
 void Credit_screen(void)
 {
-
+	CP_Image_Draw(credits, (float)CP_System_GetWindowWidth() / 2.0f, creditPosY--, (float)CP_System_GetWindowWidth(), (float)CP_System_GetWindowWidth()*5, 255);
 }
 
 void Main_Menu_Init()
 {
 	init_sprites();
+	creditPosY = CP_System_GetWindowHeight() + 2000;
+
 	//To be put in the Mainmenu.c file. (Setting the window size)
 
 	// width and height of the window will be based on how wide each wall is
@@ -142,6 +149,14 @@ void Main_Menu_Update()
 			}
 		}
 		
+	}
+	if (CP_Input_KeyTriggered(KEY_Q))
+	{
+		creditbool = 1;
+	}
+	if (creditbool == 1)
+	{
+		Credit_screen();
 	}
 }
 
