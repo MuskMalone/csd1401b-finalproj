@@ -17,6 +17,9 @@ CP_Image game_button_sprites[BUTTON_SPRITE_COUNT];
 
 static Position player_heart_pos;
 static float player_heart_speed;
+
+CP_Image tutorial[TUTORIAL_SPRITE_COUNT];
+
 CP_Image player_heart[PLAYER_HEALTH_SPRITE_COUNT];
 CP_Image Pause_Menu;
 CP_Image GameOverMenu; 
@@ -91,6 +94,12 @@ void init_sprites(void) {
 	boss_def = CP_Image_Load("./Assets/Tiles/Boss/Boss_Base.png");
 	Pause_Menu = CP_Image_Load("./Assets/PauseMenu.png");
 	BackToMenuBut = CP_Image_Load("./Assets/BACKTOMENU.png");
+
+	tutorial[0] = CP_Image_Load("./Assets/Tiles/Tutorial/Tut_1_inGame.png");
+	tutorial[1] = CP_Image_Load("./Assets/Tiles/Tutorial/Tut_2_inGame.png");
+	tutorial[2] = CP_Image_Load("./Assets/Tiles/Tutorial/Tut_3_inGame.png");
+	tutorial[3] = CP_Image_Load("./Assets/Tiles/Tutorial/Tut_4_inGame.png");
+	tutorial[4] = CP_Image_Load("./Assets/Tiles/Tutorial/Tut_5_inGame.png");
 
 	player_heart[0] = CP_Image_Load("./Assets/Tiles/Player/heart7.png");
 	player_heart[1] = CP_Image_Load("./Assets/Tiles/Player/heart6.png");
