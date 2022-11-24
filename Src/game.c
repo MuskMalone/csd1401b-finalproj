@@ -3,6 +3,7 @@
 #include "camera.h"
 #include "game.h"
 #include "button.h"
+#include "sounds.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -44,7 +45,7 @@ CP_Image tile_list[ROOM_TILE_TYPES];
 //for the window width and height
 //float W_width = WALL_DIM * GRID_COLS;
 //float W_height = WALL_DIM * GRID_ROWS;
-Position doors[4];
+Position doors[DOOR_COUNT];
 
 void back_to_mainmenu(void){
 	CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
@@ -76,29 +77,6 @@ static void load_maps(void) {
 	}
 
 	fclose(map);
-}
-
-static void generate_door(void) {
-
-	int ch;
-
-	FILE* door = fopen("Assets/NextRoom.txt", "r");
-	for (int i = 0; i < GRID_ROWS; i++) {
-		for (int j = 0; j < GRID_COLS; ++j) {
-			ch = fgetc(door);
-			// if encounter a \n char, break out of the entire loop
-			if (ch == '\n') {
-
-				break;
-			}
-
-			door_pos[i][j] = atoi((char*)&ch);
-
-		}
-	}
-
-	fclose(door);
-
 }
 
 //clears all entities except player
@@ -155,44 +133,38 @@ void draw_pause_menu_btns(void) {
 		draw_button(&(pause_menu_btns[i]));
 	}
 }
-void draw_door(void) {
-	//for (int i = 0; i < GRID_ROWS; i++) {
-	//	for (int j = 0; j < GRID_COLS; ++j) {
-	//		if (door_pos[i][j]) {
-	//			CP_Settings_StrokeWeight(0.0);
-	//			CP_Graphics_DrawRect(get_camera_x_pos(j * WALL_DIM), get_camera_y_pos(i * WALL_DIM), WALL_DIM, WALL_DIM);
-	//		}
-	//	}
-	//}
-	DoorTop = CP_Image_Load("./Assets/Tiles/DoorToptest.png");
-	DoorLeft = CP_Image_Load("./Assets/Tiles/doorLeft.png");
-	DoorRight = CP_Image_Load("./Assets/Tiles/doorRight.png");
-	DoorBot = CP_Image_Load("./Assets/Tiles/doorBot.png");
-	// top door
+void draw_door(float timer, CP_Image sprites2d[DOOR_COUNT][DOOR_SPRITE_COUNT]) {
 	//CP_Graphics_DrawRect(get_camera_x_pos(doors[0].x), get_camera_y_pos(doors[0].y), WALL_DIM * 4.0f, WALL_DIM);
-	CP_Image_Draw(DoorTop, get_camera_x_pos(doors[0].x) + 80, get_camera_y_pos(doors[0].y) + 20, WALL_DIM * 4.0f, WALL_DIM, 255);
+	int idx = (int)(timer / (DOOR_MAX_TIMER / (float)DOOR_SPRITE_COUNT));
+	if (idx == DOOR_SPRITE_COUNT) --idx;
+	CP_Image_Draw(
+		sprites2d[0][idx], 
+		get_camera_x_pos(doors[0].x + (WALL_DIM * 2.0f)), 
+		get_camera_y_pos(doors[0].y + (WALL_DIM)), 
+		WALL_DIM * 4.0f, WALL_DIM * 2.0f, 255);
 	// bottom door
-	CP_Image_Draw(DoorBot, get_camera_x_pos(doors[1].x) + 80, get_camera_y_pos(doors[1].y) + 20, WALL_DIM * 4.0f, WALL_DIM, 255);
+	CP_Image_Draw(
+		sprites2d[1][idx], 
+		get_camera_x_pos(doors[1].x + (WALL_DIM * 2.0f)),
+		get_camera_y_pos(doors[1].y),
+		WALL_DIM * 4.0f, WALL_DIM * 2.0f, 255);
 	// left door
-	CP_Image_Draw(DoorLeft, get_camera_x_pos(doors[2].x) + 20, get_camera_y_pos(doors[2].y) + 80, WALL_DIM, WALL_DIM * 4.0f, 255);
+	CP_Image_Draw(
+		sprites2d[2][idx], 
+		get_camera_x_pos(doors[2].x + (WALL_DIM)),
+		get_camera_y_pos(doors[2].y + (WALL_DIM * 2.0f)),
+		WALL_DIM * 2.0f, WALL_DIM * 4.0f, 255);
 	// right door
-	CP_Image_Draw(DoorRight, get_camera_x_pos(doors[3].x) + 20, get_camera_y_pos(doors[3].y) + 80, WALL_DIM, WALL_DIM * 4.0f, 255);
+	CP_Image_Draw(
+		sprites2d[3][idx], 
+		get_camera_x_pos(doors[3].x),
+		get_camera_y_pos(doors[3].y + (WALL_DIM * 2.0f)),
+		WALL_DIM * 2.0f, WALL_DIM * 4.0f, 255);
 }
 
 void draw_room_wall(void) {
 
 	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
-	
-	/*for (int i = 1; i < GRID_COLS - 1; i += 2) {
-		CP_Image_Draw(TopWall, ((i+1) * WALL_DIM), (WALL_DIM), WALL_DIM *2, WALL_DIM *2, 255);
-		CP_Image_Draw(BottomWall,((i + 1) * WALL_DIM), CP_System_GetWindowHeight() - (WALL_DIM), WALL_DIM * 2, WALL_DIM * 2, 255);
-	}
-	
-	
-	for (int i = 1; i < GRID_ROWS-1; i += 2) {
-		CP_Image_Draw(LeftWall, (WALL_DIM), ((i + 1) * WALL_DIM), WALL_DIM * 2, WALL_DIM * 2, 255);
-		CP_Image_Draw(RightWall, CP_System_GetWindowWidth() - (WALL_DIM), ((i + 1) * WALL_DIM), WALL_DIM * 2, WALL_DIM * 2, 255);
-	}*/
 	
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
@@ -221,7 +193,7 @@ void game_init(void)
 	// top door
 	doors[0] = (Position){ ((float)CP_System_GetWindowWidth() / 2.0f) - (WALL_DIM * 2.0f), 0.0f};
 	// bottom door
-	doors[1] = (Position){ ((float)CP_System_GetWindowWidth() / 2.0f) - (WALL_DIM * 2.0f), (float)CP_System_GetWindowHeight() - WALL_DIM };
+	doors[1] = (Position){ ((float)CP_System_GetWindowWidth() / 2.0f) - (WALL_DIM * 2.0f), (float)CP_System_GetWindowHeight() - WALL_DIM};
 
 	//left door
 	doors[2] = (Position){ 0.0f, ((float)CP_System_GetWindowHeight() / 2.0f) - (WALL_DIM * 2.0f) };
@@ -243,7 +215,7 @@ void game_init(void)
 			((float)CP_System_GetWindowWidth() * ((float)i + 1.0f)) / 3.0f,
 			(float)CP_System_GetWindowHeight() * 3.0f / 4.0f
 		};
-		fail_menu_btns[i].size = (Position){ 440.0f, 90.0f };
+		fail_menu_btns[i].size = (Position){ WALL_DIM * 6.0f, WALL_DIM * 1.0f };
 		fail_menu_btns[i].scale = 1.0f;
 		fail_menu_btns[i].timer = 0.0f;
 
@@ -251,20 +223,21 @@ void game_init(void)
 			(float)CP_System_GetWindowWidth() / 2.0f,
 			(float)CP_System_GetWindowHeight() * ((float)i + 5.0f) / 10.0f
 		};
-		pause_menu_btns[i].size = (Position){ 440.0f, 90.0f };
+		pause_menu_btns[i].size = (Position){ WALL_DIM * 6.0f, WALL_DIM * 1.0f };
 		pause_menu_btns[i].scale = 1.0f;
 		pause_menu_btns[i].timer = 0.0f;
 	}
 
-	srand(time(0));
+	srand((unsigned int)time(0));
 	init_sprites();
+	init_sounds();
 	rooms_cleared = 0;
 	map_idx = 0;
 	state = loading;
-	bossbgm = CP_Sound_Load("./Assets/SFX/Boss.wav");
-	bgm = CP_Sound_Load("./Assets/SFX/BGM1.wav");
-	//defeat = CP_Sound_Load("./Assets/SFX/Defeat.wav");
-	defeat = CP_Sound_Load("./Assets/SFX/Comedy.wav");
+	bossbgm = CP_Sound_Load("./Assets/SFX/Boss.ogg");
+	bgm = CP_Sound_Load("./Assets/SFX/BGM1.ogg");
+	//defeat = CP_Sound_Load("./Assets/SFX/Defeat.ogg");
+	defeat = CP_Sound_Load("./Assets/SFX/Comedy.ogg");
 
 	//initialized the player as idx 0
 	for (int i = 0; i < ENTITY_CAP; ++i) {
@@ -277,7 +250,6 @@ void game_init(void)
 
 
 	load_maps();
-	generate_door();
 }
 
 void game_update(void)
@@ -392,17 +364,17 @@ void game_update(void)
 			}
 		}
 	}
-
+	update_sounds();
 	draw_all(entities, tilemap,room_wall_pos, state);
 }
 
 void game_exit(void)
 {
 	CP_Sound_StopAll();
-	CP_Sound_Free(defeat);
-	CP_Sound_Free(bgm);
-	CP_Sound_Free(bossbgm);
-
+	CP_Sound_Free(&defeat);
+	CP_Sound_Free(&bgm);
+	CP_Sound_Free(&bossbgm);
+	free_sounds();
 }
 
 void load_room_done(void) {

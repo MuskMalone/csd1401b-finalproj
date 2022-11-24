@@ -49,7 +49,7 @@ int collisionCircleRect(Position circle, float radius, Position rect, float widt
 	// get distance from closest edges
 	float distX = circle.x - testX;
 	float distY = circle.y - testY;
-	float distance = sqrt((distX * distX) + (distY * distY));
+	float distance = (float)sqrt((distX * distX) + (distY * distY));
 
 	// if the distance is less than the radius, collision!
 	if (distance <= radius) {
@@ -61,7 +61,7 @@ int collisionCircleRect(Position circle, float radius, Position rect, float widt
 float positionDistance(Position a, Position b) {
 	float distX = a.x - b.x;
 	float distY = a.y - b.y;
-	return sqrt((distX * distX) + (distY * distY));
+	return (float)sqrt((distX * distX) + (distY * distY));
 }
 
 int IsAreaClicked(float area_center_x, float area_center_y, float area_width, float area_height, float click_x, float click_y)
@@ -95,15 +95,15 @@ int IsCircleClicked(float circle_center_x, float circle_center_y, float diameter
 
 }
 CP_Vector angleToVector(float angle) {
-	float radians = angle * (M_PI / 180.0f);
-	return CP_Vector_Normalize(CP_Vector_Set(cos(radians), sin(radians)));
+	float radians = angle * ((float)M_PI / 180.0f);
+	return CP_Vector_Normalize(CP_Vector_Set((float)cos(radians), (float)sin(radians)));
 
 }
-float vectorToAngle(CP_Vector a, Position from) {
-	float angle = atanf(fabs(a.y) / fabs(a.x)) * (180.0f/M_PI);
+float vectorToAngle(CP_Vector a){
+	float angle = atanf((float)fabs((double)a.y) / (float)fabs((double)a.x)) * (180.0f/(float)M_PI);
 	if (a.y > 0 && a.x < 0) return 180.0f - angle;
 	else if (a.y < 0 && a.x < 0) return angle + 180.0f;
-	else if (a.y < 0 && a.x > 0) return 360.0-angle;
+	else if (a.y < 0 && a.x > 0) return 360.0f-angle;
 	return angle;
 }
 

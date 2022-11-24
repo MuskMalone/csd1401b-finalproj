@@ -1,10 +1,10 @@
 #include "mobs.h"
 #include "player.h"
 #include "projectiles.h"
-#include "map.h"
 #include "easing.h"
 #include <stdlib.h>
 #include "camera.h"
+#include "sounds.h"
 //what each mob had run
 //when each mob is running on the screen, each codes runs
 CP_Image melee_mob_left[MELEE_MOB_SPRITE_COUNT];
@@ -31,7 +31,7 @@ void explode_mob(int mob_idx, Entity entities[] ) {
 	if (p_idx > 0)
 	{
 		Projectile* p = &(entities[p_idx].projectile);
-		set_projectile_values(p, MOB_PROJ_SOURCE, PROJ_TYPE_STATIC, mob->diameter / 2.0f, mob->pos, getVectorBetweenPositions(mob->pos, entities[PLAYER_IDX].player.pos));
+		set_projectile_values(p, MOB_PROJ_SOURCE, PROJ_TYPE_STATIC, (int)(mob->diameter / 2.0f), mob->pos, getVectorBetweenPositions(mob->pos, entities[PLAYER_IDX].player.pos));
 	}
 	create_particle_burst(
 		2.0f,
@@ -59,9 +59,11 @@ void expansion_mob_size(Entity entities[], int mob_idx)
 	//if times up
 	if (mob->timer <= 0.0f)//(mob_dia >= 100.0f)
 	{
+		play_sound(EXPLOSION2);
 		explode_mob(mob_idx, entities);
 	}
 	else if (collisionCircle(player->pos, player->diameter/2.0f, mob->pos, mob->diameter/2.0f)) {
+		play_sound(EXPLOSION2);
 		explode_mob(mob_idx, entities);
 	}
 }
@@ -195,7 +197,7 @@ void mob_melee(int player_idx, Entity entities[], int mob_idx, int wall_pos[GRID
 				set_projectile_values(
 						&(entities[p_idx].projectile),
 						MOB_PROJ_SOURCE, PROJ_TYPE_WEAPON,
-						proj_radius,
+						(int)proj_radius,
 						(Position) {
 							mob->pos.x + (mob->diameter * v.x), 
 							mob->pos.y + (mob->diameter * v.y)
@@ -238,7 +240,7 @@ entity_struct init_mob() {
 	switch (mob.type) {
 	case(range):
 		mob.timer = MOB_RANGED_TIMER;
-		mob.diameter = WALL_DIM * 1.5;
+		mob.diameter = WALL_DIM * 1.5f;
 		break;
 	case(melee):
 		mob.timer = MOB_MELEE_TIMER;
@@ -271,6 +273,7 @@ void update_mob(int mob_idx, int player_idx, Entity entities[], int wall_pos[GRI
 			360.f,
 			10
 		);
+		play_sound(SPLAT);
 		entities[mob_idx].type = entity_null;
 		return;
 	}

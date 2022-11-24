@@ -11,6 +11,7 @@
 float M_width;
 float M_height;
 CP_Image game_button_sprites[BUTTON_SPRITE_COUNT];
+CP_Image tutorial[TUTORIAL_SPRITE_COUNT];
 int tutbool = 0;
 CP_Image background = NULL;
 CP_Image Title = NULL;
@@ -52,13 +53,13 @@ void loadfile()
 	menu_buttons[1].image = &(game_button_sprites[TUTORIAL_BUTTON]);//CP_Image_Load("./Assets/HOWTOPLAY.png");
 	menu_buttons[1].on_click_func = turn_on_tut;
 	Tuts = CP_Image_Load("./Assets/TUTS.png");
-	bgm = CP_Sound_Load("./Assets/SFX/MainMenu.wav");
+	bgm = CP_Sound_Load("./Assets/SFX/MainMenu.ogg");
 	for (int i = 0; i < 3; ++i) {
 		menu_buttons[i].pos = (Position){
 			M_width,
 			(M_height * ((float)i + 5.0f)) / 4.0f
 		};
-		menu_buttons[i].size = (Position){ 512.0f, 104.0f };
+		menu_buttons[i].size = (Position){ WALL_DIM * 10.0f, WALL_DIM * 2.0f };
 		menu_buttons[i].scale = 1.0f;
 		menu_buttons[i].timer = 0.0f;
 	}
@@ -85,9 +86,9 @@ void Main_Menu_Init()
 	float W_height = WALL_DIM * GRID_ROWS;
 	float Menu_Rect_Width = W_width / 8;
 	float Menu_Rect_Height = W_height / 8;
-	CP_System_SetWindowSize(W_width, W_height);
-	M_width = CP_System_GetWindowWidth() / 2;
-	M_height = CP_System_GetWindowHeight() / 2;
+	CP_System_SetWindowSize((int)W_width, (int)W_height);
+	M_width = (float)CP_System_GetWindowWidth() / 2;
+	M_height = (float)CP_System_GetWindowHeight() / 2;
 	loadfile();
 	CP_Sound_PlayMusic(bgm);
 
@@ -107,7 +108,7 @@ void Main_Menu_Update()
 		);
 		return;
 	}
-	CP_Image_Draw(background, M_width, M_height, CP_System_GetWindowWidth() * 4, CP_System_GetWindowHeight() * 3, 190);
+	CP_Image_Draw(background, M_width, M_height, (float)CP_System_GetWindowWidth() * 4.0f, (float)CP_System_GetWindowHeight() * 3.0f, 190);
 	CP_Image_Draw(Title, M_width - 20, M_height * 3 / 4, 1024, 512, 255);
 	for (int i = 0; i < 3; i++)
 	{
@@ -131,11 +132,11 @@ void Main_Menu_Update()
 		
 		//index++;
 		//if (index > 3)index = 0;
-		CP_Image_Draw(tutorial[index], M_width, M_height, 900, CP_System_GetWindowHeight(), 255);
-		CP_Image_Draw(xbut, M_width *3.15/2, M_height /10, 75, 75, 255);
+		CP_Image_Draw(tutorial[index], M_width, M_height, (float)CP_System_GetWindowWidth()*.8f, (float)CP_System_GetWindowHeight() * .8f, 255);
+		CP_Image_Draw(xbut, M_width *3.15/2, M_height /10.0f, 75.0f, 75.0f, 255);
 		if (CP_Input_MouseTriggered(MOUSE_BUTTON_1)) 
 		{
-			if (IsCircleClicked(M_width * 3.15 / 2, M_height / 10, 50, CP_Input_GetMouseX(), CP_Input_GetMouseY()))
+			if (IsCircleClicked(M_width * 3.15f / 2.0f, M_height / 10, 50, CP_Input_GetMouseX(), CP_Input_GetMouseY()))
 			{
 				tutbool = 0;
 			}
