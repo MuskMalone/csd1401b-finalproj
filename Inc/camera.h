@@ -8,8 +8,16 @@
 #define PLAYER_SPRITE_COUNT 5
 #define BOSS_SPRITE_COUNT 7
 #define PLAYER_HEALTH_SPRITE_COUNT 8
+#define TUTORIAL_SPRITE_COUNT 5
+#define BUTTON_SPRITE_COUNT 5
+
+enum {START_BUTTON, EXIT_BUTTON, TUTORIAL_BUTTON, MENU_BUTTON, RESUME_BUTTON };
+extern CP_Image game_button_sprites[BUTTON_SPRITE_COUNT];
 
 extern int transition_side;
+
+//tutorial
+extern CP_Image tutorial[TUTORIAL_SPRITE_COUNT];
 
 //HUD
 extern CP_Image player_heart[PLAYER_HEALTH_SPRITE_COUNT];

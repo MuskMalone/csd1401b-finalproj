@@ -53,7 +53,7 @@ void projectile_wall_bounce_particles(Projectile* proj, char source) {
 	create_particle_burst(
 		1.0f,
 		EaseOutExpo,
-		CP_Color_Create(0, 0, 0, 255),
+		CP_Color_Create(255, 255, 255, 255),
 		proj->pos,
 		WALL_DIM,
 		2.0f,

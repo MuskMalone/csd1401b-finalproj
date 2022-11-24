@@ -48,6 +48,9 @@
     <ClCompile Include="..\Src\particle.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\button.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Inc\game.h">
@@ -82,6 +85,9 @@
     </ClInclude>
     <ClInclude Include="..\Inc\particle.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Inc\button.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

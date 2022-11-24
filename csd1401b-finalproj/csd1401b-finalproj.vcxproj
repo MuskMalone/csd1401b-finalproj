@@ -155,6 +155,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Src\boss.c" />
+    <ClCompile Include="..\Src\button.c" />
     <ClCompile Include="..\Src\camera.c" />
     <ClCompile Include="..\Src\game.c" />
     <ClCompile Include="..\Src\gametypes.c" />
@@ -168,6 +169,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Inc\boss.h" />
+    <ClInclude Include="..\Inc\button.h" />
     <ClInclude Include="..\Inc\camera.h" />
     <ClInclude Include="..\Inc\easing.h" />
     <ClInclude Include="..\Inc\gamestates.h" />
