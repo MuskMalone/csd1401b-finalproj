@@ -1,7 +1,6 @@
 #include "mobs.h"
 #include "player.h"
 #include "projectiles.h"
-#include "map.h"
 #include "easing.h"
 #include <stdlib.h>
 #include "camera.h"
@@ -31,7 +30,7 @@ void explode_mob(int mob_idx, Entity entities[] ) {
 	if (p_idx > 0)
 	{
 		Projectile* p = &(entities[p_idx].projectile);
-		set_projectile_values(p, MOB_PROJ_SOURCE, PROJ_TYPE_STATIC, mob->diameter / 2.0f, mob->pos, getVectorBetweenPositions(mob->pos, entities[PLAYER_IDX].player.pos));
+		set_projectile_values(p, MOB_PROJ_SOURCE, PROJ_TYPE_STATIC, (int)(mob->diameter / 2.0f), mob->pos, getVectorBetweenPositions(mob->pos, entities[PLAYER_IDX].player.pos));
 	}
 	create_particle_burst(
 		2.0f,
@@ -195,7 +194,7 @@ void mob_melee(int player_idx, Entity entities[], int mob_idx, int wall_pos[GRID
 				set_projectile_values(
 						&(entities[p_idx].projectile),
 						MOB_PROJ_SOURCE, PROJ_TYPE_WEAPON,
-						proj_radius,
+						(int)proj_radius,
 						(Position) {
 							mob->pos.x + (mob->diameter * v.x), 
 							mob->pos.y + (mob->diameter * v.y)
@@ -238,7 +237,7 @@ entity_struct init_mob() {
 	switch (mob.type) {
 	case(range):
 		mob.timer = MOB_RANGED_TIMER;
-		mob.diameter = WALL_DIM * 1.5;
+		mob.diameter = WALL_DIM * 1.5f;
 		break;
 	case(melee):
 		mob.timer = MOB_MELEE_TIMER;

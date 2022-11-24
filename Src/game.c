@@ -44,7 +44,7 @@ CP_Image tile_list[ROOM_TILE_TYPES];
 //for the window width and height
 //float W_width = WALL_DIM * GRID_COLS;
 //float W_height = WALL_DIM * GRID_ROWS;
-Position doors[4];
+Position doors[DOOR_COUNT];
 
 void back_to_mainmenu(void){
 	CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
@@ -155,7 +155,7 @@ void draw_pause_menu_btns(void) {
 		draw_button(&(pause_menu_btns[i]));
 	}
 }
-void draw_door(void) {
+void draw_door(float timer, CP_Image sprites2d[DOOR_COUNT][DOOR_SPRITE_COUNT]) {
 	//for (int i = 0; i < GRID_ROWS; i++) {
 	//	for (int j = 0; j < GRID_COLS; ++j) {
 	//		if (door_pos[i][j]) {
@@ -164,19 +164,19 @@ void draw_door(void) {
 	//		}
 	//	}
 	//}
-	DoorTop = CP_Image_Load("./Assets/Tiles/DoorToptest.png");
-	DoorLeft = CP_Image_Load("./Assets/Tiles/doorLeft.png");
-	DoorRight = CP_Image_Load("./Assets/Tiles/doorRight.png");
-	DoorBot = CP_Image_Load("./Assets/Tiles/doorBot.png");
 	// top door
 	//CP_Graphics_DrawRect(get_camera_x_pos(doors[0].x), get_camera_y_pos(doors[0].y), WALL_DIM * 4.0f, WALL_DIM);
-	CP_Image_Draw(DoorTop, get_camera_x_pos(doors[0].x) + 80, get_camera_y_pos(doors[0].y) + 20, WALL_DIM * 4.0f, WALL_DIM, 255);
-	// bottom door
-	CP_Image_Draw(DoorBot, get_camera_x_pos(doors[1].x) + 80, get_camera_y_pos(doors[1].y) + 20, WALL_DIM * 4.0f, WALL_DIM, 255);
-	// left door
-	CP_Image_Draw(DoorLeft, get_camera_x_pos(doors[2].x) + 20, get_camera_y_pos(doors[2].y) + 80, WALL_DIM, WALL_DIM * 4.0f, 255);
-	// right door
-	CP_Image_Draw(DoorRight, get_camera_x_pos(doors[3].x) + 20, get_camera_y_pos(doors[3].y) + 80, WALL_DIM, WALL_DIM * 4.0f, 255);
+	for (int i = 0; i < DOOR_COUNT; ++i) {
+		CP_Image_Draw(sprites2d[i][(int) (timer / (DOOR_MAX_TIMER / (float)DOOR_SPRITE_COUNT))], get_camera_x_pos(doors[i].x) + 80, get_camera_y_pos(doors[i].y) + 20, WALL_DIM * 4.0f, WALL_DIM, 255);
+
+	}
+	//CP_Image_Draw(DoorTop, get_camera_x_pos(doors[0].x) + 80, get_camera_y_pos(doors[0].y) + 20, WALL_DIM * 4.0f, WALL_DIM, 255);
+	//// bottom door
+	//CP_Image_Draw(DoorBot, get_camera_x_pos(doors[1].x) + 80, get_camera_y_pos(doors[1].y) + 20, WALL_DIM * 4.0f, WALL_DIM, 255);
+	//// left door
+	//CP_Image_Draw(DoorLeft, get_camera_x_pos(doors[2].x) + 20, get_camera_y_pos(doors[2].y) + 80, WALL_DIM, WALL_DIM * 4.0f, 255);
+	//// right door
+	//CP_Image_Draw(DoorRight, get_camera_x_pos(doors[3].x) + 20, get_camera_y_pos(doors[3].y) + 80, WALL_DIM, WALL_DIM * 4.0f, 255);
 }
 
 void draw_room_wall(void) {
@@ -243,7 +243,7 @@ void game_init(void)
 			((float)CP_System_GetWindowWidth() * ((float)i + 1.0f)) / 3.0f,
 			(float)CP_System_GetWindowHeight() * 3.0f / 4.0f
 		};
-		fail_menu_btns[i].size = (Position){ 440.0f, 90.0f };
+		fail_menu_btns[i].size = (Position){ WALL_DIM * 6.0f, WALL_DIM * 1.0f };
 		fail_menu_btns[i].scale = 1.0f;
 		fail_menu_btns[i].timer = 0.0f;
 
@@ -251,12 +251,12 @@ void game_init(void)
 			(float)CP_System_GetWindowWidth() / 2.0f,
 			(float)CP_System_GetWindowHeight() * ((float)i + 5.0f) / 10.0f
 		};
-		pause_menu_btns[i].size = (Position){ 440.0f, 90.0f };
+		pause_menu_btns[i].size = (Position){ WALL_DIM * 6.0f, WALL_DIM * 1.0f };
 		pause_menu_btns[i].scale = 1.0f;
 		pause_menu_btns[i].timer = 0.0f;
 	}
 
-	srand(time(0));
+	srand((unsigned int)time(0));
 	init_sprites();
 	rooms_cleared = 0;
 	map_idx = 0;
@@ -399,9 +399,9 @@ void game_update(void)
 void game_exit(void)
 {
 	CP_Sound_StopAll();
-	CP_Sound_Free(defeat);
-	CP_Sound_Free(bgm);
-	CP_Sound_Free(bossbgm);
+	CP_Sound_Free(&defeat);
+	CP_Sound_Free(&bgm);
+	CP_Sound_Free(&bossbgm);
 
 }
 
