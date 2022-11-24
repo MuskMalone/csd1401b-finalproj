@@ -11,6 +11,7 @@
 float M_width;
 float M_height;
 CP_Image game_button_sprites[BUTTON_SPRITE_COUNT];
+CP_Image tutorial[TUTORIAL_SPRITE_COUNT];
 int tutbool = 0;
 CP_Image background = NULL;
 CP_Image Title = NULL;
@@ -131,8 +132,8 @@ void Main_Menu_Update()
 		
 		//index++;
 		//if (index > 3)index = 0;
-		CP_Image_Draw(tutorial[index], M_width, M_height, 900, CP_System_GetWindowHeight(), 255);
-		CP_Image_Draw(xbut, M_width *3.15/2, M_height /10, 75, 75, 255);
+		CP_Image_Draw(tutorial[index], M_width, M_height, (float)CP_System_GetWindowWidth()*.8f, (float)CP_System_GetWindowHeight() * .8f, 255);
+		CP_Image_Draw(xbut, M_width *3.15/2, M_height /10.0f, 75.0f, 75.0f, 255);
 		if (CP_Input_MouseTriggered(MOUSE_BUTTON_1)) 
 		{
 			if (IsCircleClicked(M_width * 3.15f / 2.0f, M_height / 10, 50, CP_Input_GetMouseX(), CP_Input_GetMouseY()))

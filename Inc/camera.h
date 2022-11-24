@@ -10,6 +10,9 @@
 #define PLAYER_HEALTH_SPRITE_COUNT 8
 #define TUTORIAL_SPRITE_COUNT 5
 #define BUTTON_SPRITE_COUNT 5
+#define DOOR_COUNT 4
+#define DOOR_SPRITE_COUNT 5
+#define DOOR_MAX_TIMER 1.0f
 
 enum {START_BUTTON, EXIT_BUTTON, TUTORIAL_BUTTON, MENU_BUTTON, RESUME_BUTTON };
 extern CP_Image game_button_sprites[BUTTON_SPRITE_COUNT];
@@ -56,6 +59,7 @@ extern CP_Image explode_mob_right[MELEE_MOB_SPRITE_COUNT];
 extern CP_Image range_mob[RANGE_MOB_SPRITE_COUNT];
 
 extern CP_Image tile_list[ROOM_TILE_TYPES];
+extern CP_Image door_sprites[DOOR_COUNT][DOOR_SPRITE_COUNT];
 
 void init_sprites(void);
 void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wall_pos[GRID_ROWS][GRID_COLS], room_state state);

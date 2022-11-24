@@ -1,7 +1,6 @@
 #include "mobs.h"
 #include "player.h"
 #include "projectiles.h"
-#include "map.h"
 #include "easing.h"
 #include <stdlib.h>
 #include "camera.h"

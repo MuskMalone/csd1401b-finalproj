@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #define TRANSITION_TIMER 1.25f
 #define PLAYER_HEART_SPEED NORMAL_SPEED * 4.0f
+
 static is_loaded = 0;
 CP_Image game_button_sprites[BUTTON_SPRITE_COUNT];
 
@@ -54,6 +55,8 @@ CP_Image melee_mob_right[MELEE_MOB_SPRITE_COUNT];
 CP_Image explode_mob_right[MELEE_MOB_SPRITE_COUNT];
 CP_Image range_mob[RANGE_MOB_SPRITE_COUNT];
 
+CP_Image door_sprites[DOOR_COUNT][DOOR_SPRITE_COUNT];
+
 Position world_offset;
 
 Particle particle_array[PARTICLE_CAP];
@@ -73,6 +76,8 @@ int transitioning = 0;
 int transition_side = -1;
 float transition_timer = 0.0f;
 int prev_room_tilemap[GRID_ROWS][GRID_COLS];
+
+float door_timer = 0.0f;
 
 
 void init_sprites(void) {
@@ -224,6 +229,31 @@ void init_sprites(void) {
 	tile_list[6] = CP_Image_Load("./Assets/Tiles/BottomWall.png");
 	tile_list[7] = CP_Image_Load("./Assets/Tiles/RightWall.png");
 	tile_list[8] = CP_Image_Load("./Assets/Tiles/LeftWall.png");
+
+	door_sprites[0][0] = CP_Image_Load("./Assets/door/topdoor/doorC.png");
+	door_sprites[0][1] = CP_Image_Load("./Assets/door/topdoor/doorO22_5.png");
+	door_sprites[0][2] = CP_Image_Load("./Assets/door/topdoor/doorO45.png");
+	door_sprites[0][3] = CP_Image_Load("./Assets/door/topdoor/doorO67_5.png");
+	door_sprites[0][4] = CP_Image_Load("./Assets/door/topdoor/doorO.png");
+
+	door_sprites[1][0] = CP_Image_Load("./Assets/door/botdoor/doorC.png");
+	door_sprites[1][1] = CP_Image_Load("./Assets/door/botdoor/doorO22_5.png");
+	door_sprites[1][2] = CP_Image_Load("./Assets/door/botdoor/doorO45.png");
+	door_sprites[1][3] = CP_Image_Load("./Assets/door/botdoor/doorO67_5.png");
+	door_sprites[1][4] = CP_Image_Load("./Assets/door/botdoor/doorO.png");
+
+	door_sprites[2][0] = CP_Image_Load("./Assets/door/leftdoor/doorC.png");
+	door_sprites[2][1] = CP_Image_Load("./Assets/door/leftdoor/doorO22_5.png");
+	door_sprites[2][2] = CP_Image_Load("./Assets/door/leftdoor/doorO45.png");
+	door_sprites[2][3] = CP_Image_Load("./Assets/door/leftdoor/doorO67_5.png");
+	door_sprites[2][4] = CP_Image_Load("./Assets/door/leftdoor/doorO.png");
+
+	door_sprites[3][0] = CP_Image_Load("./Assets/door/rightdoor/doorC.png");
+	door_sprites[3][1] = CP_Image_Load("./Assets/door/rightdoor/doorO22_5.png");
+	door_sprites[3][2] = CP_Image_Load("./Assets/door/rightdoor/doorO45.png");
+	door_sprites[3][3] = CP_Image_Load("./Assets/door/rightdoor/doorO67_5.png");
+	door_sprites[3][4] = CP_Image_Load("./Assets/door/rightdoor/doorO.png");
+
 	is_loaded = 1;
 }
 
@@ -392,8 +422,12 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 
 			//ends the game
 			if (state == room_active) {
+				door_timer = 0.0f;
 			}
 			else if (state == room_clear) {
+				if (door_timer <= DOOR_MAX_TIMER) {
+					door_timer += CP_System_GetDt();
+				}
 				if (!tilemap_copied) {
 					for (int i = 0; i < GRID_ROWS; ++i) {
 						for (int j = 0; j < GRID_COLS; ++j) {
@@ -402,7 +436,7 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 					}
 					tilemap_copied = 1;
 				}
-				draw_door();
+				draw_door(door_timer, door_sprites);
 
 			}
 		}
