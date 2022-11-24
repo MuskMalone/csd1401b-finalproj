@@ -3,6 +3,7 @@
 #include "camera.h"
 #include "game.h"
 #include "button.h"
+#include "sounds.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -78,29 +79,6 @@ static void load_maps(void) {
 	fclose(map);
 }
 
-static void generate_door(void) {
-
-	int ch;
-
-	FILE* door = fopen("Assets/NextRoom.txt", "r");
-	for (int i = 0; i < GRID_ROWS; i++) {
-		for (int j = 0; j < GRID_COLS; ++j) {
-			ch = fgetc(door);
-			// if encounter a \n char, break out of the entire loop
-			if (ch == '\n') {
-
-				break;
-			}
-
-			door_pos[i][j] = atoi((char*)&ch);
-
-		}
-	}
-
-	fclose(door);
-
-}
-
 //clears all entities except player
 static void clear_all_entities(void) {
 	for (int i = 0; i < ENTITY_CAP; ++i) {
@@ -156,43 +134,37 @@ void draw_pause_menu_btns(void) {
 	}
 }
 void draw_door(float timer, CP_Image sprites2d[DOOR_COUNT][DOOR_SPRITE_COUNT]) {
-	//for (int i = 0; i < GRID_ROWS; i++) {
-	//	for (int j = 0; j < GRID_COLS; ++j) {
-	//		if (door_pos[i][j]) {
-	//			CP_Settings_StrokeWeight(0.0);
-	//			CP_Graphics_DrawRect(get_camera_x_pos(j * WALL_DIM), get_camera_y_pos(i * WALL_DIM), WALL_DIM, WALL_DIM);
-	//		}
-	//	}
-	//}
-	// top door
 	//CP_Graphics_DrawRect(get_camera_x_pos(doors[0].x), get_camera_y_pos(doors[0].y), WALL_DIM * 4.0f, WALL_DIM);
-	for (int i = 0; i < DOOR_COUNT; ++i) {
-		CP_Image_Draw(sprites2d[i][(int) (timer / (DOOR_MAX_TIMER / (float)DOOR_SPRITE_COUNT))], get_camera_x_pos(doors[i].x) + 80, get_camera_y_pos(doors[i].y) + 20, WALL_DIM * 4.0f, WALL_DIM, 255);
-
-	}
-	//CP_Image_Draw(DoorTop, get_camera_x_pos(doors[0].x) + 80, get_camera_y_pos(doors[0].y) + 20, WALL_DIM * 4.0f, WALL_DIM, 255);
-	//// bottom door
-	//CP_Image_Draw(DoorBot, get_camera_x_pos(doors[1].x) + 80, get_camera_y_pos(doors[1].y) + 20, WALL_DIM * 4.0f, WALL_DIM, 255);
-	//// left door
-	//CP_Image_Draw(DoorLeft, get_camera_x_pos(doors[2].x) + 20, get_camera_y_pos(doors[2].y) + 80, WALL_DIM, WALL_DIM * 4.0f, 255);
-	//// right door
-	//CP_Image_Draw(DoorRight, get_camera_x_pos(doors[3].x) + 20, get_camera_y_pos(doors[3].y) + 80, WALL_DIM, WALL_DIM * 4.0f, 255);
+	int idx = (int)(timer / (DOOR_MAX_TIMER / (float)DOOR_SPRITE_COUNT));
+	if (idx == DOOR_SPRITE_COUNT) --idx;
+	CP_Image_Draw(
+		sprites2d[0][idx], 
+		get_camera_x_pos(doors[0].x + (WALL_DIM * 2.0f)), 
+		get_camera_y_pos(doors[0].y + (WALL_DIM)), 
+		WALL_DIM * 4.0f, WALL_DIM * 2.0f, 255);
+	// bottom door
+	CP_Image_Draw(
+		sprites2d[1][idx], 
+		get_camera_x_pos(doors[1].x + (WALL_DIM * 2.0f)),
+		get_camera_y_pos(doors[1].y),
+		WALL_DIM * 4.0f, WALL_DIM * 2.0f, 255);
+	// left door
+	CP_Image_Draw(
+		sprites2d[2][idx], 
+		get_camera_x_pos(doors[2].x + (WALL_DIM)),
+		get_camera_y_pos(doors[2].y + (WALL_DIM * 2.0f)),
+		WALL_DIM * 2.0f, WALL_DIM * 4.0f, 255);
+	// right door
+	CP_Image_Draw(
+		sprites2d[3][idx], 
+		get_camera_x_pos(doors[3].x),
+		get_camera_y_pos(doors[3].y + (WALL_DIM * 2.0f)),
+		WALL_DIM * 2.0f, WALL_DIM * 4.0f, 255);
 }
 
 void draw_room_wall(void) {
 
 	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
-	
-	/*for (int i = 1; i < GRID_COLS - 1; i += 2) {
-		CP_Image_Draw(TopWall, ((i+1) * WALL_DIM), (WALL_DIM), WALL_DIM *2, WALL_DIM *2, 255);
-		CP_Image_Draw(BottomWall,((i + 1) * WALL_DIM), CP_System_GetWindowHeight() - (WALL_DIM), WALL_DIM * 2, WALL_DIM * 2, 255);
-	}
-	
-	
-	for (int i = 1; i < GRID_ROWS-1; i += 2) {
-		CP_Image_Draw(LeftWall, (WALL_DIM), ((i + 1) * WALL_DIM), WALL_DIM * 2, WALL_DIM * 2, 255);
-		CP_Image_Draw(RightWall, CP_System_GetWindowWidth() - (WALL_DIM), ((i + 1) * WALL_DIM), WALL_DIM * 2, WALL_DIM * 2, 255);
-	}*/
 	
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
@@ -221,7 +193,7 @@ void game_init(void)
 	// top door
 	doors[0] = (Position){ ((float)CP_System_GetWindowWidth() / 2.0f) - (WALL_DIM * 2.0f), 0.0f};
 	// bottom door
-	doors[1] = (Position){ ((float)CP_System_GetWindowWidth() / 2.0f) - (WALL_DIM * 2.0f), (float)CP_System_GetWindowHeight() - WALL_DIM };
+	doors[1] = (Position){ ((float)CP_System_GetWindowWidth() / 2.0f) - (WALL_DIM * 2.0f), (float)CP_System_GetWindowHeight() - WALL_DIM};
 
 	//left door
 	doors[2] = (Position){ 0.0f, ((float)CP_System_GetWindowHeight() / 2.0f) - (WALL_DIM * 2.0f) };
@@ -258,13 +230,14 @@ void game_init(void)
 
 	srand((unsigned int)time(0));
 	init_sprites();
+	init_sounds();
 	rooms_cleared = 0;
 	map_idx = 0;
 	state = loading;
-	bossbgm = CP_Sound_Load("./Assets/SFX/Boss.wav");
-	bgm = CP_Sound_Load("./Assets/SFX/BGM1.wav");
-	//defeat = CP_Sound_Load("./Assets/SFX/Defeat.wav");
-	defeat = CP_Sound_Load("./Assets/SFX/Comedy.wav");
+	bossbgm = CP_Sound_Load("./Assets/SFX/Boss.ogg");
+	bgm = CP_Sound_Load("./Assets/SFX/BGM1.ogg");
+	//defeat = CP_Sound_Load("./Assets/SFX/Defeat.ogg");
+	defeat = CP_Sound_Load("./Assets/SFX/Comedy.ogg");
 
 	//initialized the player as idx 0
 	for (int i = 0; i < ENTITY_CAP; ++i) {
@@ -277,7 +250,6 @@ void game_init(void)
 
 
 	load_maps();
-	generate_door();
 }
 
 void game_update(void)
@@ -392,7 +364,7 @@ void game_update(void)
 			}
 		}
 	}
-
+	update_sounds();
 	draw_all(entities, tilemap,room_wall_pos, state);
 }
 
@@ -402,7 +374,7 @@ void game_exit(void)
 	CP_Sound_Free(&defeat);
 	CP_Sound_Free(&bgm);
 	CP_Sound_Free(&bossbgm);
-
+	free_sounds();
 }
 
 void load_room_done(void) {

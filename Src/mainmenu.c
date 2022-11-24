@@ -53,7 +53,7 @@ void loadfile()
 	menu_buttons[1].image = &(game_button_sprites[TUTORIAL_BUTTON]);//CP_Image_Load("./Assets/HOWTOPLAY.png");
 	menu_buttons[1].on_click_func = turn_on_tut;
 	Tuts = CP_Image_Load("./Assets/TUTS.png");
-	bgm = CP_Sound_Load("./Assets/SFX/MainMenu.wav");
+	bgm = CP_Sound_Load("./Assets/SFX/MainMenu.ogg");
 	for (int i = 0; i < 3; ++i) {
 		menu_buttons[i].pos = (Position){
 			M_width,

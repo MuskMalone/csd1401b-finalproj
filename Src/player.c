@@ -3,6 +3,7 @@
 #include "player.h"
 #include "camera.h"
 #include "easing.h"
+#include "sounds.h"
 
 
 CP_Image player_front[PLAYER_SPRITE_COUNT];
@@ -328,6 +329,7 @@ void player_deflected_effect(Player* player) {
 	);
 	//flash_hue(CP_Color_Create(0, 251, 255, 0), DEFLECT_TINT_TIMER, 10, 30);
 	shake_camera(PROJ_DEFLECT_SHAKE, 1);
+	play_sound(EXPLOSION);
 }
 void player_injured_effect(Player *player) {
 	create_particle_burst(
@@ -344,6 +346,7 @@ void player_injured_effect(Player *player) {
 	);
 	flash_hue(CP_Color_Create(255, 0, 0, 0), DAMAGE_TINT_TIMER, 10, 30);
 	shake_camera(DAMAGE_SHAKE, 1);
+	play_sound(OOF);
 }
 int damage_player(Player *p) {
 	if (p->state != dashing) {

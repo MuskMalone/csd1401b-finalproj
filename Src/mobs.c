@@ -4,6 +4,7 @@
 #include "easing.h"
 #include <stdlib.h>
 #include "camera.h"
+#include "sounds.h"
 //what each mob had run
 //when each mob is running on the screen, each codes runs
 CP_Image melee_mob_left[MELEE_MOB_SPRITE_COUNT];
@@ -58,9 +59,11 @@ void expansion_mob_size(Entity entities[], int mob_idx)
 	//if times up
 	if (mob->timer <= 0.0f)//(mob_dia >= 100.0f)
 	{
+		play_sound(EXPLOSION2);
 		explode_mob(mob_idx, entities);
 	}
 	else if (collisionCircle(player->pos, player->diameter/2.0f, mob->pos, mob->diameter/2.0f)) {
+		play_sound(EXPLOSION2);
 		explode_mob(mob_idx, entities);
 	}
 }
@@ -270,6 +273,7 @@ void update_mob(int mob_idx, int player_idx, Entity entities[], int wall_pos[GRI
 			360.f,
 			10
 		);
+		play_sound(SPLAT);
 		entities[mob_idx].type = entity_null;
 		return;
 	}

@@ -165,6 +165,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <ClCompile Include="..\Src\particle.c" />
     <ClCompile Include="..\Src\player.c" />
     <ClCompile Include="..\Src\projectiles.c" />
+    <ClCompile Include="..\Src\sounds.c" />
     <ClCompile Include="..\Src\utils.c" />
   </ItemGroup>
   <ItemGroup>
@@ -179,6 +180,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <ClInclude Include="..\Inc\particle.h" />
     <ClInclude Include="..\Inc\player.h" />
     <ClInclude Include="..\Inc\projectiles.h" />
+    <ClInclude Include="..\Inc\sounds.h" />
     <ClInclude Include="..\Inc\utils.h" />
   </ItemGroup>
   <ItemGroup>

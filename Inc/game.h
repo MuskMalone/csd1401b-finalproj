@@ -12,8 +12,6 @@
 
 static void load_maps(void);
 
-static void generate_door(void);
-
 static void clear_all_entities(void);
 
 void generate_current_map(void);
