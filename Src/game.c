@@ -234,7 +234,7 @@ void game_init(void)
 	rooms_cleared = 0;
 	map_idx = 0;
 	state = loading;
-	bossbgm = CP_Sound_Load("./Assets/SFX/Boss.ogg");
+	bossbgm = CP_Sound_Load("./Assets/SFX/Boss.w");
 	bgm = CP_Sound_Load("./Assets/SFX/BGM1.ogg");
 	//defeat = CP_Sound_Load("./Assets/SFX/Defeat.ogg");
 	defeat = CP_Sound_Load("./Assets/SFX/Comedy.ogg");
