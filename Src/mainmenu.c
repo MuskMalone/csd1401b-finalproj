@@ -164,7 +164,7 @@ void Main_Menu_Update()
 	CP_Settings_TextSize(50.0f);
 	char buffer[500] = { 0 };
 	sprintf_s(buffer, _countof(buffer), "Press Q for credits");
-	CP_Font_DrawText(buffer, (float)CP_System_GetWindowWidth() * .01f, (float)CP_System_GetWindowHeight() * .02f);
+	CP_Font_DrawText(buffer, (float)CP_System_GetWindowWidth() * .01f, (float)CP_System_GetWindowHeight() * .05f);
 	if (creditbool == 1)
 	{
 		Credit_screen();
