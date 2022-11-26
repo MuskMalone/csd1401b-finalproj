@@ -7,6 +7,8 @@
 #define GRID_COLS 30
 #define PARTICLE_CAP 5000
 
+
+
 typedef struct Game_Buton {
 	void (*on_click_func)(void);
 	CP_Image* image;

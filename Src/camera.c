@@ -12,11 +12,15 @@
 #include <stdlib.h>
 #define TRANSITION_TIMER 1.25f
 #define PLAYER_HEART_SPEED NORMAL_SPEED * 4.0f
+
 static is_loaded = 0;
 CP_Image game_button_sprites[BUTTON_SPRITE_COUNT];
 
 static Position player_heart_pos;
 static float player_heart_speed;
+
+CP_Image tutorial[TUTORIAL_SPRITE_COUNT];
+
 CP_Image player_heart[PLAYER_HEALTH_SPRITE_COUNT];
 CP_Image Pause_Menu;
 CP_Image GameOverMenu; 
@@ -51,6 +55,7 @@ CP_Image melee_mob_right[MELEE_MOB_SPRITE_COUNT];
 CP_Image explode_mob_right[MELEE_MOB_SPRITE_COUNT];
 CP_Image range_mob[RANGE_MOB_SPRITE_COUNT];
 
+CP_Image door_sprites[DOOR_COUNT][DOOR_SPRITE_COUNT];
 Position world_offset;
 
 Particle particle_array[PARTICLE_CAP];
@@ -71,13 +76,13 @@ int transition_side = -1;
 float transition_timer = 0.0f;
 int prev_room_tilemap[GRID_ROWS][GRID_COLS];
 
+float door_timer = 0.0f;
 
 void init_sprites(void) {
 	player_heart_pos = (Position){
 		0.0f,
 		0.0f
 	};
-
 	world_offset = (Position){ 0.0f, 0.0f };
 	game_button_sprites[START_BUTTON] = CP_Image_Load("./Assets/STARTGAME.png");
 	game_button_sprites[EXIT_BUTTON] = CP_Image_Load("./Assets/EXIT.png");
@@ -91,6 +96,12 @@ void init_sprites(void) {
 	boss_def = CP_Image_Load("./Assets/Tiles/Boss/Boss_Base.png");
 	Pause_Menu = CP_Image_Load("./Assets/PauseMenu.png");
 	BackToMenuBut = CP_Image_Load("./Assets/BACKTOMENU.png");
+
+	tutorial[0] = CP_Image_Load("./Assets/Tiles/Tutorial/Tut_1_inGame.png");
+	tutorial[1] = CP_Image_Load("./Assets/Tiles/Tutorial/Tut_2_inGame.png");
+	tutorial[2] = CP_Image_Load("./Assets/Tiles/Tutorial/Tut_3_inGame.png");
+	tutorial[3] = CP_Image_Load("./Assets/Tiles/Tutorial/Tut_4_inGame.png");
+	tutorial[4] = CP_Image_Load("./Assets/Tiles/Tutorial/Tut_5_inGame.png");
 
 	player_heart[0] = CP_Image_Load("./Assets/Tiles/Player/heart7.png");
 	player_heart[1] = CP_Image_Load("./Assets/Tiles/Player/heart6.png");
@@ -215,6 +226,31 @@ void init_sprites(void) {
 	tile_list[6] = CP_Image_Load("./Assets/Tiles/BottomWall.png");
 	tile_list[7] = CP_Image_Load("./Assets/Tiles/RightWall.png");
 	tile_list[8] = CP_Image_Load("./Assets/Tiles/LeftWall.png");
+
+	door_sprites[0][0] = CP_Image_Load("./Assets/door/topdoor/doorC.png");
+	door_sprites[0][1] = CP_Image_Load("./Assets/door/topdoor/doorO22_5.png");
+	door_sprites[0][2] = CP_Image_Load("./Assets/door/topdoor/doorO45.png");
+	door_sprites[0][3] = CP_Image_Load("./Assets/door/topdoor/doorO67_5.png");
+	door_sprites[0][4] = CP_Image_Load("./Assets/door/topdoor/doorO.png");
+
+	door_sprites[1][0] = CP_Image_Load("./Assets/door/botdoor/doorC.png");
+	door_sprites[1][1] = CP_Image_Load("./Assets/door/botdoor/doorO22_5.png");
+	door_sprites[1][2] = CP_Image_Load("./Assets/door/botdoor/doorO45.png");
+	door_sprites[1][3] = CP_Image_Load("./Assets/door/botdoor/doorO67_5.png");
+	door_sprites[1][4] = CP_Image_Load("./Assets/door/botdoor/doorO.png");
+
+	door_sprites[2][0] = CP_Image_Load("./Assets/door/leftdoor/doorC.png");
+	door_sprites[2][1] = CP_Image_Load("./Assets/door/leftdoor/doorO22_5.png");
+	door_sprites[2][2] = CP_Image_Load("./Assets/door/leftdoor/doorO45.png");
+	door_sprites[2][3] = CP_Image_Load("./Assets/door/leftdoor/doorO67_5.png");
+	door_sprites[2][4] = CP_Image_Load("./Assets/door/leftdoor/doorO.png");
+
+	door_sprites[3][0] = CP_Image_Load("./Assets/door/rightdoor/doorC.png");
+	door_sprites[3][1] = CP_Image_Load("./Assets/door/rightdoor/doorO22_5.png");
+	door_sprites[3][2] = CP_Image_Load("./Assets/door/rightdoor/doorO45.png");
+	door_sprites[3][3] = CP_Image_Load("./Assets/door/rightdoor/doorO67_5.png");
+	door_sprites[3][4] = CP_Image_Load("./Assets/door/rightdoor/doorO.png");
+
 	is_loaded = 1;
 }
 
@@ -327,11 +363,13 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 	if (state == room_failed) {
 
 		// draw ur room failed stuff here
+		//CP_Graphics_ClearBackground(CP_Color_Create(0, 0, 0, 255));
 
 		
 		
 		CP_Image_Draw(GameOverMenu, (float) CP_System_GetWindowWidth() / 2.0f, (float)CP_System_GetWindowHeight() / 2.0f, (float)CP_System_GetWindowWidth(), (float)CP_System_GetWindowHeight(), 255);
 		draw_room_failed_buttons();
+		//creditPosY--;
 		//CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
 		//CP_Settings_TextSize(50.0f);
 		//char buffer[500] = { 0 };
@@ -383,8 +421,12 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 
 			//ends the game
 			if (state == room_active) {
+				door_timer = 0.0f;
 			}
 			else if (state == room_clear) {
+				if (door_timer <= DOOR_MAX_TIMER) {
+					door_timer += CP_System_GetDt();
+				}
 				if (!tilemap_copied) {
 					for (int i = 0; i < GRID_ROWS; ++i) {
 						for (int j = 0; j < GRID_COLS; ++j) {
@@ -393,7 +435,7 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 					}
 					tilemap_copied = 1;
 				}
-				draw_door();
+				draw_door(door_timer, door_sprites);
 
 			}
 		}

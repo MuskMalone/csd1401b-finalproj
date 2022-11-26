@@ -4,6 +4,7 @@
 #include "player.h"
 #include "boss.h"
 #include "mobs.h"
+#include "sounds.h"
 CP_Image Mobile_Proj_E;
 CP_Image Mobile_Proj_P;
 CP_Image player_projectile_sprites[EXPLOSION_PROJECTILE_SPRITE_COUNT];
@@ -31,7 +32,7 @@ void set_projectile_values(Projectile* Proj, char Source, char type, int radius,
 	else if (type == PROJ_TYPE_MOBILE)
 		Proj->rebound_count = 0;
 }
-void projectile_wall_bounce_particles(Projectile* proj, char source) {
+void projectile_wall_bounce_effect(Projectile* proj, char source) {
 	float start_angle = 0.0f, end_angle = 0.0f;
 	if (source == PROJ_VERTICAL_WALL) {
 		if (proj->Direction.x > 0.0f) {
@@ -63,6 +64,7 @@ void projectile_wall_bounce_particles(Projectile* proj, char source) {
 		end_angle,
 		10
 	);
+	play_sound(RICOCHET);
 }
 void update_projectile(int index, Entity entities[], int wall_pos[GRID_ROWS][GRID_COLS]) {
 	Projectile* proj = &(entities[index].projectile);
@@ -156,7 +158,7 @@ void deflectprojectiles(char source,int index, Entity entities[]) {
 			
 		}
 		if (proj->source == PLAYER_PROJ_SOURCE1)
-			projectile_wall_bounce_particles(proj, source);
+			projectile_wall_bounce_effect(proj, source);
 	}
 	else{
 		proj->type = PROJ_TYPE_STATIC;

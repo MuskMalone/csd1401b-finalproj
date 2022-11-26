@@ -5,17 +5,22 @@
 #include "utils.h"
 #include "camera.h"
 #include "button.h"
+#include <stdlib.h>
 
 
 #define SPLASH_SCREEN_DURATION 3.0f
 float M_width;
 float M_height;
 CP_Image game_button_sprites[BUTTON_SPRITE_COUNT];
+CP_Image tutorial[TUTORIAL_SPRITE_COUNT];
 int tutbool = 0;
+int creditbool = 0;
 CP_Image background = NULL;
 CP_Image Title = NULL;
 CP_Image Tuts = NULL;
 CP_Image xbut = NULL;
+CP_Image credits;
+
 CP_Sound bgm;
 //typedef struct Button
 //{
@@ -29,6 +34,9 @@ CP_Sound bgm;
 float splash_screen_timer = 0.0f;
 float splash_screen_alpha = 0.0f;
 CP_Image splash_screen_image;
+float creditPosY;
+
+int index = 0;
 
 static Game_Button menu_buttons[3];
 void goGame(void);
@@ -39,6 +47,7 @@ void turn_on_tut(void) {
 
 void loadfile()
 {
+	credits = CP_Image_Load("./Assets/Tiles/credits.png");
 	xbut = CP_Image_Load("./Assets/xBut.png");
 	background = CP_Image_Load("./Assets/main.png");
 	Title = CP_Image_Load("./Assets/Title.png");
@@ -50,13 +59,13 @@ void loadfile()
 	menu_buttons[1].image = &(game_button_sprites[TUTORIAL_BUTTON]);//CP_Image_Load("./Assets/HOWTOPLAY.png");
 	menu_buttons[1].on_click_func = turn_on_tut;
 	Tuts = CP_Image_Load("./Assets/TUTS.png");
-	bgm = CP_Sound_Load("./Assets/SFX/MainMenu.wav");
+	bgm = CP_Sound_Load("./Assets/SFX/MainMenu.ogg");
 	for (int i = 0; i < 3; ++i) {
 		menu_buttons[i].pos = (Position){
 			M_width,
 			(M_height * ((float)i + 5.0f)) / 4.0f
 		};
-		menu_buttons[i].size = (Position){ 512.0f, 104.0f };
+		menu_buttons[i].size = (Position){ WALL_DIM * 10.0f, WALL_DIM * 2.0f };
 		menu_buttons[i].scale = 1.0f;
 		menu_buttons[i].timer = 0.0f;
 	}
@@ -70,12 +79,17 @@ void goGame(void)
 
 void Credit_screen(void)
 {
+	if (creditPosY > -(float)CP_System_GetWindowHeight() /2.0f)
+		creditPosY -= 1.5f;
 
+	CP_Image_Draw(credits, (float)CP_System_GetWindowWidth() / 2.0f, creditPosY, (float)CP_System_GetWindowWidth(), ((float)CP_System_GetWindowHeight()*3.0f), 255);
 }
 
 void Main_Menu_Init()
 {
 	init_sprites();
+	creditPosY = ((float)CP_System_GetWindowHeight() * 3.0f) / 2.0f;
+
 	//To be put in the Mainmenu.c file. (Setting the window size)
 
 	// width and height of the window will be based on how wide each wall is
@@ -112,12 +126,25 @@ void Main_Menu_Update()
 		update_button(&(menu_buttons[i]));
 		draw_button(&(menu_buttons[i]));
 	}
+	
+	if (CP_Input_KeyTriggered(KEY_A))
+	{
+		--index;
+		if (index < 0)index = 4;
 
-
+	}
+	if (CP_Input_KeyTriggered(KEY_D))
+	{
+		++index;
+		if (index > 4)index = 0;
+	}
 	if (tutbool == 1)
 	{
-		CP_Image_Draw(Tuts, M_width, M_height, 900, (float)CP_System_GetWindowHeight(), 255);
-		CP_Image_Draw(xbut, M_width *3.15f/2.0f, M_height /10, 75, 75, 255);
+		
+		//index++;
+		//if (index > 3)index = 0;
+		CP_Image_Draw(tutorial[index], M_width, M_height, (float)CP_System_GetWindowWidth()*.8f, (float)CP_System_GetWindowHeight() * .8f, 255);
+		CP_Image_Draw(xbut, M_width *3.15/2.0f, M_height /10.0f, 75.0f, 75.0f, 255);
 		if (CP_Input_MouseTriggered(MOUSE_BUTTON_1)) 
 		{
 			if (IsCircleClicked(M_width * 3.15f / 2.0f, M_height / 10, 50, CP_Input_GetMouseX(), CP_Input_GetMouseY()))
@@ -125,7 +152,24 @@ void Main_Menu_Update()
 				tutbool = 0;
 			}
 		}
+		
 	}
+	if (CP_Input_KeyTriggered(KEY_Q))
+	{
+		creditbool = !creditbool;
+		creditPosY = ((float) CP_System_GetWindowHeight() * 3.0f) / 2.0f;
+
+	}
+	CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
+	CP_Settings_TextSize(50.0f);
+	char buffer[500] = { 0 };
+	sprintf_s(buffer, _countof(buffer), "Press Q for credits");
+	CP_Font_DrawText(buffer, (float)CP_System_GetWindowWidth() * .01f, (float)CP_System_GetWindowHeight() * .02f);
+	if (creditbool == 1)
+	{
+		Credit_screen();
+	}
+
 }
 
 void Main_Menu_Exit()

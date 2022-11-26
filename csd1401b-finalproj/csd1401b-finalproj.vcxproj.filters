@@ -51,6 +51,9 @@
     <ClCompile Include="..\Src\button.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\sounds.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Inc\game.h">
@@ -87,6 +90,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Inc\button.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Inc\sounds.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -208,6 +214,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Assets\Tiles\DoorToptest.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Assets\Tiles\credits.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
