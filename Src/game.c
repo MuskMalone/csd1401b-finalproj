@@ -12,10 +12,10 @@
 #define BOSS_ROOM_INTERVAL 6
 #define SIZE 11
 #define DOOR_WIDTH WALL_DIM * 4.0f
+
 // to disable vs warning for fopen function
 #pragma warning(disable : 4996)
 
-// @todo auto resize the array
 CP_Image game_button_sprites[BUTTON_SPRITE_COUNT];
 Game_Button fail_menu_btns[2];
 Game_Button pause_menu_btns[2];
@@ -27,7 +27,7 @@ static int room_wall_pos[GRID_ROWS][GRID_COLS];
 static unsigned int random_tile_number;
 static int rooms_cleared = 0;
 static int map_idx = 0;
-int isplaying = 0;
+int isplaying;
 CP_Sound bgm;
 CP_Sound bossbgm;
 CP_Sound defeat;
@@ -38,37 +38,40 @@ CP_Image DoorBot;
 
 static room_state state = loading;
 
-// map of the tiles that the game will draw
 static int tilemap[GRID_ROWS][GRID_COLS];
 CP_Image tile_list[ROOM_TILE_TYPES];
 
-//for the window width and height
-//float W_width = WALL_DIM * GRID_COLS;
-//float W_height = WALL_DIM * GRID_ROWS;
 Position doors[DOOR_COUNT];
 
+/*
+This function set the next game state back to the main menu from the pause screen.
+*/
 void back_to_mainmenu(void){
 	CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
 }
+
+/*
+This function sets the game state to room_active.
+*/
 void resume_game(void) {
 	state = room_active;
 }
 
+/*
+This function loads in the different rooms for the levels from a text file using the
+function atoi. Its reads a series of 1s and 0s and set the value in the array to 1(wall)
+or 0(floor).
+*/
 static void load_maps(void) {
 
 	int ch, idx;
 
-	// loads the map delimited by \n into the wall_pos array
 	FILE* map = fopen("Assets/maps.txt", "r");
 	for (idx = 0; idx < SIZE; ++idx) {
 		for (int i = 0; i < GRID_ROWS; i++) {
 			for (int j = 0; j < GRID_COLS; ++j) {
 				ch = fgetc(map);
-				// if encounter a \n char, break out of the entire loop
 
-				// loads mob positions, wall positions, boss positions maybe into 
-				// map_pos
-				// 0 = nothing, 1 = wall, 2 = entity
 				map_pos[idx][i][j] = atoi((char*)&ch);
 			}
 		}
@@ -79,16 +82,20 @@ static void load_maps(void) {
 	fclose(map);
 }
 
-//clears all entities except player
+/*
+This function clears the map all entities except player. 
+*/
 static void clear_all_entities(void) {
 	for (int i = 0; i < ENTITY_CAP; ++i) {
 		if (entities[i].type != entity_player)
-			//marks idx ripe for overriding
 			entities[i].type = entity_null;
 	}
 }
 
-// generate the map that the player will use for the room
+/*
+This function generates the current map and uses the array from room_wall_pos to
+determine which tile is drawn.
+*/
 void generate_current_map(void) {
 	int idx = 0;
 	for (int i = 0; i < GRID_ROWS; i++) {
@@ -118,23 +125,35 @@ void generate_current_map(void) {
 					entities[idx].boss.pos = (Position){ ((float)j * WALL_DIM) + (WALL_DIM / 2.0f), ((float)i * WALL_DIM) + (WALL_DIM / 2.0f) };
 				break;
 			}
-			//
+			
 		}
 	}
 }
+
+/*
+This functions draws the main menu and exit buttons on the game over screen.
+*/
 void draw_room_failed_buttons(void) {
 	for (int i = 0; i < 2; ++i) {
 		draw_button(&(fail_menu_btns[i]));
 	}
 }
 
+/*
+This functions draws the main menu and exit buttons on the pause screen.
+*/
 void draw_pause_menu_btns(void) {
 	for (int i = 0; i < 2; ++i) {
 		draw_button(&(pause_menu_btns[i]));
 	}
 }
+
+/*
+This functions draws the door animation.
+*/
 void draw_door(float timer, CP_Image sprites2d[DOOR_COUNT][DOOR_SPRITE_COUNT]) {
-	//CP_Graphics_DrawRect(get_camera_x_pos(doors[0].x), get_camera_y_pos(doors[0].y), WALL_DIM * 4.0f, WALL_DIM);
+
+
 	int idx = (int)(timer / (DOOR_MAX_TIMER / (float)DOOR_SPRITE_COUNT));
 	if (idx == DOOR_SPRITE_COUNT) --idx;
 	CP_Image_Draw(
@@ -162,6 +181,9 @@ void draw_door(float timer, CP_Image sprites2d[DOOR_COUNT][DOOR_SPRITE_COUNT]) {
 		WALL_DIM * 2.0f, WALL_DIM * 4.0f, 255);
 }
 
+/*
+This function draws the obstacles in the room. 
+*/
 void draw_room_wall(void) {
 
 	CP_Settings_ImageWrapMode(CP_IMAGE_WRAP_CLAMP_EDGE);
@@ -176,6 +198,9 @@ void draw_room_wall(void) {
 
 }
 
+/*
+This function draws the floor tiles.
+*/
 void draw_room_floor(void) {
 	for (int i = 0; i < GRID_ROWS; i++) {
 		for (int j = 0; j < GRID_COLS; ++j) {
@@ -187,29 +212,32 @@ void draw_room_floor(void) {
 	}
 }
 
+/*
+This function is to initialise the game state.
+*/
 void game_init(void)
 {
 	isplaying = 0;
-	// top door
-	doors[0] = (Position){ ((float)CP_System_GetWindowWidth() / 2.0f) - (WALL_DIM * 2.0f), 0.0f};
-	// bottom door
-	doors[1] = (Position){ ((float)CP_System_GetWindowWidth() / 2.0f) - (WALL_DIM * 2.0f), (float)CP_System_GetWindowHeight() - WALL_DIM};
 
-	//left door
+	//sets the door positions in the room
+	doors[0] = (Position){ ((float)CP_System_GetWindowWidth() / 2.0f) - (WALL_DIM * 2.0f), 0.0f};
+	doors[1] = (Position){ ((float)CP_System_GetWindowWidth() / 2.0f) - (WALL_DIM * 2.0f), (float)CP_System_GetWindowHeight() - WALL_DIM};
 	doors[2] = (Position){ 0.0f, ((float)CP_System_GetWindowHeight() / 2.0f) - (WALL_DIM * 2.0f) };
-	//right door
 	doors[3] = (Position){(float)CP_System_GetWindowWidth() - WALL_DIM, ((float)CP_System_GetWindowHeight() / 2.0f) - (WALL_DIM * 2.0f) };
 	
+	//draws the buttons for game over state and when button is clicked, set to next game state.
 	fail_menu_btns[0].image = &(game_button_sprites[MENU_BUTTON]);
 	fail_menu_btns[0].on_click_func = back_to_mainmenu;
 	fail_menu_btns[1].image = &(game_button_sprites[EXIT_BUTTON]);
 	fail_menu_btns[1].on_click_func = CP_Engine_Terminate;
 
+	//draws the buttons for pause menu state and when button is clicked, set to next game state.
 	pause_menu_btns[0].image = &(game_button_sprites[RESUME_BUTTON]);
 	pause_menu_btns[0].on_click_func = resume_game;
 	pause_menu_btns[1].image = &(game_button_sprites[EXIT_BUTTON]);
 	pause_menu_btns[1].on_click_func = CP_Engine_Terminate;
 
+	//sets the postion of the buttons.
 	for (int i = 0; i < 2; ++i) {
 		fail_menu_btns[i].pos = (Position){
 			((float)CP_System_GetWindowWidth() * ((float)i + 1.0f)) / 3.0f,
@@ -228,18 +256,20 @@ void game_init(void)
 		pause_menu_btns[i].timer = 0.0f;
 	}
 
+	//to set rng
 	srand((unsigned int)time(0));
+
+	//initialise the sprites and sounds.
 	init_sprites();
 	init_sounds();
 	rooms_cleared = 0;
 	map_idx = 0;
 	state = loading;
-	bossbgm = CP_Sound_Load("./Assets/SFX/Boss.w");
+	bossbgm = CP_Sound_Load("./Assets/SFX/Boss.ogg");
 	bgm = CP_Sound_Load("./Assets/SFX/BGM1.ogg");
-	//defeat = CP_Sound_Load("./Assets/SFX/Defeat.ogg");
 	defeat = CP_Sound_Load("./Assets/SFX/Comedy.ogg");
 
-	//initialized the player as idx 0
+
 	for (int i = 0; i < ENTITY_CAP; ++i) {
 		entities[i].type = entity_null;
 	}
@@ -248,21 +278,24 @@ void game_init(void)
 		init_player()
 	};
 
-
 	load_maps();
 }
 
+/*
+This function is to initialise the game state.
+*/
 void game_update(void)
 {
+
 	if (CP_Input_KeyTriggered(KEY_F)) {
 		clear_all_entities();
 	}
 	if (state == room_failed) {
+
 		if (isplaying == 1 || isplaying == 0)
 		{
 			CP_Sound_StopAll();
 			CP_Sound_PlayMusic(defeat);
-			//play defeat music
 			isplaying = 2;
 		}
 		clear_all_entities();
@@ -278,22 +311,20 @@ void game_update(void)
 	}
 	else {
 		if (state == loading) {
-			//if it is boss room
+		
 			if ((rooms_cleared % BOSS_ROOM_INTERVAL) == (BOSS_ROOM_INTERVAL - 1)) {
 				map_idx = 0;
 				if (isplaying == 1)
 				{
 					CP_Sound_StopAll();
 					CP_Sound_PlayMusic(bossbgm);
-					//play boss scene music
 					isplaying = 0;
 				}
 			}
 			else {
-				map_idx = rand() % 10 + 1; //set map idx to a random range between 0 to 4
+				map_idx = rand() % 10 + 1;
 				if (isplaying == 0) 
 				{
-					//play bgm
 					CP_Sound_StopAll();
 					CP_Sound_PlayMusic(bgm);
 					isplaying = 1;
@@ -313,11 +344,10 @@ void game_update(void)
 				}
 			}
 
-			//ends the game
 			if (entities[PLAYER_IDX].player.state == dead) state = room_failed;
 			if (state == room_active) {
 				for (int i = 0; i < ENTITY_CAP; ++i) {
-					// if the entities are not player or null
+
 					if (entities[i].type != entity_player && entities[i].type != entity_null && entities[i].type != entity_projectile)
 						break;
 					if (i == ENTITY_CAP - 1)
@@ -368,6 +398,9 @@ void game_update(void)
 	draw_all(entities, tilemap,room_wall_pos, state);
 }
 
+/*
+This function exit the game state.
+*/
 void game_exit(void)
 {
 	CP_Sound_StopAll();
@@ -375,9 +408,5 @@ void game_exit(void)
 	CP_Sound_Free(&bgm);
 	CP_Sound_Free(&bossbgm);
 	free_sounds();
-}
-
-void load_room_done(void) {
-	
 }
 
