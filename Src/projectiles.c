@@ -1,3 +1,11 @@
+/*
+@file projectiles.c
+@author Han Qin Ding
+@course CSD1401
+@section B
+@brief code for projectile entity
+*/
+/*______________________________________________________________________*/
 #include "projectiles.h"
 #include "camera.h"
 #include "easing.h"

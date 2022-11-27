@@ -8,7 +8,14 @@
  *    | |
  *    |_|
  */
-
+ /*
+ @file particle.h
+ @author Vanessa Chua
+ @course CSD1401
+ @section B
+ @brief  code for particle effects
+ */
+ /*______________________________________________________________________*/
 #include "gametypes.h"
 
  //declaration of functions

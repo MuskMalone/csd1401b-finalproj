@@ -1,3 +1,11 @@
+/*
+@file sounds.c
+@author Chun Ho Kok
+@course CSD1401
+@section B
+@brief plays sounds once when play_sound is called
+*/
+/*______________________________________________________________________*/
 #include "sounds.h"
 
 static Sound sounds[SOUND_COUNT];

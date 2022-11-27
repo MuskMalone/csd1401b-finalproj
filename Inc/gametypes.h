@@ -1,3 +1,11 @@
+/*
+@file gametypes.h
+@author Tan Cheng Hian, Han Qin Ding, Vanessa Chua, Shannon Teo, Chun Ho Kok
+@course CSD1401
+@section B
+@brief game state functions
+*/
+/*______________________________________________________________________*/
 #pragma once
 #include "utils.h"
 #define WALL_DIM 3.5f * ((float)CP_System_GetDisplayHeight()/100.0f)

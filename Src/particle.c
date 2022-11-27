@@ -9,7 +9,14 @@
  *    |_|
  */
 
- //include header file that require for the particle
+ /*
+ @file particle.c
+ @author Vanessa Chua
+ @course CSD1401
+ @section B
+ @brief  code for particle effects
+ */
+ /*______________________________________________________________________*/
 #include "gametypes.h"
 #include "particle.h"
 #include "camera.h"
@@ -24,7 +31,7 @@ void init_particle(
 	float max_timer,
 	CP_Color color,
 	float (*pos_lerp_func)(float start, float end, float value)
-) { //setting when game start
+) { //inits a particle struct's members given a pointer to a particle
 	ptcl->running = 1;
 	ptcl->diameter = diameter;
 	ptcl->curr_pos = ptcl->start_pos = start_pos; //current position of particle

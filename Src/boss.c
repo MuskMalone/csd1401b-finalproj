@@ -1,3 +1,11 @@
+/*
+@file boss.c
+@author Han Qin Ding
+@course CSD1401
+@section B
+@brief code for boss entity
+*/
+/*______________________________________________________________________*/
 #include "boss.h"
 #include "projectiles.h"
 #include "utils.h"

@@ -1,3 +1,11 @@
+/*
+@file projectiles.h
+@author Han Qin Ding
+@course CSD1401
+@section B
+@brief code for projectile entity
+*/
+/*______________________________________________________________________*/
 #pragma once
 #include "utils.h"
 #include "cprocessing.h"

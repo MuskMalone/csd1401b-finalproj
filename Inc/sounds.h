@@ -1,3 +1,11 @@
+/*
+@file sounds.h
+@author Chun Ho Kok
+@course CSD1401
+@section B
+@brief plays sounds once when play_sound is called
+*/
+/*______________________________________________________________________*/
 #pragma once
 #include "cprocessing.h"
 #define SOUND_COUNT 5

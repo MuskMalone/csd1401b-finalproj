@@ -1,3 +1,11 @@
+/*
+@file camera.h
+@author Tan Cheng Hian
+@course CSD1401
+@section B
+@brief code for game camera
+*/
+/*______________________________________________________________________*/
 #pragma once
 #include "gametypes.h"
 #define EXPLOSION_PROJECTILE_SPRITE_COUNT 7

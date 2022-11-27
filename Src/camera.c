@@ -1,3 +1,11 @@
+/*
+@file camera.c
+@author Tan Cheng Hian
+@course CSD1401
+@section B
+@brief code for game camera
+*/
+/*______________________________________________________________________*/
 #include "player.h"
 #include "boss.h"
 #include "mobs.h"
@@ -13,7 +21,7 @@
 #define TRANSITION_TIMER 1.25f
 #define PLAYER_HEART_SPEED NORMAL_SPEED * 4.0f
 
-static is_loaded = 0;
+static is_loaded = 0; // doesnt load the sprites more than once
 CP_Image game_button_sprites[BUTTON_SPRITE_COUNT];
 
 static Position player_heart_pos;
@@ -468,6 +476,7 @@ void draw_all(Entity entities[], int tile_map[GRID_ROWS][GRID_COLS], int room_wa
 	}
 
 }
+
 void insert_to_particle_array(
 	float diameter,
 	Position start_pos,

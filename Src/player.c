@@ -1,3 +1,11 @@
+/*
+@file player.c
+@author Tan Cheng Hian
+@course CSD1401
+@section B
+@brief code for player entity
+*/
+/*______________________________________________________________________*/
 #include <stdio.h>
 #include <stdlib.h>
 #include "player.h"

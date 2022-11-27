@@ -1,3 +1,11 @@
+/*
+@file game.h
+@author Shannon Teo
+@course CSD1401
+@section B
+@brief where the main game runs
+*/
+/*______________________________________________________________________*/
 #pragma once
 #include "cprocessing.h"
 #include "utils.h"

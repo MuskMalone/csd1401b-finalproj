@@ -1,3 +1,11 @@
+/*
+@file utils.c
+@author Shannon Teo
+@course CSD1401
+@section B
+@brief utility functions used for the game
+*/
+/*______________________________________________________________________*/
 #pragma once
 #include <math.h>
 #include "cprocessing.h"

@@ -1,3 +1,11 @@
+/*
+@file mainmenu.c
+@author Chun Ho Kok
+@course CSD1401
+@section B
+@brief main menu of the game
+*/
+/*______________________________________________________________________*/
 #include "cprocessing.h"
 #include "game.h"
 #include "gametypes.h"
@@ -6,6 +14,7 @@
 #include "camera.h"
 #include "button.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 
 #define SPLASH_SCREEN_DURATION 3.0f
@@ -79,9 +88,10 @@ void goGame(void)
 
 void Credit_screen(void)
 {
-	if (creditPosY > -(float)CP_System_GetWindowHeight() /2.0f)
+	if (creditPosY > -(float)CP_System_GetWindowHeight() / 2.0f) {
 		creditPosY -= 1.5f;
-
+	}
+	else creditbool = 0;
 	CP_Image_Draw(credits, (float)CP_System_GetWindowWidth() / 2.0f, creditPosY, (float)CP_System_GetWindowWidth(), ((float)CP_System_GetWindowHeight()*3.0f), 255);
 }
 
@@ -144,7 +154,7 @@ void Main_Menu_Update()
 		//index++;
 		//if (index > 3)index = 0;
 		CP_Image_Draw(tutorial[index], M_width, M_height, (float)CP_System_GetWindowWidth()*.8f, (float)CP_System_GetWindowHeight() * .8f, 255);
-		CP_Image_Draw(xbut, M_width *3.15/2.0f, M_height /10.0f, 75.0f, 75.0f, 255);
+		CP_Image_Draw(xbut, M_width *3.15f/2.0f, M_height /10.0f, 75.0f, 75.0f, 255);
 		if (CP_Input_MouseTriggered(MOUSE_BUTTON_1)) 
 		{
 			if (IsCircleClicked(M_width * 3.15f / 2.0f, M_height / 10, 50, CP_Input_GetMouseX(), CP_Input_GetMouseY()))
@@ -160,16 +170,16 @@ void Main_Menu_Update()
 		creditPosY = ((float) CP_System_GetWindowHeight() * 3.0f) / 2.0f;
 
 	}
-	CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
-	CP_Settings_TextSize(50.0f);
-	char buffer[500] = { 0 };
-	sprintf_s(buffer, _countof(buffer), "Press Q for credits");
-	CP_Font_DrawText(buffer, (float)CP_System_GetWindowWidth() * .01f, (float)CP_System_GetWindowHeight() * .05f);
-	if (creditbool == 1)
+
+	if (creditbool)
 	{
 		Credit_screen();
 	}
-
+	CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
+	CP_Settings_TextSize(50.0f);
+	char buffer[500] = { 0 };
+	(creditbool) ? sprintf_s(buffer, _countof(buffer), "Press Q to exit") : sprintf_s(buffer, _countof(buffer), "Press Q for credits");
+	CP_Font_DrawText(buffer, (float)CP_System_GetWindowWidth() * .01f, (float)CP_System_GetWindowHeight() * .05f);
 }
 
 void Main_Menu_Exit()

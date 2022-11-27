@@ -1,3 +1,11 @@
+/*
+@file main.c
+@author Tan Cheng Hian, Han Qin Ding, Vanessa Chua, Shannon Teo, Chun Ho Kok
+@course CSD1401
+@section B
+@brief starting point for the game
+*/
+/*______________________________________________________________________*/
 #include "cprocessing.h"
 #include "gamestates.h"
 

@@ -8,8 +8,14 @@
  *
  *
  */
-
-//include header file that require for the mobs
+ /*
+ @file mob.c
+ @author Vanessa Chua
+ @course CSD1401
+ @section B
+ @brief  code for mob entity
+ */
+ /*______________________________________________________________________*/
 #include "mobs.h"
 #include "player.h" //player pos, etc
 #include "projectiles.h" //projectiles for the mobs

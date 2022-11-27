@@ -1,3 +1,11 @@
+/*
+@file easing.h
+@author Professor Gerald Wong
+@course CSD1401
+@section B
+@brief  easing functions written by professor gerald wong and uploaded to moodle
+*/
+/*______________________________________________________________________*/
 #pragma once
 
 #include <stdlib.h>

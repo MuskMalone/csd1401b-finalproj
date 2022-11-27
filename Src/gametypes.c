@@ -1,3 +1,11 @@
+/*
+@file gametypes.c
+@author Tan Cheng Hian, Han Qin Ding, Vanessa Chua, Shannon Teo, Chun Ho Kok
+@course CSD1401
+@section B
+@brief game state functions
+*/
+/*______________________________________________________________________*/
 #include "gametypes.h"
 
 int insert_to_entity_array(entity_type type, Entity entities[], entity_struct(*init_func)(void)) {

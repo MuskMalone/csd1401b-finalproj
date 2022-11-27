@@ -1,3 +1,11 @@
+/*
+@file boss.h
+@author Han Qin Ding
+@course CSD1401
+@section B
+@brief code for boss entity
+*/
+/*______________________________________________________________________*/
 #pragma once
 #include "utils.h"
 #include "cprocessing.h"

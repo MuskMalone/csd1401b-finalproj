@@ -1,3 +1,11 @@
+/*
+@file gamestates.h
+@author Tan Cheng Hian, Han Qin Ding, Vanessa Chua, Shannon Teo, Chun Ho Kok
+@course CSD1401
+@section B
+@brief game state functions
+*/
+/*______________________________________________________________________*/
 #pragma once
 void Main_Menu_Init(void);
 

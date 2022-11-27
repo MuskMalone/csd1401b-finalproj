@@ -1,3 +1,11 @@
+/*
+@file player.h
+@author Tan Cheng Hian
+@course CSD1401
+@section B
+@brief code for player entity
+*/
+/*______________________________________________________________________*/
 #pragma once
 #include "utils.h"
 #include "cprocessing.h"

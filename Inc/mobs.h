@@ -8,7 +8,14 @@
  *
  *
  */
-
+ /*
+ @file mob.h
+ @author Vanessa Chua
+ @course CSD1401
+ @section B
+ @brief  code for mob entity
+ */
+ /*______________________________________________________________________*/
 #pragma once
 #include "utils.h"
 #include "cprocessing.h"

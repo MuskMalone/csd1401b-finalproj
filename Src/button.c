@@ -1,3 +1,11 @@
+/*
+@file button.c
+@author Chun Ho Kok
+@course CSD1401
+@section B
+@brief buttons for game, fail, and pause menu
+*/
+/*______________________________________________________________________*/
 #include "button.h"
 #include "easing.h"
 #define BUTTON_MAX_TIMER .5f

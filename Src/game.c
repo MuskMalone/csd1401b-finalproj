@@ -1,4 +1,11 @@
-
+/*
+@file game.c
+@author Shannon Teo
+@course CSD1401
+@section B
+@brief where the main game runs
+*/
+/*______________________________________________________________________*/
 #include "gamestates.h"
 #include "camera.h"
 #include "game.h"

@@ -1,3 +1,11 @@
+/*
+@file utils.h
+@author Shannon Teo
+@course CSD1401
+@section B
+@brief utility functions used for the game
+*/
+/*______________________________________________________________________*/
 #include "utils.h"
 
 /*
